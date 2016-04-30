@@ -10,3 +10,24 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+#Camel
+target
+*.iml
+*.ipr
+*.iws
+.idea
+.DS_Store
+.classpath
+.ekstazi
+.project
+.settings
+.checkstyle
+*.log
+test-salesforce-login.properties
+dependency-reduced-pom.xml
+id_file
+components/camel-solr/data
+*.epoch
+.factorypath
+.pmd
