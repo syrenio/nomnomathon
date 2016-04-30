@@ -1,0 +1,69 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>wmpm16.group05</groupId>
+  <artifactId>nomnomathon</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>nomnomathon</name>
+  <url>https://github.com/syrenio/nomnomathon</url>
+  <description>TU Vienna Workflow Management and Process Management Project Summer Term 2016 - Group 05 - NomNomathon</description>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>
+ <!-- spring-web -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-web</artifactId>
+	<version>1.3.3.RELEASE</version>
+</dependency>
+
+
+    <!-- camel -->
+    <dependency>
+    <groupId>org.apache.camel</groupId>
+    <artifactId>camel-spring-boot-starter</artifactId>
+    <version>2.17.0</version>
+	</dependency>
+  <dependency>
+	<groupId>org.apache.camel</groupId>
+	<artifactId>camel-stream</artifactId>
+	<version>2.17.0</version>
+</dependency>
+
+    <!-- test -->
+<dependency>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-starter-test</artifactId>
+	<version>1.3.3.RELEASE</version>
+</dependency>
+
+<dependency>
+	<groupId>org.apache.camel</groupId>
+	<artifactId>camel-test</artifactId>
+	<version>2.17.0</version>
+</dependency>
+
+
+  </dependencies>  
+  
+    <build>
+    <plugins>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring-boot-version}</version>
+      </plugin>
+    </plugins>
+  </build>
+</project>
