@@ -1,0 +1,19 @@
+{
+  "ROWSET": {
+    "ROW": [
+      {
+        "FIELD1": "10:00",
+        "FIELD2": "22:00"
+      },
+      { "FIELD1": "italian" },
+      {
+        "FIELD1": "pizza",
+        "FIELD2": "2.99"
+      },
+      {
+        "FIELD1": "pasta",
+        "FIELD2": "1.99"
+      }
+    ]
+  }
+}
