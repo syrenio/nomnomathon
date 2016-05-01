@@ -1,7 +1,10 @@
 package wmpm16.group05.nomnomathon.routers;
 
+import org.apache.camel.Exchange;
+import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
+import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -33,6 +36,9 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 		inputFolderPath = System.getProperty("user.dir") + "/" + inputFolder;
+
+		configureREST();
+
 		from("file:" + inputFolderPath + "?consumer.delay=" + delay).
 			choice()
 				.when().simple("${file:name.ext} == 'csv'").unmarshal().csv().process(csvToRestaurantDataTranslator)
@@ -42,4 +48,11 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 			.to("log:mock:result");
 	}
 
+	private void configureREST(){
+		restConfiguration().component("servlet").bindingMode(RestBindingMode.json);
+		rest("/")
+				.get("/status").to("direct:status");
+		from("direct:status")
+				.transform().constant("running!");
+	}
 }
