@@ -13,9 +13,4 @@ public class CsvToRestaurantData implements Processor{
 		
 	}
 
-	public Boolean validateData() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

@@ -12,7 +12,7 @@ import com.google.gson.internal.LinkedTreeMap;
 import wmpm16.group05.nomnomathon.models.RestaurantDataModel;
 
 @Component("xmlToRestaurantDataTranslator")
-public class JsonToRestaurantData extends RestaurantDataValidator implements Processor {
+public class JsonToRestaurantData implements Processor {
 
 	private Gson gson = new Gson();
 	@Autowired 

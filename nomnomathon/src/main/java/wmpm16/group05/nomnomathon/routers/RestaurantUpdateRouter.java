@@ -33,6 +33,10 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 	private String delay;
 	@Value("${restaurantUpdate.keepFiles}")
 	private String keepFiles;
+	@Value("${restaurantUpdate.dbName}")
+	private String dbName;
+	@Value("${restaurantUpdate.collectionName}")
+	private String collectionName;
 	private String inputFolderPath;
 
 	@Override
@@ -41,12 +45,12 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 
 		configureREST();
 
-		from("file:" + inputFolderPath + "?consumer.delay=" + delay + "&charset=utf-8&noop=" +keepFiles).
+		from("file:" + inputFolderPath + "?consumer.delay=" + delay + "&charset=utf-8&noop=" + keepFiles).
 			choice()
 				.when().simple("${file:name.ext} == 'csv'").unmarshal().csv().process(csvToRestaurantDataTranslator)
 				.when().simple("${file:name.ext} == 'xml'").unmarshal().jacksonxml().process(xmlToRestaurantDataTranslator)
 				.when().simple("${file:name.ext} == 'json'").unmarshal().json(JsonLibrary.Gson).process(jsonToRestaurantDataTranslator)
-			.to("log:mock:result");
+			.to("mongodb:mongoDb?database="+dbName+"&collection="+collectionName+"&operation=insert");
 	}
 
 	private void configureREST(){
