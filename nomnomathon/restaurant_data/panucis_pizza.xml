@@ -1,18 +1,23 @@
-<?xml version="1.0"?>
-<ROWSET>
-<ROW>
-<FIELD1>10:00</FIELD1>
-<FIELD2>22:00</FIELD2>
-</ROW>
-<ROW>
-<FIELD1>italian</FIELD1>
-</ROW>
-<ROW>
-<FIELD1>pizza</FIELD1>
-<FIELD2>2.99</FIELD2>
-</ROW>
-<ROW>
-<FIELD1>pasta</FIELD1>
-<FIELD2>1.99</FIELD2>
-</ROW>
-</ROWSET>
+<?xml version="1.0" encoding="UTF-8" ?>
+	<RESTAURANTDATA>
+		<DATA>
+			<NAME>Panucis Pizza</NAME>
+			<LOCATION>1150</LOCATION>
+			<OPENING>10:00</OPENING>
+			<CLOSING>22:00</CLOSING>
+			<CATEGORIES>italian</CATEGORIES>
+			<CATEGORIES>american</CATEGORIES>
+		</DATA>
+		<MENU>
+			<NAME>pizza</NAME>
+			<PRICE>2.99</PRICE>
+		</MENU>
+		<MENU>
+			<NAME>pasta</NAME>
+			<PRICE>1.99</PRICE>
+		</MENU>
+		<MENU>
+			<NAME>burger</NAME>
+			<PRICE>3.99</PRICE>
+		</MENU>
+	</RESTAURANTDATA>
