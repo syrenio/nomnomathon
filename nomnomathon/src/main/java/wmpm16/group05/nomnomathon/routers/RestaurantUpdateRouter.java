@@ -1,17 +1,13 @@
 package wmpm16.group05.nomnomathon.routers;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
+import wmpm16.group05.nomnomathon.beans.translators.CsvToRestaurantData;
 import wmpm16.group05.nomnomathon.beans.translators.JsonToRestaurantData;
 import wmpm16.group05.nomnomathon.beans.translators.XmlToRestaurantData;
-import wmpm16.group05.nomnomathon.beans.translators.CsvToRestaurantData;
 
 /**
  * RestaurantUpdateRouter using the Normalizer Pattern
@@ -43,7 +39,6 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 	public void configure() throws Exception {
 		inputFolderPath = System.getProperty("user.dir") + "/" + inputFolder;
 
-		configureREST();
 
 		from("file:" + inputFolderPath + "?consumer.delay=" + delay + "&charset=utf-8&noop=" + keepFiles).
 			choice()
@@ -51,13 +46,5 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 				.when().simple("${file:name.ext} == 'xml'").unmarshal().jacksonxml().process(xmlToRestaurantDataTranslator)
 				.when().simple("${file:name.ext} == 'json'").unmarshal().json(JsonLibrary.Gson).process(jsonToRestaurantDataTranslator)
 			.to("mongodb:mongoDb?database="+dbName+"&collection="+collectionName+"&operation=insert");
-	}
-
-	private void configureREST(){
-		restConfiguration().component("servlet").bindingMode(RestBindingMode.json);
-		rest("/")
-				.get("/status").to("direct:status");
-		from("direct:status")
-				.transform().constant("running!");
 	}
 }
