@@ -1,4 +1,4 @@
-package wmpm16.group05.nomnomathon.routers;
+package wmpm16.group05.nomnomathon.domain;
 
 /**
  * Created by syrenio on 5/4/2016.

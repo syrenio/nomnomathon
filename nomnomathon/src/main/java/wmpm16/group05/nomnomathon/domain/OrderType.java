@@ -1,0 +1,11 @@
+package wmpm16.group05.nomnomathon.domain;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+/**
+ * Created by syrenio on 04/05/16.
+ */
+public enum OrderType {
+    SMS,
+    REGULAR
+}

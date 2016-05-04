@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import wmpm16.group05.nomnomathon.routers.RestaurantCapacityResponse;
+import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 
 import javax.websocket.server.PathParam;
 

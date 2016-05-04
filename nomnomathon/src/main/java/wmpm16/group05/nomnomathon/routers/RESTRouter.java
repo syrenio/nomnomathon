@@ -1,16 +1,15 @@
 package wmpm16.group05.nomnomathon.routers;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Message;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http.HttpMethods;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import wmpm16.group05.nomnomathon.domain.OrderRequest;
+import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 
 /**
  * Created by syrenio on 5/3/2016.
@@ -27,6 +26,7 @@ public class RESTRouter extends RouteBuilder {
 
         rest("/")
                 .get("/status").to("direct:status")
+                .post("/orders").type(OrderRequest.class).to("direct:postOrder")
                 .get("/restaurants/{id}").to("direct:callRestaurant");
         from("direct:status")
                 .transform().constant("running!");
@@ -34,6 +34,10 @@ public class RESTRouter extends RouteBuilder {
                 .setHeader(Exchange.HTTP_METHOD, HttpMethods.GET)
                 .to("http://petstore.swagger.io/v2/store/inventory");
 
+        from("direct:postOrder")
+                .process(x -> {
+                    System.out.println(x.getIn());
+                });
 
         from("direct:start")
                 .process(new Processor() {
