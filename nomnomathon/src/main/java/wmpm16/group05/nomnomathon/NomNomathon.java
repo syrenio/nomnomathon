@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
-public class NomNomathon extends SpringBootServletInitializer {
+public class NomNomathon {
     private static final String CAMEL_URL_MAPPING = "/api/*";
     private static final String CAMEL_SERVLET_NAME = "CamelServlet";
 

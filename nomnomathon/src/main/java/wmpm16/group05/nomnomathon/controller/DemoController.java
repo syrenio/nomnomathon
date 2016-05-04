@@ -14,7 +14,7 @@ public class DemoController {
     @Autowired
     private CamelContext context;
 
-    @RequestMapping
+    @RequestMapping("/start")
     private void getStart() throws Exception {
         System.out.println(context);
         ProducerTemplate template = context.createProducerTemplate();

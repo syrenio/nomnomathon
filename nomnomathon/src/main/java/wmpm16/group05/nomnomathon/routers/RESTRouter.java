@@ -25,9 +25,6 @@ public class RESTRouter extends RouteBuilder {
                 .bindingMode(RestBindingMode.json)
                 .dataFormatProperty("prettyPrint", "true");
 
-        addMockedEndpoints();
-
-
         rest("/")
                 .get("/status").to("direct:status")
                 .get("/restaurants/{id}").to("direct:callRestaurant");
@@ -44,7 +41,7 @@ public class RESTRouter extends RouteBuilder {
                         System.out.println(exchange.getIn().getBody());
                     }
                 })
-                .to("http://localhost:8080/api/external/restaurants/pizzza")
+                .to("http://localhost:8080/external/restaurants/pizzza")
                 .unmarshal().json(JsonLibrary.Jackson, RestaurantCapacityResponse.class)
                 .process(new Processor() {
                     public void process(Exchange exchange) throws Exception {
@@ -53,24 +50,6 @@ public class RESTRouter extends RouteBuilder {
                     }
                 });
 
-        //http://petstore.swagger.io/v2/store/inventory
     }
-
-    private void addMockedEndpoints(){
-        rest("/external")
-                .get("/restaurants/pizzza").to("direct:pizzza");
-
-        from("direct:pizzza").process(new Processor() {
-            public void process(Exchange exchange) throws Exception {
-                double rnd = Math.random();
-                RestaurantCapacityResponse resp = new RestaurantCapacityResponse();
-                resp.setCapacityAvailable(rnd > 0.5);
-
-                exchange.getIn().setBody(resp);
-            }
-        });
-    }
-
-
 
 }
