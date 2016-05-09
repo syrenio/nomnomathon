@@ -1,6 +1,7 @@
 package wmpm16.group05.nomnomathon.domain;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Created by syrenio on 04/05/16.
@@ -9,8 +10,9 @@ public class OrderRequest {
     private OrderType type;
     private String text;
     private Long phoneNumber;
-    private Long userId;
+    private Optional<Long> userId;
     private List<Long> dishes;
+    private Optional<Long> restaurantId;
 
     public String getText() {
         return text;
@@ -36,19 +38,27 @@ public class OrderRequest {
         this.dishes = dishes;
     }
 
-    public Long getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Long userId) {
-        this.userId = userId;
-    }
-
     public Long getPhoneNumber() {
         return phoneNumber;
     }
 
     public void setPhoneNumber(Long phoneNumber) {
         this.phoneNumber = phoneNumber;
+    }
+
+    public Optional<Long> getRestaurantId() {
+        return restaurantId;
+    }
+
+    public void setRestaurantId(Optional<Long> restaurantId) {
+        this.restaurantId = restaurantId;
+    }
+
+    public Optional<Long> getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Optional<Long> userId) {
+        this.userId = userId;
     }
 }
