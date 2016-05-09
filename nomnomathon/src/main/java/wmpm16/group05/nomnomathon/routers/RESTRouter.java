@@ -47,9 +47,15 @@ public class RESTRouter extends RouteBuilder {
                 });
 
         from("direct:postOrderWithSMS")
+                .process(x -> {
+                    System.out.println("SMS " + x.getIn());
+                })
                 .to("direct:checkUserToken");
 
         from("direct:postOrderWithREGULAR")
+                .process(x -> {
+                    System.out.println("REGULAR " + x.getIn());
+                })
                 .to("direct:checkUserToken");
 
         from("direct:checkUserToken")
@@ -68,6 +74,11 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:rejectOrder")
                 .to("direct:notifyCustomer");
+
+        from("direct:notifyCustomer")
+                .process(x -> {
+                    System.out.println(x.getIn());
+                });
 
         /* possible process nodes */
 

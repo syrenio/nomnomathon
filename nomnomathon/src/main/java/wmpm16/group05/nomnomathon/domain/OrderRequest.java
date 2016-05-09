@@ -38,12 +38,12 @@ public class OrderRequest {
         this.phoneNumber = phoneNumber;
     }
 
-    public Optional<Long> getRestaurantId() {
-        return restaurantId;
+    public List<String> getDishes() {
+        return dishes;
     }
 
-    public void setRestaurantId(Optional<Long> restaurantId) {
-        this.restaurantId = restaurantId;
+    public void setDishes(List<String> dishes) {
+        this.dishes = dishes;
     }
 
     public Optional<Long> getUserId() {
@@ -54,11 +54,11 @@ public class OrderRequest {
         this.userId = userId;
     }
 
-    public List<String> getDishes() {
-        return dishes;
+    public Optional<Long> getRestaurantId() {
+        return restaurantId;
     }
 
-    public void setDishes(List<String> dishes) {
-        this.dishes = dishes;
+    public void setRestaurantId(Optional<Long> restaurantId) {
+        this.restaurantId = restaurantId;
     }
 }
