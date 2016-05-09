@@ -53,6 +53,7 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:checkUserToken");
 
         from("direct:checkUserToken")
+                /*choice customer exists and is valid*/
                 .to("direct:enrichCustomerData");
 
         from("direct:enrichCustomerData")

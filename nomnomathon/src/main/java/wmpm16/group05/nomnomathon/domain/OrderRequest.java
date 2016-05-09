@@ -11,7 +11,7 @@ public class OrderRequest {
     private String text;
     private Long phoneNumber;
     private Optional<Long> userId;
-    private List<Long> dishes;
+    private List<String> dishes;
     private Optional<Long> restaurantId;
 
     public String getText() {
@@ -28,14 +28,6 @@ public class OrderRequest {
 
     public void setType(OrderType type) {
         this.type = type;
-    }
-
-    public List<Long> getDishes() {
-        return dishes;
-    }
-
-    public void setDishes(List<Long> dishes) {
-        this.dishes = dishes;
     }
 
     public Long getPhoneNumber() {
@@ -60,5 +52,13 @@ public class OrderRequest {
 
     public void setUserId(Optional<Long> userId) {
         this.userId = userId;
+    }
+
+    public List<String> getDishes() {
+        return dishes;
+    }
+
+    public void setDishes(List<String> dishes) {
+        this.dishes = dishes;
     }
 }
