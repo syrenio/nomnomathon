@@ -56,9 +56,6 @@ public class RESTRouter extends RouteBuilder {
         //from("direct:queryRestaurants")
         //from("direct:rejectOrder") /* update order in database*/
 
-
-
-
         /**/
 
         from("direct:start")
