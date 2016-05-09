@@ -9,6 +9,7 @@ import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
+import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 
 /**
@@ -35,9 +36,30 @@ public class RESTRouter extends RouteBuilder {
                 .to("http://petstore.swagger.io/v2/store/inventory");
 
         from("direct:postOrder")
+                /*
+                .choice()
+                .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.SMS)
+                .to("direct:postOrderWithSMS")
+                .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.REGULAR)
+                .to("direct:postOrderWithREGULAR")
+                .end()*/
                 .process(x -> {
                     System.out.println(x.getIn());
                 });
+
+        /* possible process nodes */
+
+        //from("direct:checkUserToken")
+        //from("direct:customerNotify")
+        //from("direct:enrichCustomerData")
+        //from("direct:storeOrder")
+        //from("direct:queryRestaurants")
+        //from("direct:rejectOrder") /* update order in database*/
+
+
+
+
+        /**/
 
         from("direct:start")
                 .process(new Processor() {
