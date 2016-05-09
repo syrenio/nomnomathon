@@ -1,126 +1,133 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
 
-  <groupId>wmpm16.group05</groupId>
-  <artifactId>nomnomathon</artifactId>
-  <version>0.0.1-SNAPSHOT</version>
-  <packaging>jar</packaging>
+	<groupId>wmpm16.group05</groupId>
+	<artifactId>nomnomathon</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 
-  <name>nomnomathon</name>
-  <url>https://github.com/syrenio/nomnomathon</url>
-  <description>TU Vienna Workflow Management and Process Management Project Summer Term 2016 - Group 05 - NomNomathon</description>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-      <spring.version>1.3.3.RELEASE</spring.version>
-  </properties>
-
-
-  <dependencies>
-    <dependency>
-      <groupId>junit</groupId>
-      <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
-    </dependency>
-  <!-- spring-web -->
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-web</artifactId>
-	<version>${spring.version}</version>
-</dependency>
-  <dependency>
-	<groupId>org.apache.camel</groupId>
-	<artifactId>camel-stream</artifactId>
-	<version>2.17.0</version>
-</dependency>
-
-    <!-- test -->
-<dependency>
-	<groupId>org.springframework.boot</groupId>
-	<artifactId>spring-boot-starter-test</artifactId>
-	<version>${spring.version}</version>
-</dependency>
-
-<dependency>
-	<groupId>org.apache.camel</groupId>
-	<artifactId>camel-test</artifactId>
-	<version>2.17.0</version>
-</dependency>
-
-<!-- components -->
-
-<!-- camel-spring-boot-starter -->
-<dependency>
-    <groupId>org.apache.camel</groupId>
-    <artifactId>camel-spring-boot-starter</artifactId>
-    <version>2.17.0</version>
-</dependency>
-
-<!-- mongodb -->
-<dependency>
-	<groupId>org.apache.camel</groupId>
-	<artifactId>camel-mongodb</artifactId>
-	<version>2.17.0</version>
-</dependency>
-
-<!-- csv -->
-<dependency>
-	<groupId>org.apache.camel</groupId>
-	<artifactId>camel-csv</artifactId>
-	<version>2.17.0</version>
-</dependency>
-
-<!-- json -->
-<dependency>
-	<groupId>org.apache.camel</groupId>
-	<artifactId>camel-gson</artifactId>
-	<version>2.17.0</version>
-</dependency>
-
-<!-- xml -->
-<dependency>
-	<groupId>org.apache.camel</groupId>
-	<artifactId>camel-jacksonxml</artifactId>
-	<version>2.17.0</version>
-</dependency>
-
-<!-- camel-mail -->
-<dependency>
-    <groupId>org.apache.camel</groupId>
-    <artifactId>camel-mail</artifactId>
-    <version>2.17.0</version>
-</dependency>
+	<name>nomnomathon</name>
+	<url>https://github.com/syrenio/nomnomathon</url>
+	<description>TU Vienna Workflow Management and Process Management Project Summer Term 2016 - Group 05 - NomNomathon</description>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring.version>1.3.3.RELEASE</spring.version>
+		<camel.version>2.17.0</camel.version>
+	</properties>
 
 
-<dependency>
-  <groupId>org.apache.camel</groupId>
-  <artifactId>camel-servlet</artifactId>
-  <version>2.17.0</version>
-</dependency>
+	<dependencies>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>3.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<!-- spring-web -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-stream</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
 
-<dependency>
-  <groupId>org.apache.camel</groupId>
-  <artifactId>camel-http</artifactId>
-  <version>2.17.0</version>
-</dependency>
-  </dependencies>  
-  
-    <build>
-    <plugins>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-        <version>${spring.version}</version>
-      </plugin>
-        <plugin>
-            <groupId>org.apache.maven.plugins</groupId>
-            <artifactId>maven-compiler-plugin</artifactId>
-            <configuration>
-                <source>1.8</source>
-                <target>1.8</target>
-            </configuration>
-        </plugin>
-    </plugins>
-  </build>
+		<!-- test -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-test</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+
+		<!-- components -->
+
+		<!-- camel-spring-boot-starter -->
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-spring-boot-starter</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+
+		<!-- mongodb -->
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-mongodb</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+
+		<!-- csv -->
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-csv</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+
+		<!-- json -->
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-gson</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+
+		<!-- xml -->
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-jacksonxml</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+
+		<!-- camel-mail -->
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-mail</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+
+
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-servlet</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-http</artifactId>
+			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-metrics</artifactId>
+			<version>${camel.version}</version>
+
+		</dependency>
+	</dependencies>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>${spring.version}</version>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
