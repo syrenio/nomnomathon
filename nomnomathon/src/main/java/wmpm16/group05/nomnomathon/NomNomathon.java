@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.embedded.ServletRegistrationBean;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
@@ -30,7 +31,12 @@ public class NomNomathon {
      * A main method to start
      */
     public static void main(String[] args) {
-        SpringApplication.run(NomNomathon.class, args);
+        ConfigurableApplicationContext app = SpringApplication.run(NomNomathon.class, args);
+    }
+
+    @PostConstruct
+    public void initDB(){
+        System.out.println("<--- INIT DB STUFF --->");
     }
 
     @Bean
