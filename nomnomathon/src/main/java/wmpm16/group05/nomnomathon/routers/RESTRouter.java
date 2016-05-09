@@ -36,25 +36,47 @@ public class RESTRouter extends RouteBuilder {
                 .to("http://petstore.swagger.io/v2/store/inventory");
 
         from("direct:postOrder")
-                /*
                 .choice()
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.SMS)
                 .to("direct:postOrderWithSMS")
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.REGULAR)
                 .to("direct:postOrderWithREGULAR")
-                .end()*/
+                .end()
                 .process(x -> {
                     System.out.println(x.getIn());
                 });
 
+        from("direct:postOrderWithSMS")
+                .to("direct:checkUserToken");
+
+        from("direct:postOrderWithREGULAR")
+                .to("direct:checkUserToken");
+
+        from("direct:checkUserToken")
+                .to("direct:enrichCustomerData");
+
+        from("direct:enrichCustomerData")
+                .to("direct:storeOrder");
+
+        from("direct:storeOrder")
+                .to("direct:queryRestaurants");
+
+        from("direct:queryRestaurants")
+                /*choice or something here,  reject or next step in process*/
+                .to("direct:rejectOrder");
+
+        from("direct:rejectOrder")
+                .to("direct:notifyCustomer");
+
         /* possible process nodes */
 
         //from("direct:checkUserToken")
-        //from("direct:customerNotify")
         //from("direct:enrichCustomerData")
         //from("direct:storeOrder")
         //from("direct:queryRestaurants")
         //from("direct:rejectOrder") /* update order in database*/
+
+        //from("direct:notifyCustomer")
 
         /**/
 
