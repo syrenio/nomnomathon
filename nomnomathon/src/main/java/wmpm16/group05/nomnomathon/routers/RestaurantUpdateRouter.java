@@ -41,10 +41,12 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 
 
 		from("file:" + inputFolderPath + "?consumer.delay=" + delay + "&charset=utf-8&noop=" + keepFiles).
+		to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG&marker=loaded").
 			choice()
 				.when().simple("${file:name.ext} == 'csv'").unmarshal().csv().process(csvToRestaurantDataTranslator)
 				.when().simple("${file:name.ext} == 'xml'").unmarshal().jacksonxml().process(xmlToRestaurantDataTranslator)
 				.when().simple("${file:name.ext} == 'json'").unmarshal().json(JsonLibrary.Gson).process(jsonToRestaurantDataTranslator)
-			.to("mongodb:mongoDb?database="+dbName+"&collection="+collectionName+"&operation=insert");
+			.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
+				.to("mongodb:mongoDb?database="+dbName+"&collection="+collectionName+"&operation=insert").to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=INFO&marker=saved");
 	}
 }
