@@ -55,10 +55,9 @@ public class RESTRouter extends RouteBuilder {
                 .end();
 
         from("direct:postOrderWithSMS")
-                .process(x -> {
-                    System.out.println("SMS " + x.getIn());
-                })
-                .to("direct:checkUserToken");
+                .filter(simple("${in.body.type} == 'SMS' && ${in.body.text} contains 'hungry'")) /*IGNORE OTHER Messages */
+                .to("direct:checkUserToken")
+                .end();
 
         from("direct:postOrderWithREGULAR")
                 .process(req -> {
