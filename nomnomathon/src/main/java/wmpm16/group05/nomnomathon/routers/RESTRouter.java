@@ -7,6 +7,7 @@ import org.apache.camel.component.http.HttpMethods;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
@@ -41,10 +42,7 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:postOrderWithSMS")
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.REGULAR)
                 .to("direct:postOrderWithREGULAR")
-                .end()
-                .process(x -> {
-                    System.out.println(x.getIn());
-                });
+                .end();
 
         from("direct:postOrderWithSMS")
                 .process(x -> {
@@ -59,6 +57,12 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:checkUserToken");
 
         from("direct:checkUserToken")
+                .process(req -> {
+                    System.out.println(req.getIn().getHeaders());
+                    //req.getIn().getHeader("org.restlet.http.headers");
+
+                })
+                //.to("sql:select order_seq.nextval from dual?outputHeader=OrderId&outputType=SelectOne")
                 /*choice customer exists and is valid*/
                 .to("direct:enrichCustomerData");
 
