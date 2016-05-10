@@ -3,7 +3,7 @@ Workflow Management and Process Management Project
 
 # test order via REST Endpoint
 
-> curl -H "Content-Type: application/json" -X POST -d '{"type":"SMS","text":"hungry"}' http://localhost:8080/api/orders
+> curl -H "Content-Type: application/json" -X POST -d '{"type":"SMS","text":"hungry","phoneNumber":"+4368012345678"}' http://localhost:8080/api/orders
 
 or
 

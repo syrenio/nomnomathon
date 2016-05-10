@@ -9,7 +9,7 @@ import java.util.Optional;
 public class OrderRequest {
     private OrderType type;
     private String text;
-    private Long phoneNumber;
+    private String phoneNumber;
     private Optional<Long> userId;
     private List<String> dishes;
     private Optional<Long> restaurantId;
@@ -28,14 +28,6 @@ public class OrderRequest {
 
     public void setType(OrderType type) {
         this.type = type;
-    }
-
-    public Long getPhoneNumber() {
-        return phoneNumber;
-    }
-
-    public void setPhoneNumber(Long phoneNumber) {
-        this.phoneNumber = phoneNumber;
     }
 
     public List<String> getDishes() {
@@ -60,5 +52,13 @@ public class OrderRequest {
 
     public void setRestaurantId(Optional<Long> restaurantId) {
         this.restaurantId = restaurantId;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
     }
 }

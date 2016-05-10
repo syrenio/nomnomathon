@@ -7,12 +7,14 @@ import org.apache.camel.component.http.HttpMethods;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.tomcat.util.http.parser.Authorization;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
+import wmpm16.group05.nomnomathon.processor.AuthProcessor;
 
 import java.nio.charset.Charset;
 import java.util.Base64;
@@ -24,7 +26,8 @@ import java.util.Optional;
 @Component
 public class RESTRouter extends RouteBuilder {
 
-    private static final String HEADER_Authorization = "Authorization";
+    @Autowired
+    private AuthProcessor authProcessor;
 
     @Override
     public void configure() throws Exception {
@@ -63,33 +66,7 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:checkUserToken");
 
         from("direct:checkUserToken")
-                .process(req -> {
-
-                    /*extract userId from header: Authorization  --> Basic Base64(username:password)*/
-                    /*maybe use X-Auth-Token or Authorization*/
-
-                    String auth_header = (String) req.getIn().getHeader(HEADER_Authorization);
-                    String username = null;
-                    String password = null;
-
-                    if (auth_header != null && auth_header.startsWith("Basic")) {
-                        final String[] values = extractBasicAuth(auth_header);
-                        username = values[0];
-                        password = values[1];
-                    }
-
-                    /*TODO check in DB*/
-                    /*TODO insert UserID into order-request*/
-
-                    OrderRequest body = req.getIn().getBody(OrderRequest.class);
-                    if(username!= null && password != null){
-                        if(username.equals("bernd") && password.equals("nomnom")){
-                            body.setUserId(Optional.of(159l));
-                        }
-                    }
-                    req.getIn().setBody(body);
-                    System.out.println(body.getUserId().get());
-                })
+                .process(authProcessor)
                 //.to("sql:select order_seq.nextval from dual?outputHeader=OrderId&outputType=SelectOne")
                 /*choice customer exists and is valid*/
                 .to("direct:enrichCustomerData");
@@ -139,17 +116,6 @@ public class RESTRouter extends RouteBuilder {
                     }
                 });
 
-    }
-
-    private String[] extractBasicAuth(String auth_header) {
-        // Authorization: Basic base64credentials
-        String base64Credentials = auth_header.substring("Basic".length()).trim();
-        String credentials = new String(Base64.getDecoder().decode(base64Credentials),
-                Charset.forName("UTF-8"));
-        // credentials = username:password
-        final String[] values = credentials.split(":", 2);
-        System.out.println("auth: " + values[0] + ":"+ values[1]);
-        return values;
     }
 
 }
