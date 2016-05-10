@@ -7,4 +7,4 @@ Workflow Management and Process Management Project
 
 or
 
-> curl -H "Content-Type: application/json" -X POST -d '{"type":"REGULAR","text":"hungry"}' http://localhost:8080/api/orders
+> curl -H "Content-Type: application/json;" -H "Authorization: Basic YmVybmQ6bm9tbm9t" -X POST -d '{"type":"REGULAR","text":"hungry"}' http://localhost:8080/api/orders
