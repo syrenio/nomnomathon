@@ -17,8 +17,11 @@ import org.springframework.context.annotation.Configuration;
 
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import wmpm16.group05.nomnomathon.models.Customer;
+import wmpm16.group05.nomnomathon.models.CustomerRepository;
 
 import javax.annotation.PostConstruct;
 
@@ -26,6 +29,9 @@ import javax.annotation.PostConstruct;
 public class NomNomathon {
     private static final String CAMEL_URL_MAPPING = "/api/*";
     private static final String CAMEL_SERVLET_NAME = "CamelServlet";
+
+    @Autowired
+    CustomerRepository customerRepository;
 
     /**
      * A main method to start
@@ -37,6 +43,11 @@ public class NomNomathon {
     @PostConstruct
     public void initDB(){
         System.out.println("<--- INIT DB STUFF --->");
+        customerRepository.deleteAll();
+
+        Customer customer = new Customer("bernd","bernd","test");
+        customer.setPhoneNumber("+4368012345678");
+        customerRepository.save(customer);
     }
 
     @Bean

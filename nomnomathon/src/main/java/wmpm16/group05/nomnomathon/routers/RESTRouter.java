@@ -56,6 +56,7 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:postOrderWithSMS")
                 .filter(simple("${in.body.type} == 'SMS' && ${in.body.text} contains 'hungry'")) /*IGNORE OTHER Messages */
+                //.to("jpa://wmpm16.group05.nomnomathon.models.Customer?consumer.query=select o from wmpm16.group05.nomnomathon.models.Customer o where o.id = 1")
                 .to("direct:checkUserToken")
                 .end();
 

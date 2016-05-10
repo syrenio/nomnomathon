@@ -24,6 +24,8 @@
 			<version>3.8.1</version>
 			<scope>test</scope>
 		</dependency>
+
+
 		<!-- spring-web -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -34,6 +36,11 @@
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-stream</artifactId>
 			<version>${camel.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+			<version>${spring.version}</version>
 		</dependency>
 
 		<!-- Jackson -->
@@ -75,6 +82,13 @@
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-mongodb</artifactId>
 			<version>${camel.version}</version>
+		</dependency>
+
+		<!-- database -->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>1.4.191</version>
 		</dependency>
 
 		<!-- csv -->
@@ -121,7 +135,11 @@
 			<groupId>org.apache.camel</groupId>
 			<artifactId>camel-metrics</artifactId>
 			<version>${camel.version}</version>
-
+		</dependency>
+		<dependency>
+			<groupId>org.apache.camel</groupId>
+			<artifactId>camel-jpa</artifactId>
+			<version>${camel.version}</version>
 		</dependency>
 	</dependencies>
 

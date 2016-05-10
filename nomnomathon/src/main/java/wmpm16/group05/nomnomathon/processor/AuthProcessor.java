@@ -2,10 +2,13 @@ package wmpm16.group05.nomnomathon.processor;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.test.annotation.Commit;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
+import wmpm16.group05.nomnomathon.models.Customer;
+import wmpm16.group05.nomnomathon.models.CustomerRepository;
 
 import java.nio.charset.Charset;
 import java.util.Base64;
@@ -18,6 +21,9 @@ import java.util.Optional;
 public class AuthProcessor implements Processor{
 
     private static final String HEADER_Authorization = "Authorization";
+
+    @Autowired
+    private CustomerRepository customerRepository;
 
     @Override
     public void process(Exchange req) throws Exception {
@@ -36,9 +42,12 @@ public class AuthProcessor implements Processor{
     private void userTokenSMS(Exchange req) {
         OrderRequest body = req.getIn().getBody(OrderRequest.class);
 
-        if(body.getPhoneNumber().equals("+4368012345678")){
-            body.setUserId(Optional.of(159l));
+        Customer customer = customerRepository.findOneByPhoneNumber(body.getPhoneNumber());
+
+        if(customer!=null){
+            body.setUserId(Optional.of(customer.getId()));
         }
+        /*TODO Throw Error or Exception when user doesnt exist*/
 
         req.getIn().setBody(body);
     }
@@ -55,14 +64,17 @@ public class AuthProcessor implements Processor{
             password = values[1];
         }
 
-                    /*TODO check in DB*/
-                    /*TODO insert UserID into order-request*/
+        /*TODO check in DB*/
+        /*TODO insert UserID into order-request*/
 
         if(username!= null && password != null){
             if(username.equals("bernd") && password.equals("nomnom")){
                 body.setUserId(Optional.of(159l));
             }
         }
+        /*TODO Throw Error or Exception when user doesnt exist*/
+
+
         req.getIn().setBody(body);
         System.out.println(body.getUserId().get());
     }
