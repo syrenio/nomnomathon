@@ -45,7 +45,7 @@ public class NomNomathon {
         System.out.println("<--- INIT DB STUFF --->");
         customerRepository.deleteAll();
 
-        Customer customer = new Customer("bernd","bernd","test");
+        Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");
         customerRepository.save(customer);
     }

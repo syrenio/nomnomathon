@@ -64,12 +64,10 @@ public class AuthProcessor implements Processor{
             password = values[1];
         }
 
-        /*TODO check in DB*/
-        /*TODO insert UserID into order-request*/
-
         if(username!= null && password != null){
-            if(username.equals("bernd") && password.equals("nomnom")){
-                body.setUserId(Optional.of(159l));
+            Optional<Customer> cust = customerRepository.findOneByUserNameAndPassword(username,password);
+            if(cust.isPresent()){
+                body.setUserId(Optional.of(cust.get().getId()));
             }
         }
         /*TODO Throw Error or Exception when user doesnt exist*/
