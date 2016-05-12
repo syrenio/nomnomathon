@@ -16,8 +16,9 @@ public class DemoController {
 
     @RequestMapping("/start")
     private void getStart() throws Exception {
-        System.out.println(context);
+        System.out.println(context.getName());
         ProducerTemplate template = context.createProducerTemplate();
         template.sendBody("direct:start",null);
+        template.sendBody("direct:findAll",null);
     }
 }
