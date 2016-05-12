@@ -15,16 +15,18 @@ public class Customer {
     @GeneratedValue(strategy= GenerationType.AUTO)
     private long id;
     private String userName;
+    private String password;
     private String firstName;
     private String lastName;
     private String phoneNumber;
 
     protected Customer() {}
 
-    public Customer(String userName, String firstName, String lastName) {
+    public Customer(String userName, String firstName, String lastName, String password) {
         this.userName = userName;
         this.firstName = firstName;
         this.lastName = lastName;
+        this.password = password;
     }
 
     @Override
