@@ -3,6 +3,7 @@ package wmpm16.group05.nomnomathon.models;
 import java.util.ArrayList;
 
 public class RestaurantDataModel {
+	private int _id;
 	private String name;
 	private String loc;
 	private String open;
@@ -11,7 +12,8 @@ public class RestaurantDataModel {
 	private ArrayList<String> menu;
 	
 	
-	public RestaurantDataModel(String name, String loc, String opening, String closing, ArrayList<String> cats, ArrayList<String> menu){
+	public RestaurantDataModel(int id, String name, String loc, String opening, String closing, ArrayList<String> cats, ArrayList<String> menu){
+		this.setId(id);
 		this.name = name;
 		this.loc = loc;
 		this.open = opening;
@@ -78,5 +80,15 @@ public class RestaurantDataModel {
 
 	public void setMenu(ArrayList<String> menu) {
 		this.menu = menu;
+	}
+
+
+	public int getId() {
+		return _id;
+	}
+
+
+	public void setId(int id) {
+		this._id = id;
 	}
 }

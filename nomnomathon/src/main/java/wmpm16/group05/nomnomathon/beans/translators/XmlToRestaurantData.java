@@ -12,7 +12,6 @@ public class XmlToRestaurantData implements Processor {
 	public void process(Exchange exchange) throws Exception {
 		// TODO Auto-generated method stub
 		//System.err.println(exchange.getIn().getBody().getClass());
-		logger.error(exchange.getIn().getBody().getClass());
 
 	}
 

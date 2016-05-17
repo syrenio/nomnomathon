@@ -1,6 +1,4 @@
-Panucis Pizza, 1150
-10:00, 22:00
-italian, amercian
-pizza, 2.99
-pasta, 1.99
-burger,3.99
+Panucis Pizza, 1, 1150, 10:00, 22:00, italian, american, pizza, 2.99
+Panucis Pizza, 1, 1150, 10:00, 22:00, italian, american, pasta, 1.99
+Panucis Pizza, 1, 1150, 10:00, 22:00, italian, american, burger, 3.99
+

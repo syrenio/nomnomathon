@@ -1,23 +1,27 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-	<RESTAURANTDATA>
-		<DATA>
-			<NAME>Panucis Pizza</NAME>
-			<LOCATION>1150</LOCATION>
-			<OPENING>10:00</OPENING>
-			<CLOSING>22:00</CLOSING>
-			<CATEGORIES>italian</CATEGORIES>
-			<CATEGORIES>american</CATEGORIES>
-		</DATA>
-		<MENU>
-			<NAME>pizza</NAME>
-			<PRICE>2.99</PRICE>
-		</MENU>
-		<MENU>
-			<NAME>pasta</NAME>
-			<PRICE>1.99</PRICE>
-		</MENU>
-		<MENU>
-			<NAME>burger</NAME>
-			<PRICE>3.99</PRICE>
-		</MENU>
-	</RESTAURANTDATA>
+<restaurantdata>
+        <data>
+            <name>Panucis Pizza</name>
+            <id>1</id>
+            <location>1150</location>
+            <opening>10:00</opening>
+            <closing>22:00</closing>
+            <categories>
+                <category>italian</category>
+                <category>american</category>
+            </categories>
+        </data>
+        <menu>
+            <item>
+                <name>pizza</name>
+                <price>2.99</price>
+            </item>
+            <item>
+                <name>pasta</name>
+                <price>1.99</price>
+            </item>
+            <item>
+                <name>burger</name>
+                <price>3.99</price>
+            </item>
+        </menu>
+</restaurantdata>
