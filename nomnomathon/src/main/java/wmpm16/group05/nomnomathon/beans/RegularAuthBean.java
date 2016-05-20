@@ -1,12 +1,9 @@
-package wmpm16.group05.nomnomathon.processor;
+package wmpm16.group05.nomnomathon.beans;
 
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.test.annotation.Commit;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
-import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
 
@@ -15,41 +12,18 @@ import java.util.Base64;
 import java.util.Optional;
 
 /**
- * Created by syrenio on 5/10/2016.
+ * Created by syrenio on 5/20/2016.
  */
 @Component
-public class AuthProcessor implements Processor{
+public class RegularAuthBean {
 
     private static final String HEADER_Authorization = "Authorization";
 
     @Autowired
     private CustomerRepository customerRepository;
 
-    @Override
-    public void process(Exchange req) throws Exception {
-        /*extract userId from header: Authorization  --> Basic Base64(username:password)*/
-        /*maybe use X-Auth-Token or Authorization*/
-
-        OrderRequest body = req.getIn().getBody(OrderRequest.class);
-
-        if(body.getType() == OrderType.REGULAR){
-            userTokenREGULAR(req);
-        }else if(body.getType() == OrderType.SMS){
-            userTokenSMS(req);
-        }
-    }
-
-    private void userTokenSMS(Exchange req) {
-        OrderRequest body = req.getIn().getBody(OrderRequest.class);
-
-        Customer customer = customerRepository.findOneByPhoneNumber(body.getPhoneNumber());
-
-        if(customer!=null){
-            body.setUserId(Optional.of(customer.getId()));
-        }
-        /*TODO Throw Error or Exception when user doesnt exist*/
-
-        req.getIn().setBody(body);
+    public void process(Exchange exchange){
+        userTokenREGULAR(exchange);
     }
 
     private void userTokenREGULAR(Exchange req){
@@ -72,9 +46,7 @@ public class AuthProcessor implements Processor{
         }
         /*TODO Throw Error or Exception when user doesnt exist*/
 
-
-        req.getIn().setBody(body);
-        System.out.println(body.getUserId().get());
+        req.getOut().setBody(body);
     }
 
     private String[] extractBasicAuth(String auth_header) {
@@ -84,7 +56,6 @@ public class AuthProcessor implements Processor{
                 Charset.forName("UTF-8"));
         // credentials = username:password
         final String[] values = credentials.split(":", 2);
-        System.out.println("auth: " + values[0] + ":"+ values[1]);
         return values;
     }
 }

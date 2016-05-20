@@ -3,31 +3,20 @@ package wmpm16.group05.nomnomathon.routers;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.http.HttpMethods;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.apache.tomcat.util.http.parser.Authorization;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import wmpm16.group05.nomnomathon.beans.RegularAuthBean;
+import wmpm16.group05.nomnomathon.beans.SMSAuthBean;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
-import wmpm16.group05.nomnomathon.processor.AuthProcessor;
-
-import java.nio.charset.Charset;
-import java.util.Base64;
-import java.util.Optional;
 
 /**
  * Created by syrenio on 5/3/2016.
  */
 @Component
 public class RESTRouter extends RouteBuilder {
-
-    @Autowired
-    private AuthProcessor authProcessor;
 
     @Override
     public void configure() throws Exception {
@@ -38,14 +27,13 @@ public class RESTRouter extends RouteBuilder {
 
         rest("/")
                 .get("/status").to("direct:status")
-                .post("/orders").type(OrderRequest.class).to("direct:postOrder")
-                .get("/restaurants/{id}").to("direct:callRestaurant");
+                .post("/orders").type(OrderRequest.class).to("direct:postOrder");
+
+        /*REST Endpoint to check if service is running*/
         from("direct:status")
                 .transform().constant("running!");
-        from("direct:callRestaurant")
-                .setHeader(Exchange.HTTP_METHOD, HttpMethods.GET)
-                .to("http://petstore.swagger.io/v2/store/inventory");
 
+        /*Start of the process*/
         from("direct:postOrder")
                 .choice()
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.SMS)
@@ -54,36 +42,39 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:postOrderWithREGULAR")
                 .end();
 
+        /*
+        * check if SMS order is of type SMS and contains keyword 'hungry'
+        * perform authentication and extract customerId
+        * */
         from("direct:postOrderWithSMS")
                 .filter(simple("${in.body.type} == 'SMS' && ${in.body.text} contains 'hungry'")) /*IGNORE OTHER Messages */
-                //.to("jpa://wmpm16.group05.nomnomathon.models.Customer?consumer.query=select o from wmpm16.group05.nomnomathon.models.Customer o where o.id = 1")
-                .to("direct:checkUserToken")
+                .bean(SMSAuthBean.class)
+                .to("direct:enrichCustomerData")
                 .end();
 
+        /*extract customerId from header */
         from("direct:postOrderWithREGULAR")
-                .process(req -> {
-                })
-                .to("direct:checkUserToken");
-
-        from("direct:checkUserToken")
-                .process(authProcessor)
-                //.to("sql:select order_seq.nextval from dual?outputHeader=OrderId&outputType=SelectOne")
-                /*choice customer exists and is valid*/
+                .bean(RegularAuthBean.class)
                 .to("direct:enrichCustomerData");
 
+        /*enrich order-request with customer data from DB and transform to Order*/
         from("direct:enrichCustomerData")
                 .to("direct:storeOrder");
 
+        /*store order in DB*/
         from("direct:storeOrder")
                 .to("direct:queryRestaurants");
 
+        /*query restaurants for dishes*/
         from("direct:queryRestaurants")
                 /*choice or something here,  reject or next step in process*/
                 .to("direct:rejectOrder");
 
+        /*reject order, update DB*/
         from("direct:rejectOrder")
                 .to("direct:notifyCustomer");
 
+        /*notify customer via channel*/
         from("direct:notifyCustomer")
                 .process(x -> {
                     System.out.println(x.getIn());
