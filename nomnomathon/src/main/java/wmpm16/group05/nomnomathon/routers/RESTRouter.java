@@ -6,19 +6,15 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http.HttpMethods;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.apache.tomcat.util.http.parser.Authorization;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
+import wmpm16.group05.nomnomathon.beans.PollCustomerFromOrder;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 import wmpm16.group05.nomnomathon.processor.AuthProcessor;
-
-import java.nio.charset.Charset;
-import java.util.Base64;
-import java.util.Optional;
 
 /**
  * Created by syrenio on 5/3/2016.
@@ -28,7 +24,7 @@ public class RESTRouter extends RouteBuilder {
 
     @Autowired
     private AuthProcessor authProcessor;
-
+    
     @Override
     public void configure() throws Exception {
         restConfiguration()
@@ -71,10 +67,12 @@ public class RESTRouter extends RouteBuilder {
                 /*choice customer exists and is valid*/
                 .to("direct:enrichCustomerData");
 
-        from("direct:enrichCustomerData")
-                .to("direct:storeOrder");
+        from("direct:enrichCustomerData").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.enrichCustomerData?level=DEBUG").enrich("direct:pollUser", new EnrichCustomer())
+                .to("direct:storeOrder").end();
+        
+        from("direct:pollUser").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.pollUser?level=DEBUG").bean(PollCustomerFromOrder.class);
 
-        from("direct:storeOrder")
+        from("direct:storeOrder").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder?level=DEBUG")
                 .to("direct:queryRestaurants");
 
         from("direct:queryRestaurants")

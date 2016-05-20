@@ -42,6 +42,7 @@ public class NomNomathon {
 
         Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");
+        customer.setAddress("Teststraße 44, 1111 Wien");
         customerRepository.save(customer);
     }
 
