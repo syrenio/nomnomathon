@@ -21,6 +21,7 @@ import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wmpm16.group05.nomnomathon.models.Customer;
+import wmpm16.group05.nomnomathon.models.CustomerNotificationType;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
 
 import javax.annotation.PostConstruct;
@@ -47,7 +48,19 @@ public class NomNomathon {
 
         Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");
+        customer.setMail("a.b@c.d");
+        customer.setNotificationType(CustomerNotificationType.MAIL);;
+        customer.setAddress("Percostraße 27, 1220 Wien");
         customerRepository.save(customer);
+        
+        customer = new Customer("bmu","Bernhard","Müller","12345");
+        customer.setPhoneNumber("+4369981259747");
+        customer.setMail("bernhard.mueller@gmx.at");
+        customer.setNotificationType(CustomerNotificationType.MAIL);;
+        customer.setAddress("Percostraße 25, 1220 Wien");
+        customerRepository.save(customer);
+        
+        
     }
 
     @Bean

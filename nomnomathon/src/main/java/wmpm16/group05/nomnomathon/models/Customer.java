@@ -19,6 +19,10 @@ public class Customer {
     private String firstName;
     private String lastName;
     private String phoneNumber;
+    private String mail;
+    private String restUri;
+    private CustomerNotificationType notificationType;
+    private String address;
 
     protected Customer() {}
 
@@ -47,4 +51,36 @@ public class Customer {
     public long getId() {
         return id;
     }
+
+	public String getMail() {
+		return mail;
+	}
+
+	public void setMail(String mail) {
+		this.mail = mail;
+	}
+
+	public String getRestUri() {
+		return restUri;
+	}
+
+	public void setRestUri(String restUri) {
+		this.restUri = restUri;
+	}
+
+	public CustomerNotificationType getNotificationType() {
+		return notificationType;
+	}
+
+	public void setNotificationType(CustomerNotificationType notificationType) {
+		this.notificationType = notificationType;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
+	}
 }
