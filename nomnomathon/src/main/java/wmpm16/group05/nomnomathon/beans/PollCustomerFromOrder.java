@@ -1,5 +1,7 @@
 package wmpm16.group05.nomnomathon.beans;
 
+import java.util.Optional;
+
 import org.apache.camel.language.Simple;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,9 +16,9 @@ public class PollCustomerFromOrder {
 	@Autowired
 	CustomerRepository customerRepository;
 	
-	public Customer findCustomer(@Simple("body.userid") long userid) {
-		log.debug("Receive user with id " + userid);
-		return customerRepository.findOneById(userid);
+	public Customer findCustomer(@Simple("body.userId") Optional<Long> userid) {
+		log.debug("Receive user with id " + userid.get());
+		return customerRepository.findOneById(userid.get());
 	}
 
 }

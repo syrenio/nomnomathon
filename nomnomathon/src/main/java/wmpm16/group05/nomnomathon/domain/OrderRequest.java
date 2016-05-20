@@ -13,8 +13,33 @@ public class OrderRequest {
     private Optional<Long> userId;
     private List<String> dishes;
     private Optional<Long> restaurantId;
+    private String adress;
+    private String receiverName;
 
-    public String getText() {
+    @Override
+	public String toString() {
+		return "OrderRequest [type=" + type + ", text=" + text + ", phoneNumber=" + phoneNumber + ", userId=" + userId
+				+ ", dishes=" + dishes + ", restaurantId=" + restaurantId + ", adress=" + adress + ", receiverName="
+				+ receiverName + "]";
+	}
+
+	public String getAdress() {
+		return adress;
+	}
+
+	public void setAdress(String adress) {
+		this.adress = adress;
+	}
+
+	public String getReceiverName() {
+		return receiverName;
+	}
+
+	public void setReceiverName(String receiverName) {
+		this.receiverName = receiverName;
+	}
+
+	public String getText() {
         return text;
     }
 

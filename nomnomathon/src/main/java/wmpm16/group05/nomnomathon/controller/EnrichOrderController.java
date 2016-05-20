@@ -9,11 +9,8 @@ import org.apache.camel.ProducerTemplate;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-
-import wmpm16.group05.nomnomathon.domain.Dish;
-import wmpm16.group05.nomnomathon.domain.Order;
+import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
 
@@ -29,7 +26,7 @@ public class EnrichOrderController {
     CustomerRepository customerRepository;
 
 	@RequestMapping("/demo/EnrichOrder")
-	public Order startProcess() {
+	public OrderRequest startProcess() {
 		
 		Optional<Customer> opcustomer = customerRepository.findOneByUserNameAndPassword("bernd","nomnom");
 		log.debug("Found customer: " + (opcustomer.isPresent() ? opcustomer.get() : "No customer found - exiting"));
@@ -42,12 +39,18 @@ public class EnrichOrderController {
 		}
 		Customer customer = opcustomer.get();
 		Optional<Long> oprestaurantid = Optional.ofNullable(null);
-		List<Dish> disheslist = new ArrayList<>();
+		List<String> disheslist = new ArrayList<>();
+		
+		OrderRequest orderReq = new OrderRequest();
+		orderReq.setUserId(Optional.of(customer.getId()));
+		orderReq.setRestaurantId(oprestaurantid);
+		orderReq.setDishes(disheslist);
+		
 		
 		ProducerTemplate template = context.createProducerTemplate();
-		Order order = (Order) template.requestBody("direct:enrichCustomerData", new Order(customer.getId(), oprestaurantid, disheslist));
+		OrderRequest response = (OrderRequest) template.requestBody("direct:enrichCustomerData", orderReq);
 		
-		return order;
+		return response;
 		
 	}
 

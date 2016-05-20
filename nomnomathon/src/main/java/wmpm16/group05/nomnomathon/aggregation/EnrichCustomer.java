@@ -4,6 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.apache.log4j.Logger;
 
+import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.models.Customer;
 
 public class EnrichCustomer implements AggregationStrategy{
@@ -12,11 +13,11 @@ public class EnrichCustomer implements AggregationStrategy{
 	@Override
 	public Exchange aggregate(Exchange arg0, Exchange arg1) {
 		log.debug("Aggregating " + arg0.getIn().getBody().toString() + " and " + arg1.getIn().getBody().toString());
-		wmpm16.group05.nomnomathon.domain.Order order = (wmpm16.group05.nomnomathon.domain.Order) arg0.getIn().getBody();
+		OrderRequest orderrequest = (OrderRequest) arg0.getIn().getBody();
 		Customer customer = (Customer) arg1.getIn().getBody();
 		
-		order.setAdress(customer.getAddress());
-		order.setReceiverName(customer.getFirstName() + " " + customer.getLastName());
+		orderrequest.setAdress(customer.getAddress());
+		orderrequest.setReceiverName(customer.getFirstName() + " " + customer.getLastName());
 		
 		return arg0;
 	}
