@@ -10,11 +10,7 @@ import javax.persistence.Id;
 
 public class Order {
 	
-	@Id
-	@GeneratedValue(strategy= GenerationType.AUTO)
 	private Long orderId;
-	//TODO not working?
-	
 	private OrderState state;
 	private Customer customer;
 	private Optional<Long> restaurantid;
@@ -22,6 +18,10 @@ public class Order {
 
 	public Long getOrderId() {
 		return orderId;
+	}
+	
+	public void setOrderId(long orderId) {
+		this.orderId = orderId;
 	}
 	
 	public OrderState getState() {
