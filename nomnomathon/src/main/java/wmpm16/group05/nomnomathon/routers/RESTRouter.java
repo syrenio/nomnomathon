@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
 import wmpm16.group05.nomnomathon.beans.PollCustomerFromOrder;
+import wmpm16.group05.nomnomathon.beans.StoreOrderBean;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
@@ -67,12 +68,18 @@ public class RESTRouter extends RouteBuilder {
                 /*choice customer exists and is valid*/
                 .to("direct:enrichCustomerData");
 
-        from("direct:enrichCustomerData").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.enrichCustomerData?level=DEBUG").enrich("direct:pollUser", new EnrichCustomer())
+        from("direct:enrichCustomerData")
+        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.enrichCustomerData?level=DEBUG")
+        		.enrich("direct:pollUser", new EnrichCustomer())
                 .to("direct:storeOrder").end();
         
-        from("direct:pollUser").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.pollUser?level=DEBUG").bean(PollCustomerFromOrder.class);
+        from("direct:pollUser")
+        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.pollUser?level=DEBUG")
+        		.bean(PollCustomerFromOrder.class);
 
-        from("direct:storeOrder").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder?level=DEBUG")
+        from("direct:storeOrder")
+        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder?level=DEBUG")
+        		.bean(StoreOrderBean.class)
                 .to("direct:queryRestaurants");
 
         from("direct:queryRestaurants")

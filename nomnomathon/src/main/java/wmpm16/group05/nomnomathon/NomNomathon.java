@@ -13,6 +13,9 @@ import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
+import wmpm16.group05.nomnomathon.models.OrderListEntry;
+import wmpm16.group05.nomnomathon.models.OrderListEntryRepository;
+
 import javax.annotation.PostConstruct;
 
 @SpringBootApplication
@@ -28,6 +31,9 @@ public class NomNomathon {
     @Autowired
     CustomerRepository customerRepository;
     
+    @Autowired
+    OrderListEntryRepository orderListEntryRepository;
+    
     /**
      * A main method to start
      */
@@ -40,6 +46,9 @@ public class NomNomathon {
         System.out.println("<--- INIT DB STUFF --->");
         customerRepository.deleteAll();
 
+        orderListEntryRepository.deleteAll();
+     
+        
         Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");
         customer.setAddress("Teststraße 44, 1111 Wien");
