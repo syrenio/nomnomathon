@@ -9,9 +9,12 @@ import org.apache.camel.model.rest.RestBindingMode;
 
 import org.springframework.stereotype.Component;
 
+import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
+import wmpm16.group05.nomnomathon.beans.PollCustomerFromOrder;
 import wmpm16.group05.nomnomathon.beans.RegularAuthBean;
 
 import wmpm16.group05.nomnomathon.beans.SMSAuthBean;
+import wmpm16.group05.nomnomathon.beans.StoreOrderBean;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;

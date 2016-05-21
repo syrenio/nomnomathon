@@ -3,7 +3,9 @@ package wmpm16.group05.nomnomathon;
 import org.apache.camel.CamelContext;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.component.servlet.CamelHttpTransportServlet;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.CustomerNotificationType;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
+import wmpm16.group05.nomnomathon.models.OrderListEntryRepository;
 
 import javax.annotation.PostConstruct;
 
