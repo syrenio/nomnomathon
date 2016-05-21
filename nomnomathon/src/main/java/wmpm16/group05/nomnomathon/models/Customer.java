@@ -23,6 +23,7 @@ public class Customer {
     private String restUri;
     private CustomerNotificationType notificationType;
     private String address;
+    private String creditCard;
 
     protected Customer() {}
 
@@ -34,13 +35,14 @@ public class Customer {
     }
 
     @Override
-    public String toString() {
-        return String.format(
-                "Customer[id=%d, firstName='%s', lastName='%s']",
-                id, firstName, lastName);
-    }
+	public String toString() {
+		return "Customer [id=" + id + ", userName=" + userName + ", password=" + password + ", firstName=" + firstName
+				+ ", lastName=" + lastName + ", phoneNumber=" + phoneNumber + ", mail=" + mail + ", restUri=" + restUri
+				+ ", notificationType=" + notificationType + ", address=" + address + ", creditCard=" + creditCard
+				+ "]";
+	}
 
-    public String getPhoneNumber() {
+	public String getPhoneNumber() {
         return phoneNumber;
     }
 
@@ -82,5 +84,13 @@ public class Customer {
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getCreditCard() {
+		return creditCard;
+	}
+
+	public void setCreditCard(String creditCard) {
+		this.creditCard = creditCard;
 	}
 }
