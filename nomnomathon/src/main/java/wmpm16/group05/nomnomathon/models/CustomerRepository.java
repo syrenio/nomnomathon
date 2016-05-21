@@ -13,6 +13,8 @@ import java.util.Optional;
 public interface CustomerRepository extends CrudRepository<Customer,Long> {
 
     Customer findOneByPhoneNumber(String phoneNumber);
+    
+    Customer findOneById(Long id);
 
     Optional<Customer> findOneByUserNameAndPassword(String userName, String password);
 }

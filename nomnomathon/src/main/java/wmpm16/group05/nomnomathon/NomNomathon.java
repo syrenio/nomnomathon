@@ -28,12 +28,20 @@ import javax.annotation.PostConstruct;
 
 @SpringBootApplication
 public class NomNomathon {
+	private static final Logger log = Logger.getLogger(NomNomathon.class);
+	
     private static final String CAMEL_URL_MAPPING = "/api/*";
     private static final String CAMEL_SERVLET_NAME = "CamelServlet";
+
+    @Value("${mongoDB.host}")
+    private String mongoHost;
 
     @Autowired
     CustomerRepository customerRepository;
 
+    @Autowired
+    OrderListEntryRepository orderListEntryRepository;
+    
     /**
      * A main method to start
      */
@@ -44,7 +52,10 @@ public class NomNomathon {
     @PostConstruct
     public void initDB(){
         System.out.println("<--- INIT DB STUFF --->");
+
         customerRepository.deleteAll();
+
+        orderListEntryRepository.deleteAll();
 
         Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");
@@ -73,7 +84,8 @@ public class NomNomathon {
     
     @Bean
     public Mongo mongoDb(){
-    	return new MongoClient();
+    	log.debug("Resolved Adress for MongoDB: " + this.mongoHost);
+    	return new MongoClient(this.mongoHost);
     }
     
 }

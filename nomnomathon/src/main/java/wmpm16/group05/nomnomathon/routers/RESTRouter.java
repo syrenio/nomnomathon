@@ -3,20 +3,28 @@ package wmpm16.group05.nomnomathon.routers;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
+
 import org.springframework.stereotype.Component;
+
 import wmpm16.group05.nomnomathon.beans.RegularAuthBean;
+
 import wmpm16.group05.nomnomathon.beans.SMSAuthBean;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
+
 
 /**
  * Created by syrenio on 5/3/2016.
  */
 @Component
 public class RESTRouter extends RouteBuilder {
+
+
+
 
     @Override
     public void configure() throws Exception {
@@ -29,9 +37,13 @@ public class RESTRouter extends RouteBuilder {
                 .get("/status").to("direct:status")
                 .post("/orders").type(OrderRequest.class).to("direct:postOrder");
 
+
         /*REST Endpoint to check if service is running*/
         from("direct:status")
                 .transform().constant("running!");
+
+
+
 
         /*Start of the process*/
         from("direct:postOrder")
@@ -48,6 +60,8 @@ public class RESTRouter extends RouteBuilder {
         * */
         from("direct:postOrderWithSMS")
                 .filter(simple("${in.body.type} == 'SMS' && ${in.body.text} contains 'hungry'")) /*IGNORE OTHER Messages */
+
+
                 .bean(SMSAuthBean.class)
                 .to("direct:enrichCustomerData")
                 .end();
@@ -59,10 +73,19 @@ public class RESTRouter extends RouteBuilder {
 
         /*enrich order-request with customer data from DB and transform to Order*/
         from("direct:enrichCustomerData")
-                .to("direct:storeOrder");
+        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.enrichCustomerData?level=DEBUG")
+        		.enrich("direct:pollUser", new EnrichCustomer())
+                .to("direct:storeOrder").end();
+        
+		/*poll user data from SQL DB*/
+        from("direct:pollUser")
+        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.pollUser?level=DEBUG")
+        		.bean(PollCustomerFromOrder.class);
 
         /*store order in DB*/
         from("direct:storeOrder")
+        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder?level=DEBUG")
+        		.bean(StoreOrderBean.class)
                 .to("direct:queryRestaurants");
 
         /*query restaurants for dishes*/
