@@ -21,7 +21,7 @@ public class StoreOrderBean {
 	public void save(Exchange exchange){
 	
 		Order order = exchange.getIn().getBody(Order.class);
-		OrderListEntry orderListEntry;
+		OrderListEntry orderListEntry = null;
 		Timestamp ts = new Timestamp(System.currentTimeMillis());
 		
 		/* Store everything available yet */ 
@@ -39,6 +39,7 @@ public class StoreOrderBean {
 			orderListEntryRepository.save(orderListEntry);
 			
 		}
+		exchange.getIn().setBody(order);
 		
 	}
 		
