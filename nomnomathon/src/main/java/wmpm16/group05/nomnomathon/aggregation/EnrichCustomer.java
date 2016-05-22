@@ -35,6 +35,11 @@ public class EnrichCustomer implements AggregationStrategy{
 		
 		// Exchange transform OrderRequest to Order 
 		in.setBody(order);
+		in.setHeader("notificationType", customer.getNotificationType());
+		in.setHeader("to", customer.getMail());
+		in.setHeader("lastName", customer.getLastName());
+		in.setHeader("firstName", customer.getFirstName());
+		
 		arg0.setIn(in);
 		
 		return arg0;

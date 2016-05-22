@@ -149,6 +149,14 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-chunk</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>

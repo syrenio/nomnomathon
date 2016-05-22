@@ -1,0 +1,6 @@
+Hallo {$headers.firstName} {$headers.lastName}, <br>
+ 
+dein Zahlunsmittel wurde abgelehnt <br>
+
+
+dein NomNomathon Team <br>

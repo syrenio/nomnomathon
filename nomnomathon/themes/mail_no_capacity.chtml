@@ -1,0 +1,6 @@
+Hallo {$headers.firstName} {$headers.lastName}, 
+ 
+wir konnten leider kein Restaurant finden, dass deine Bestellung bearbeiten kann. Versuch es später noch einmal
+
+
+dein NomNomathon Team
