@@ -16,7 +16,7 @@ public class QueryRestaurantRouter extends RouteBuilder {
     public void configure() throws Exception {
 
 
-        from("direct:findAll")
+        from("direct:findAll1")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data" +
                         "&operation=findAll")
                 .bean(QueryRestaurantBean.class)
