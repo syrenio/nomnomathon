@@ -9,10 +9,7 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
-import wmpm16.group05.nomnomathon.beans.PollCustomerFromOrder;
-import wmpm16.group05.nomnomathon.beans.RegularAuthBean;
-import wmpm16.group05.nomnomathon.beans.SMSAuthBean;
-import wmpm16.group05.nomnomathon.beans.StoreOrderBean;
+import wmpm16.group05.nomnomathon.beans.*;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
@@ -101,6 +98,16 @@ public class RESTRouter extends RouteBuilder {
 
         /*query restaurants for dishes*/
         from("direct:queryRestaurants")
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.queryRestaurants?level=DEBUG")
+                .bean(ExtractDishRestaurantBean.class)
+                .to("direct:findAll");
+
+        from("direct:findAll")
+                .setBody().simple("{\"menu.name\":{ $in: [${header.dishNames}]}}")
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
+                .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll")
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
+                .bean(QueryRestaurantBean.class)
                 /*choice or something here,  reject or next step in process*/
                 .to("direct:rejectOrder");
 
