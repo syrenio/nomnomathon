@@ -1,8 +1,6 @@
-Hallo {$headers.firstName} {$headers.lastName}, 
+Hallo {$headers.firstName} {$headers.lastName}, <br>
  
-deine Bestellung ist unterwegs.
+deine Bestellung wird gerade zubereitet und frisch an dich geliefert. <br>
 
-Wir freuen uns auf deine nächste Bestellung.
-
-Mit freundlichen Grüßen,
-dein NomNomathon Team
+Wir freuen uns auf deine nächste Bestellung, <br>
+dein NomNomathon Team <br>

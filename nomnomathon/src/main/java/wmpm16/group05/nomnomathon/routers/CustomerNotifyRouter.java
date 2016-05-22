@@ -43,13 +43,16 @@ public class CustomerNotifyRouter extends RouteBuilder {
 	
         /* Send SMS to Customer */
         from("direct:notifyCustomerSms")
-			.to("log:notifyCustomerSms");
+        	.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerSms:send");
     
         /* Send Mail to Customer */
         from("direct:notifyCustomerMail")
 	        .setHeader("Content-type", constant("text/html"))
 	        .choice()
-	        	.when(header("orderState").isEqualTo(OrderState.REJECTED_NO_CAPACITY))
+        		.when(header("orderState").isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
+		    		.setHeader("subject", constant("NomNom - No Restaurants"))
+					.to("chunk:mail_no_restaurants")
+				.when(header("orderState").isEqualTo(OrderState.REJECTED_NO_CAPACITY))
 	        		.setHeader("subject", constant("NomNom - No Capacity"))
 	    			.to("chunk:mail_no_capacity")
 	        	.when(header("orderState").isEqualTo(OrderState.REJECTED_INVALID_PAYMENT))
@@ -58,13 +61,16 @@ public class CustomerNotifyRouter extends RouteBuilder {
 		        .when(header("orderState").isEqualTo(OrderState.FULLFILLED))
         			.setHeader("subject", constant("NomNom - Order finished"))
 	    			.to("chunk:mail_fullfilled")
+	    		.otherwise()
+	    			//TODO error handling
+					.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:undefined_orderState?level=ERROR")
 	        .end()
-			.wireTap("log:mail:send")
-			.to("smtp://" + host + "?password=" + pass + "&username=" + user + "&from=" + user);
+			.to("smtp://" + host + "?password=" + pass + "&username=" + user + "&from=" + user)
+			.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:send");
     
         /* Send REST to Customer */
         from("direct:notifyCustomerRest")
-			.to("log:notifyCustomerRest");
+			.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerRest:send");
         
         
     }
