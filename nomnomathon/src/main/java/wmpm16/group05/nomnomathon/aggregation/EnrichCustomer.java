@@ -39,6 +39,7 @@ public class EnrichCustomer implements AggregationStrategy{
 		in.setHeader("to", customer.getMail());
 		in.setHeader("lastName", customer.getLastName());
 		in.setHeader("firstName", customer.getFirstName());
+		in.setHeader("type", orderRequest.getType());
 		
 		arg0.setIn(in);
 		
