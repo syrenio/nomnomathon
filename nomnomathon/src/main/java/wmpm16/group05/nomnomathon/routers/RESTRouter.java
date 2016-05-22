@@ -1,28 +1,19 @@
 package wmpm16.group05.nomnomathon.routers;
 
-import javax.persistence.criteria.Order;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
-
 import org.springframework.stereotype.Component;
-
 import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
-import wmpm16.group05.nomnomathon.beans.DoStuffWithOrder;
 import wmpm16.group05.nomnomathon.beans.PollCustomerFromOrder;
 import wmpm16.group05.nomnomathon.beans.RegularAuthBean;
-
 import wmpm16.group05.nomnomathon.beans.SMSAuthBean;
 import wmpm16.group05.nomnomathon.beans.StoreOrderBean;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
-import wmpm16.group05.nomnomathon.models.OrderInProcess;
-import wmpm16.group05.nomnomathon.models.OrderState;
 
 
 /**
