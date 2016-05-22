@@ -38,7 +38,7 @@ public class StoreOrderBean {
 		
 		/* Store everything available yet */ 
 		//TODO extend to all fields != null
-		
+		/*
 		for (Dish dish : order.getDishes()) {
 			orderListEntry = new OrderListEntry();
 
@@ -49,8 +49,8 @@ public class StoreOrderBean {
 			orderListEntry.setState(order.getState());
 			
 			orderListEntryRepository.save(orderListEntry);
-			
 		}
+		*/
 		
 		exchange.setOut(exchange.getIn());
 		

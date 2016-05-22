@@ -100,7 +100,6 @@ public class RESTRouter extends RouteBuilder {
         /*query restaurants for dishes*/
         from("direct:queryRestaurants")
                 /*choice or something here,  reject or next step in process*/
-        		.bean(new DoStuffWithOrder())
                 .to("direct:rejectOrder");
 
         /*reject order, update DB*/
@@ -114,14 +113,6 @@ public class RESTRouter extends RouteBuilder {
                 });
 
         /* possible process nodes */
-
-        //from("direct:checkUserToken")
-        //from("direct:enrichCustomerData")
-        //from("direct:storeOrder")
-        //from("direct:queryRestaurants")
-        //from("direct:rejectOrder") /* update order in database*/
-
-        //from("direct:notifyCustomer")
 
         /**/
 
