@@ -69,13 +69,17 @@ public class RESTRouter extends RouteBuilder {
         from("direct:postOrderWithSMS")
                 .filter(simple("${in.body.type} == 'SMS' && ${in.body.text} contains 'hungry'")) /*IGNORE OTHER Messages */
                 .bean(SMSAuthBean.class)
+                .filter(simple("${in.body.userId.present} == true"))
                 .to("direct:enrichCustomerData")
+                .end()
                 .end();
 
         /*extract customerId from header */
         from("direct:postOrderWithREGULAR")
                 .bean(RegularAuthBean.class)
-                .to("direct:enrichCustomerData");
+                .filter(simple("${in.body.userId.present} == true"))
+                .to("direct:enrichCustomerData")
+                .end();
 
         /*enrich order-request with customer data from DB and transform to Order*/
         from("direct:enrichCustomerData")
@@ -102,6 +106,7 @@ public class RESTRouter extends RouteBuilder {
 
         /*reject order, update DB*/
         from("direct:rejectOrder")
+                //.to("direct:sendCustomerNotification");
                 .to("direct:notifyCustomer");
 
         /*notify customer via channel*/

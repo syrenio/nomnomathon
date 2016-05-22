@@ -24,6 +24,8 @@ public class SMSAuthBean {
     private void userTokenSMS(Exchange req) {
         OrderRequest body = req.getIn().getBody(OrderRequest.class);
 
+        body.setUserId(Optional.empty());
+
         Customer customer = customerRepository.findOneByPhoneNumber(body.getPhoneNumber());
 
         if(customer!=null){
