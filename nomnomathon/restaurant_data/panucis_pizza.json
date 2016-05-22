@@ -15,13 +15,13 @@
   		},
   		"menu": [{
   				"name": "pizza",
-  				"price": "2.99"
+  				"price": 2.99
   			}, {
   				"name": "pasta",
-  				"price": "1.99"
+  				"price": 1.99
   			}, {
   				"name": "burger",
-  				"price": "3.99"
+  				"price": 3.99
   			}]
 
   		}
