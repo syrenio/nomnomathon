@@ -23,3 +23,7 @@ Unknown property 'tex'
 Invalid format exception
 
 > curl -H "Content-Type: application/json;" -H "Authorization: Basic YmVybmQ6bm9tbm9t" -X POST -d '{"type":"UPS!","text":"hungry"}' http://localhost:8080/api/orders
+
+## Update restaurant data via REST Endpoint
+
+> curl -H "Content-Type: application/json" http://localhost:8080/api/updateResData --data-binary @panucis_pizza.json
