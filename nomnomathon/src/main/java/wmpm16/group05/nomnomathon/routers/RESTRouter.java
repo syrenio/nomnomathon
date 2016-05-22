@@ -15,6 +15,7 @@ import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
+import wmpm16.group05.nomnomathon.models.OrderInProcess;
 
 
 /**
@@ -94,7 +95,19 @@ public class RESTRouter extends RouteBuilder {
         		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.before?level=DEBUG")
         		.bean(StoreOrderBean.class)
         		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
-                .to("direct:queryRestaurants");
+                .choice()
+                    .when(exchange -> exchange.getIn().getHeader("type")==OrderType.SMS)
+                    .to("direct:hungryDish")
+                    .otherwise()
+                    .to("direct:queryRestaurants");
+
+        from("direct:hungryDish")
+                .setBody().simple("{ \"menu.price\": { $gt: 0, $lt: 20 }}")
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.hungryDish?level=DEBUG")
+                .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll")
+                .bean(RandomDishBean.class)
+                .to("direct:rejectOrder");
+
 
         /*query restaurants for dishes*/
         from("direct:queryRestaurants")
