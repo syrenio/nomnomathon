@@ -16,7 +16,15 @@ public class ExtractDishRestaurantBean {
 
     public void process(Exchange exchange){
         OrderInProcess order = exchange.getIn().getBody(OrderInProcess.class);
-        Optional<Long> restaurant = order.getRestaurantid();
         List<Dish> dishes = order.getDishes();
+
+        String dishNames = "";
+        for (Dish d : dishes) {
+            dishNames += "\"" + d.getDish() + "\", ";
+        }
+        dishNames = dishNames.substring(0, dishNames.length() - 2);
+
+        exchange.getIn().setHeader("dishNames", dishNames);
+        exchange.getIn().setHeader("order", order);
     }
 }
