@@ -5,16 +5,12 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
-
 import org.springframework.stereotype.Component;
-
 import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
 import wmpm16.group05.nomnomathon.beans.PollCustomerFromOrder;
 import wmpm16.group05.nomnomathon.beans.RegularAuthBean;
-
 import wmpm16.group05.nomnomathon.beans.SMSAuthBean;
 import wmpm16.group05.nomnomathon.beans.StoreOrderBean;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
@@ -94,8 +90,9 @@ public class RESTRouter extends RouteBuilder {
 
         /*store order in DB*/
         from("direct:storeOrder")
-        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder?level=DEBUG")
+        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.before?level=DEBUG")
         		.bean(StoreOrderBean.class)
+        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
                 .to("direct:queryRestaurants");
 
         /*query restaurants for dishes*/
@@ -110,7 +107,7 @@ public class RESTRouter extends RouteBuilder {
         /*notify customer via channel*/
         from("direct:notifyCustomer")
                 .process(x -> {
-                    System.out.println(x.getIn());
+                    System.out.println(x.getIn().getBody());
                 });
 
         /* Next processes*/
