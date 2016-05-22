@@ -22,10 +22,7 @@ import com.mongodb.MongoClient;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import wmpm16.group05.nomnomathon.models.Customer;
-import wmpm16.group05.nomnomathon.models.CustomerNotificationType;
-import wmpm16.group05.nomnomathon.models.CustomerRepository;
-import wmpm16.group05.nomnomathon.models.OrderListEntryRepository;
+import wmpm16.group05.nomnomathon.models.*;
 
 import javax.annotation.PostConstruct;
 
@@ -42,8 +39,14 @@ public class NomNomathon {
     @Autowired
     CustomerRepository customerRepository;
 
+    //@Autowired
+    //OrderListEntryRepository orderListEntryRepository;
+
     @Autowired
-    OrderListEntryRepository orderListEntryRepository;
+    DishRepository dishRepository;
+
+    @Autowired
+    OrderRepository orderRepository;
     
     /**
      * A main method to start
@@ -57,8 +60,9 @@ public class NomNomathon {
         System.out.println("<--- INIT DB STUFF --->");
 
         customerRepository.deleteAll();
-
-        orderListEntryRepository.deleteAll();
+        dishRepository.deleteAll();
+        orderRepository.deleteAll();
+        //orderListEntryRepository.deleteAll();
 
         Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");

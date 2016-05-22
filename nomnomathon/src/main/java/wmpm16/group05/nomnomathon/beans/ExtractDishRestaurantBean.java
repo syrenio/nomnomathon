@@ -3,7 +3,7 @@ package wmpm16.group05.nomnomathon.beans;
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.models.Dish;
-import wmpm16.group05.nomnomathon.models.Order;
+import wmpm16.group05.nomnomathon.models.OrderInProcess;
 
 import java.util.List;
 import java.util.Optional;
@@ -15,7 +15,7 @@ import java.util.Optional;
 public class ExtractDishRestaurantBean {
 
     public void process(Exchange exchange){
-        Order order = exchange.getIn().getBody(Order.class);
+        OrderInProcess order = exchange.getIn().getBody(OrderInProcess.class);
         Optional<Long> restaurant = order.getRestaurantid();
         List<Dish> dishes = order.getDishes();
     }
