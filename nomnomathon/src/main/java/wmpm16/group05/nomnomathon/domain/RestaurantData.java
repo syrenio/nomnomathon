@@ -1,24 +1,24 @@
-package wmpm16.group05.nomnomathon.models;
+package wmpm16.group05.nomnomathon.domain;
 
 import java.util.ArrayList;
 
-public class RestaurantDataModel {
+public class RestaurantData {
 	private int _id;
 	private String name;
-	private String loc;
-	private String open;
-	private String close;
-	private ArrayList<String> cats;
+	private String location;
+	private String opening;
+	private String closing;
+	private ArrayList<String> categories;
 	private ArrayList<String> menu;
 	
 	
-	public RestaurantDataModel(int id, String name, String loc, String opening, String closing, ArrayList<String> cats, ArrayList<String> menu){
+	public RestaurantData(int id, String name, String loc, String opening, String closing, ArrayList<String> categories, ArrayList<String> menu){
 		this.setId(id);
 		this.name = name;
-		this.loc = loc;
-		this.open = opening;
-		this.close = closing;
-		this.cats = cats;
+		this.location = loc;
+		this.opening = opening;
+		this.closing = closing;
+		this.categories = categories;
 		this.menu = menu;
 	}
 
@@ -34,42 +34,42 @@ public class RestaurantDataModel {
 
 
 	public String getLoc() {
-		return loc;
+		return location;
 	}
 
 
 	public void setLoc(String loc) {
-		this.loc = loc;
+		this.location = loc;
 	}
 
 
 	public String getOpening() {
-		return open;
+		return opening;
 	}
 
 
 	public void setOpening(String opening) {
-		this.open = opening;
+		this.opening = opening;
 	}
 
 
 	public String getClosing() {
-		return close;
+		return closing;
 	}
 
 
 	public void setClosing(String closing) {
-		this.close = closing;
+		this.closing = closing;
 	}
 
 
 	public ArrayList<String> getCats() {
-		return cats;
+		return categories;
 	}
 
 
 	public void setCats(ArrayList<String> cats) {
-		this.cats = cats;
+		this.categories = cats;
 	}
 
 

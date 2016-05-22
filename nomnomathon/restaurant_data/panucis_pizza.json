@@ -2,7 +2,7 @@
   	"restaurantdata": {
   		"data": {
   			"name": "Panucis Pizza",
-  			"id": 1,
+  			"_id": 1,
   			"location": "1150",
   			"opening": "10:00",
   			"closing": "22:00",
