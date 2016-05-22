@@ -1,0 +1,6 @@
+Hallo {$headers.firstName} {$headers.lastName}, <br>
+ 
+deine Bestellung wird gerade zubereitet und frisch an dich geliefert. <br>
+
+Wir freuen uns auf deine nächste Bestellung, <br>
+dein NomNomathon Team <br>

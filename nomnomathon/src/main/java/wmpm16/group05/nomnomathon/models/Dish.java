@@ -1,6 +1,14 @@
 package wmpm16.group05.nomnomathon.models;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class Dish {
+	@Id
+	@GeneratedValue
+	private long id;
     private String dishName;
     private long dishId;
     private double quantity;

@@ -38,6 +38,8 @@ public class RegularAuthBean {
             password = values[1];
         }
 
+        body.setUserId(Optional.empty());
+
         if(username!= null && password != null){
             Optional<Customer> cust = customerRepository.findOneByUserNameAndPassword(username,password);
             if(cust.isPresent()){
