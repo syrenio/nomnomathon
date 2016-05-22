@@ -1,5 +1,7 @@
 package wmpm16.group05.nomnomathon.routers;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -18,6 +20,8 @@ import wmpm16.group05.nomnomathon.beans.StoreOrderBean;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
+import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
+import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
 
 
 /**
@@ -35,6 +39,11 @@ public class RESTRouter extends RouteBuilder {
                 .component("servlet")
                 .bindingMode(RestBindingMode.json)
                 .dataFormatProperty("prettyPrint", "true");
+
+        /* GLOBAL Error handler on exception */
+        onException(UnrecognizedPropertyException.class).handled(true).bean(UnrecognizedPropertyHandler.class);
+        onException(InvalidFormatException.class).handled(true).bean(InvalidFormatHandler.class);
+
 
         rest("/")
                 .get("/status").to("direct:status")
@@ -63,8 +72,6 @@ public class RESTRouter extends RouteBuilder {
         * */
         from("direct:postOrderWithSMS")
                 .filter(simple("${in.body.type} == 'SMS' && ${in.body.text} contains 'hungry'")) /*IGNORE OTHER Messages */
-
-
                 .bean(SMSAuthBean.class)
                 .to("direct:enrichCustomerData")
                 .end();
@@ -106,17 +113,7 @@ public class RESTRouter extends RouteBuilder {
                     System.out.println(x.getIn());
                 });
 
-        /* possible process nodes */
-
-        //from("direct:checkUserToken")
-        //from("direct:enrichCustomerData")
-        //from("direct:storeOrder")
-        //from("direct:queryRestaurants")
-        //from("direct:rejectOrder") /* update order in database*/
-
-        //from("direct:notifyCustomer")
-
-        /**/
+        /* Next processes*/
 
         from("direct:start")
                 .process(new Processor() {
