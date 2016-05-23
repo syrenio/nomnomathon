@@ -34,10 +34,9 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 	@Override
 	public void configure() throws Exception {
 		inputFolderPath = System.getProperty("user.dir") + "/" + inputFolder;
-		restConfiguration().component("servlet").bindingMode(RestBindingMode.off);
 
 		/* Providing REST Endpoint for Restaurant Data Updates */
-		rest("/").post("/updateResData").to("direct:resUpdate");
+		rest("/").bindingMode(RestBindingMode.off).post("/updateResData").to("direct:resUpdate");
 
 		/* File scan Endpoint for Restaurant Data Updates */
 		from("file:" + inputFolderPath + "?consumer.delay=" + delay + "&charset=utf-8&noop=" + keepFiles)
