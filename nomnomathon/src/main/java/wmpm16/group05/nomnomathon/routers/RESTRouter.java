@@ -96,7 +96,7 @@ public class RESTRouter extends RouteBuilder {
         		.bean(StoreOrderBean.class)
         		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
                 .choice()
-                    .when(exchange -> exchange.getIn().getHeader("type")==OrderType.SMS)
+                    .when(header("type").isEqualTo(OrderType.SMS))
                     .to("direct:hungryDish")
                     .otherwise()
                     .to("direct:queryRestaurants");
