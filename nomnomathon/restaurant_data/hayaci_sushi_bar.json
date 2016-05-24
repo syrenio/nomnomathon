@@ -1,0 +1,34 @@
+{
+  "restaurantdata": {
+    "data": {
+      "name": "Hayaci Sushi Bar",
+      "_id": 3,
+      "location": "1090",
+      "opening": "11:30",
+      "closing": "22:50",
+      "categories": [
+        "chinese",
+        "japanese"
+      ]
+    },
+    "menu": [
+      {
+        "name": "avocado maki",
+        "price": 6.50
+      },
+      {
+        "name": "sushi sashimi big",
+        "price": 19.80
+      },
+      {
+        "name": "agamo bento",
+        "price": 8.50
+      },
+      {
+        "name": "thai bento",
+        "price": 8.50
+      }
+    ]
+  }
+}
+

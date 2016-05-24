@@ -1,0 +1,37 @@
+{
+  "restaurantdata": {
+    "data": {
+      "name": "Mexican Restaurant",
+      "_id": 2,
+      "location": "2134",
+      "opening": "11:00",
+      "closing": "23:30",
+      "categories": [
+        "mexican",
+        "american"
+      ]
+    },
+    "menu": [
+      {
+        "name": "chicken burrito",
+        "price": 5.60
+      },
+      {
+        "name": "steak fajitas",
+        "price": 12.99
+      },
+      {
+        "name": "doritos taco salad",
+        "price": 8.99
+      },
+      {
+        "name": "black bean quesadillas",
+        "price": 5.80
+      },
+      {
+        "name": "tortilla chips",
+        "price": 3.99
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "restaurantdata": {
+    "data": {
+      "name": "Schnitzelhaus",
+      "_id": 4,
+      "location": "1150",
+      "opening": "10:00",
+      "closing": "23:30",
+      "categories": [
+        "austrian",
+        "german"
+      ]
+    },
+    "menu": [
+      {
+        "name": "wiener schnitzel chicken",
+        "price": 4.99
+      },
+      {
+        "name": "chicken wings",
+        "price": 5.99
+      },
+      {
+        "name": "schnitzel burger",
+        "price": 4.99
+      }
+    ]
+  }
+}
