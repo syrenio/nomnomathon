@@ -1,7 +1,7 @@
 <restaurantdata>
-        <data>
+    
             <name>Panucis Pizza</name>
-            <id>1</id>
+            <_id>1</_id>
             <location>1150</location>
             <opening>10:00</opening>
             <closing>22:00</closing>
@@ -9,7 +9,7 @@
                 <category>italian</category>
                 <category>american</category>
             </categories>
-        </data>
+ 
         <menu>
             <item>
                 <name>pizza</name>
