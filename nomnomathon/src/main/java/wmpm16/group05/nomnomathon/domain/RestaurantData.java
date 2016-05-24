@@ -11,10 +11,6 @@ public class RestaurantData {
 	private ArrayList<String> categories;
 	private ArrayList<Menu> menu;
 	
-	
-
-
-
 	public String getName() {
 		return name;
 	}
