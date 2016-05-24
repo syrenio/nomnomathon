@@ -1,0 +1,28 @@
+  {
+
+
+  	"name": "Panucis Pizza",
+  	"_id": 2,
+  	"location": "1150",
+  	"opening": "10:00",
+  	"closing": "22:00",
+  	"categories": [
+
+  		"italian",
+  		"american"
+
+  	],
+
+  	"menu": [{
+  		"name": "pizza",
+  		"price": 22.99
+  	}, {
+  		"name": "pasta",
+  		"price": 11.99
+  	}, {
+  		"name": "burger",
+  		"price": 33.99
+  	}]
+
+
+  }

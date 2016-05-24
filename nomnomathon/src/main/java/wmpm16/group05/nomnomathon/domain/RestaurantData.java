@@ -9,18 +9,10 @@ public class RestaurantData {
 	private String opening;
 	private String closing;
 	private ArrayList<String> categories;
-	private ArrayList<String> menu;
+	private ArrayList<Menu> menu;
 	
 	
-	public RestaurantData(int id, String name, String loc, String opening, String closing, ArrayList<String> categories, ArrayList<String> menu){
-		this.setId(id);
-		this.name = name;
-		this.location = loc;
-		this.opening = opening;
-		this.closing = closing;
-		this.categories = categories;
-		this.menu = menu;
-	}
+
 
 
 	public String getName() {
@@ -33,12 +25,12 @@ public class RestaurantData {
 	}
 
 
-	public String getLoc() {
+	public String getLocation() {
 		return location;
 	}
 
 
-	public void setLoc(String loc) {
+	public void setLocation(String loc) {
 		this.location = loc;
 	}
 
@@ -63,32 +55,36 @@ public class RestaurantData {
 	}
 
 
-	public ArrayList<String> getCats() {
+	public ArrayList<String> getCategories() {
 		return categories;
 	}
 
 
-	public void setCats(ArrayList<String> cats) {
-		this.categories = cats;
+	public void setCats(ArrayList<String> categories) {
+		this.categories = categories;
 	}
 
 
-	public ArrayList<String> getMenu() {
+
+
+	public ArrayList<Menu> getMenu() {
 		return menu;
 	}
 
 
-	public void setMenu(ArrayList<String> menu) {
+	public void setMenu(ArrayList<Menu> menu) {
 		this.menu = menu;
 	}
 
 
-	public int getId() {
+	public int get_id() {
 		return _id;
 	}
 
 
-	public void setId(int id) {
+	public void set_id(int id) {
 		this._id = id;
 	}
+	
+
 }

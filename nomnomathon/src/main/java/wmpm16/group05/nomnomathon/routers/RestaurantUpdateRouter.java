@@ -1,13 +1,17 @@
 package wmpm16.group05.nomnomathon.routers;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.jackson.JacksonDataFormat;
+import org.apache.camel.component.jackson.ListJacksonDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
+import org.apache.camel.spi.DataFormat;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import wmpm16.group05.nomnomathon.beans.translators.ResDataTranslator;
+import wmpm16.group05.nomnomathon.domain.RestaurantData;
 
 /**
  * RestaurantUpdateRouter using the Normalizer Pattern
@@ -37,12 +41,17 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 		restConfiguration().component("servlet").bindingMode(RestBindingMode.off);
 
 		/* Providing REST Endpoint for Restaurant Data Updates */
-		rest("/").post("/updateResData").to("direct:resUpdate");
+
+		rest("/").//bindingMode(RestBindingMode.off).
+		post("/updateResData").to("direct:resUpdate");
 
 		/* File scan Endpoint for Restaurant Data Updates */
 		from("file:" + inputFolderPath + "?consumer.delay=" + delay + "&charset=utf-8&noop=" + keepFiles)
 				.to("direct:resUpdate");
 
+		JacksonDataFormat format = new JacksonDataFormat();
+		format.setUnmarshalType(RestaurantData.class);
+		
 		/*  Message Router in front of a number of Message Translator instances */
 		from("direct:resUpdate")
 				.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG&marker=loaded").choice()
@@ -56,8 +65,10 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 				.jacksonxml().bean("resDataTranslator", "transXml")
 				
 				/*  JSON */
-				.when().simple("${file:name.ext} == 'json' || ${in.headers.Content-Type} == 'application/json'").unmarshal()
-				.json(JsonLibrary.Jackson).bean("resDataTranslator", "transJson")
+				.when().simple("${file:name.ext} == 'json' || ${in.headers.Content-Type} == 'application/json'").
+				to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG").
+				unmarshal(format)
+				//.json(JsonLibrary.Jackson).bean("resDataTranslator", "transJson")
 				.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
 				
 				/* Update Mongo DB */

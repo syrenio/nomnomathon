@@ -1,29 +1,24 @@
-  {
-  	"restaurantdata": {
-  		"data": {
-  			"name": "Panucis Pizza",
-  			"_id": 1,
-  			"location": "1150",
-  			"opening": "10:00",
-  			"closing": "22:00",
-  			"categories": [
+{
+	"name": "Panucis Pizza",
+	"_id": 1,
+	"location": "1150",
+	"opening": "10:00",
+	"closing": "22:00",
+	"categories": [
 
-  					"italian",
-  					"american"
+		"italian",
+		"american"
 
-  			]
-  		},
-  		"menu": [{
-  				"name": "pizza",
-  				"price": 2.99
-  			}, {
-  				"name": "pasta",
-  				"price": 1.99
-  			}, {
-  				"name": "burger",
-  				"price": 3.99
-  			}]
+	],
 
-  		}
-  	}
-
+	"menu": [{
+		"name": "pizza",
+		"price": 22.99
+	}, {
+		"name": "pasta",
+		"price": 11.99
+	}, {
+		"name": "burger",
+		"price": 33.99
+	}]
+}
