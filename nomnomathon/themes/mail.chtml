@@ -1,0 +1,72 @@
+{!-- templates for customer notification mails --}
+{#header}
+Hallo {$headers.firstName} {$headers.lastName},<br><br>
+{#}
+
+{#footer}
+<br>
+Wir freuen uns auf deine nächste Bestellung, <br>
+dein NomNomathon Team <br>
+<a href="http://www.nomnomathon.eu/">www.nomnomathon.eu</a><br>
+{#}
+
+
+{!-- various message types --}
+
+{#fullfilled}
+{% include #header %}
+ 
+deine Bestellung mit der NomNomId: {$headers.orderId} wird gerade zubereitet und frisch an dich geliefert. <br>
+<table border="1">
+<tr>
+<td>Gericht</td>
+<td>Menge</td>
+<td>Preis</td>
+</tr>
+{% loop in $headers.menu as $dish %}
+
+
+<tr>
+<td>{$dish.dish}</td>
+<td>{$dish.quantity}</td>
+<td>{$dish.price}</td>
+</tr>
+
+
+{% onEmpty %}
+{!-- Always provide an onEmpty block in case $widgets is empty/null --}
+
+
+
+
+{% endloop %}
+</table>
+
+
+{% include #footer %}
+{#}
+
+{#invalid_payment}
+{% include #header %}
+ 
+deine Zahlung konnte leider nicht erfolgreich ausgeführt werden.<br>
+
+{% include #footer %}
+{#}
+
+{#no_capacity}
+{% include #header %}
+ 
+wir konnten leider kein Restaurant finden, dass deine Bestellung bearbeiten kann. Versuch es doch ein anderes Mal. <br>
+
+{% include #footer %}
+{#}
+
+{#no_restaurants}
+{% include #header %}
+ 
+wir konnten leider kein Restaurant finden, dass deine Bestellung bearbeiten kann. <br>
+
+{% include #footer %}
+{#}
+
