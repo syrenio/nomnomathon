@@ -78,6 +78,14 @@ public class NomNomathon {
         customer.setAddress("Percostraße 25, 1220 Wien");
         customerRepository.save(customer);
         
+        //authcode: bWF3ZToxMjM0NQ==
+        customer = new Customer("mawe","Martin","Weik","12345");
+        customer.setPhoneNumber("+4369912345678");
+        customer.setMail("martin@weik.at");
+        customer.setNotificationType(CustomerNotificationType.MAIL);;
+        customer.setAddress("blabla, 1234 Wien");
+        customerRepository.save(customer);
+        
         
     }
 
