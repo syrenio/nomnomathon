@@ -32,7 +32,7 @@ public class ResDataTranslator {
 		
 		if(validator.validateData(name, loc, opening, closing, cats, menu)){
 			//Update Message Body to our valid json
-			exchange.getIn().setBody(gson.toJson((new RestaurantData(id, name,loc,opening,closing,cats,menu))));
+			exchange.getIn().setBody((new RestaurantData(id, name,loc,opening,closing,cats,menu)));
 		}else{
 			throw new TranslatorException("Provided data seem not to be valid.");
 		}

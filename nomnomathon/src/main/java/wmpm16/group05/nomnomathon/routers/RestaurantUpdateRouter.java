@@ -57,8 +57,9 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 				
 				/*  JSON */
 				.when().simple("${file:name.ext} == 'json' || ${in.headers.Content-Type} == 'application/json'").unmarshal()
-				.json(JsonLibrary.Jackson).bean("resDataTranslator", "transJson")
+				.json(JsonLibrary.Jackson).bean("resDataTranslator", "transJson").marshal().json(JsonLibrary.Gson).convertBodyTo(String.class)
 				.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
+				
 				.otherwise().stop()
 				.end()
 				
