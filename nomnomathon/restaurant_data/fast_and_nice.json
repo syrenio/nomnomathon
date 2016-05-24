@@ -1,6 +1,5 @@
 {
-  "restaurantdata": {
-    "data": {
+
       "name": "Fast and Nice",
       "_id": 5,
       "location": "1150",
@@ -10,7 +9,7 @@
         "italian",
         "american"
       ]
-    },
+    ,
     "menu": [
       {
         "name": "Bulgogi Bento",
@@ -25,15 +24,15 @@
         "price": "7.60"
       },
       {
-        "name": "Ente Süß Sauer",
+        "name": "Ente Suss Sauer",
         "price": "10.90"
       },
       {
-        "name": "Gebratene Nudeln Mit Hühnerfleisch",
+        "name": "Gebratene Nudeln Mit Huhnerfleisch",
         "price": "7.90"
       },
       {
-        "name": "Gebratener Eierreis Mit Hühnerfleisch",
+        "name": "Gebratener Eierreis Mit Huhnerfleisch",
         "price": "7.50"
       },
       {
@@ -65,6 +64,6 @@
         "price": "3.90"
       }
     ]
-  }
+ 
 }
 
