@@ -51,6 +51,11 @@ public class QueryRestaurantBean {
                 exchange.getIn().setHeader("orderState", OrderState.REJECTED_NO_RESTAURANTS);
             }
         }
+        
+        if (exchange.getIn().getHeader("orderState") != OrderState.REJECTED_NO_RESTAURANTS) {
+        	exchange.getIn().setHeader("orderState", OrderState.RESTAURANT_SELECT);
+        }
+        
 
     }
 

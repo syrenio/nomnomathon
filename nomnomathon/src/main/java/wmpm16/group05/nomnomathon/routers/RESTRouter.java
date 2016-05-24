@@ -16,6 +16,7 @@ import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
+import wmpm16.group05.nomnomathon.models.OrderState;
 
 
 /**
@@ -106,6 +107,7 @@ public class RESTRouter extends RouteBuilder {
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.hungryDish?level=DEBUG")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll")
                 .bean(RandomDishBean.class)
+                .setHeader("orderState").constant(OrderState.FULLFILLED) // just for DEMO without second part of process
                 .to("direct:rejectOrder");
 
 
@@ -126,11 +128,15 @@ public class RESTRouter extends RouteBuilder {
 
         /*reject order, update DB*/
         from("direct:rejectOrder")
-                //.to("direct:sendCustomerNotification");
+        		//TODO update OrderInProcess in DB
                 .to("direct:notifyCustomer");
 
         /*notify customer via channel*/
         from("direct:notifyCustomer")
+        		.filter(header("orderState").isEqualTo(OrderState.RESTAURANT_SELECT))
+        			.setHeader("orderState").constant(OrderState.FULLFILLED) // just for DEMO without second part of process
+        		.end()
+        		.wireTap("direct:sendCustomerNotification")
                 .process(x -> {
                     System.out.println(x.getIn().getBody());
                 });
