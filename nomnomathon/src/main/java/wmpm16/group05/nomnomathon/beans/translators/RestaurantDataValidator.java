@@ -16,5 +16,4 @@ public class RestaurantDataValidator{
 				(cats != null && cats.size() > 0) &&
 				(menu != null && menu.size() > 0);
 	}
-	
 }
