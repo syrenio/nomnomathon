@@ -3,6 +3,7 @@ package wmpm16.group05.nomnomathon.routers;
 import java.util.List;
 
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.chunk.ChunkConstants;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -41,7 +42,7 @@ public class CustomerNotifyRouter extends RouteBuilder {
         //TODO extract orderId & co to header to acces it in template
 //        Alt: StringTemplate, FreeMarker
         	.setHeader("orderId").simple("headers.order.orderId")
-    		.setHeader("menu").simple("headers.order.dishes")
+    		.setHeader("dishes").simple("headers.order.dishes")
 	    	//.setHeader("menu").simple("body.menu") // exception: cant find menu in body??
         
 	        .choice()
@@ -65,24 +66,30 @@ public class CustomerNotifyRouter extends RouteBuilder {
         from("direct:notifyCustomerMail")
 	        .setHeader("Content-type", constant("text/html"))
 	        .choice()
-//	        TODO set template via header, only one to chunk
-//	        setHeader(ChunkConstants.CHUNK_TEMPLATE).constant("template").
+	        	// set mail subject and Chunk template
         		.when(header("orderState").isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
 		    		.setHeader("subject", constant("NomNom - No Restaurants"))
-					.to("chunk:mail#no_restaurants")
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#no_restaurants"))
+					
 				.when(header("orderState").isEqualTo(OrderState.REJECTED_NO_CAPACITY))
 	        		.setHeader("subject", constant("NomNom - No Capacity"))
-	    			.to("chunk:mail#no_capacity")
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#no_capacity"))
+	    			
 	        	.when(header("orderState").isEqualTo(OrderState.REJECTED_INVALID_PAYMENT))
         			.setHeader("subject", constant("NomNom - Payment failed"))
-	    			.to("chunk:mail#invalid_payment")
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#invalid_payment"))
+	    			
 		        .when(header("orderState").isEqualTo(OrderState.FULLFILLED))
         			.setHeader("subject", constant("NomNom - Order finished"))
-	    			.to("chunk:mail#fullfilled")
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#fullfilled"))
+	    			
 	    		.otherwise()
 	    			//TODO error handling
 					.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:undefined_orderState?level=ERROR")
+					.stop()
 	        .end()
+	        // execute Chunk template and send mail
+	        .to("chunk:dummy")
 			.to("smtp://" + host + "?password=" + pass + "&username=" + user + "&from=" + user)
 			.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:send");
     
