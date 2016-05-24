@@ -48,18 +48,18 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 				.choice()
 				
 				/*  CSV */
-				.when().simple("${file:name.ext} == 'csv' || ${in.headers.Content-Type} == 'text/csv'").unmarshal()
-				.csv().bean("resDataTranslator", "transCsv")
+//				.when().simple("${file:name.ext} == 'csv' || ${in.headers.Content-Type} == 'text/csv'").unmarshal()
+//				.csv().bean("resDataTranslator", "transCsv")
 				
 				/*  XML */
-				.when().simple("${file:name.ext} == 'xml' || ${in.headers.Content-Type} == 'text/xml'").unmarshal()
-				.jacksonxml().bean("resDataTranslator", "transXml")
+//				.when().simple("${file:name.ext} == 'xml' || ${in.headers.Content-Type} == 'text/xml'").unmarshal()
+//				.jacksonxml().bean("resDataTranslator", "transXml")
 				
 				/*  JSON */
 				.when().simple("${file:name.ext} == 'json' || ${in.headers.Content-Type} == 'application/json'").unmarshal()
 				.json(JsonLibrary.Jackson).bean("resDataTranslator", "transJson")
 				.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
-				
+				.otherwise().stop()
 				.end()
 				
 				/* Update Mongo DB */
