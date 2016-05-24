@@ -1,6 +1,6 @@
 {
-  "restaurantdata": {
-    "data": {
+
+
       "name": "Mexican Restaurant",
       "_id": 2,
       "location": "2134",
@@ -10,7 +10,7 @@
         "mexican",
         "american"
       ]
-    },
+    ,
     "menu": [
       {
         "name": "chicken burrito",
@@ -33,5 +33,5 @@
         "price": 3.99
       }
     ]
-  }
+  
 }

@@ -1,6 +1,6 @@
 {
-  "restaurantdata": {
-    "data": {
+  
+
       "name": "Hayaci Sushi Bar",
       "_id": 3,
       "location": "1090",
@@ -10,7 +10,7 @@
         "chinese",
         "japanese"
       ]
-    },
+    ,
     "menu": [
       {
         "name": "avocado maki",
@@ -29,6 +29,6 @@
         "price": 8.50
       }
     ]
-  }
+  
 }
 

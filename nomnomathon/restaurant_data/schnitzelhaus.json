@@ -1,6 +1,6 @@
 {
-  "restaurantdata": {
-    "data": {
+
+
       "name": "Schnitzelhaus",
       "_id": 4,
       "location": "1150",
@@ -10,7 +10,7 @@
         "austrian",
         "german"
       ]
-    },
+    ,
     "menu": [
       {
         "name": "wiener schnitzel chicken",
@@ -25,5 +25,5 @@
         "price": 4.99
       }
     ]
-  }
+  
 }
