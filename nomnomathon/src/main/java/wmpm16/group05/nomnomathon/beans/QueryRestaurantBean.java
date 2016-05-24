@@ -45,9 +45,9 @@ public class QueryRestaurantBean {
 
         for (Dish d : dishesInOrder) {
             if(dishesName.contains(d.getDish())){
-                System.out.println(d.getDish()+" can be deliverd");
+                System.out.println(d.getDish()+" can be delivered");
             }else{
-                System.out.println(d.getDish()+" cannot be deliverd: no suitable restaurant found --> Order rejected");
+                System.out.println(d.getDish()+" cannot be delivered: no suitable restaurant found --> Order rejected");
                 exchange.getIn().setHeader("orderState", OrderState.REJECTED_NO_RESTAURANTS);
             }
         }
