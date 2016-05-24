@@ -42,7 +42,6 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 
 		/* Providing REST Endpoint for Restaurant Data Updates */
 
-		rest("/").bindingMode(RestBindingMode.off).post("/updateResData").to("direct:resUpdate");
 
 		rest("/").//bindingMode(RestBindingMode.off).
 		post("/updateResData").to("direct:resUpdate");
