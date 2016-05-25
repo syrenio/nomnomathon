@@ -13,10 +13,12 @@ import wmpm16.group05.nomnomathon.domain.RestaurantData;
 public class ResDataConverter {
 	private List<String> dataList;
 	private ArrayList<String> categories;
-	private ArrayList<Menu> menuItems = new ArrayList<Menu>();
+	private ArrayList<Menu> menuItems;
+	private RestaurantData resData;
 
 	public RestaurantData convert(List<List<String>> resDataCsv) {
-		RestaurantData resData = new RestaurantData();
+		menuItems = new ArrayList<Menu>();
+		resData = new RestaurantData();
 		for (List<String> row : resDataCsv) {
 			dataList = row.subList(0, 5);
 			Menu item = new Menu();
