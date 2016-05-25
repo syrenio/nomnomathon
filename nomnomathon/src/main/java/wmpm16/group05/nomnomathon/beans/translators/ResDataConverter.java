@@ -29,7 +29,7 @@ public class ResDataConverter {
 		resData.set_id(Integer.parseInt(dataList.get(1).replaceAll("\\s", "")));
 		resData.setLocation(dataList.get(2));
 		resData.setOpening(dataList.get(3));
-		resData.setClosing(dataList.get(3));
+		resData.setClosing(dataList.get(4));
 		resData.setCats((ArrayList<String>) categories);
 		resData.setMenu((ArrayList<Menu>) menuItems);
 		return resData;
