@@ -4,11 +4,9 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.component.jacksonxml.JacksonXMLDataFormat;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import wmpm16.group05.nomnomathon.beans.translators.ResDataTranslator;
 import wmpm16.group05.nomnomathon.domain.RestaurantData;
 
 /**
@@ -19,8 +17,6 @@ import wmpm16.group05.nomnomathon.domain.RestaurantData;
 @Component
 public class RestaurantUpdateRouter extends RouteBuilder {
 
-	@Autowired
-	private ResDataTranslator resDataTranslator;
 	@Value("${restaurantUpdate.inputFolder}")
 	private String inputFolder;
 	@Value("${restaurantUpdate.delay}")
@@ -58,9 +54,8 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 				.choice()
 
 					/* CSV */
-					// .when().simple("${file:name.ext} == 'csv' ||
-					// ${in.headers.Content-Type} == 'text/csv'").unmarshal()
-					// .csv().bean("resDataTranslator", "transCsv")
+					 .when().simple("${file:name.ext} == 'csv' || ${in.headers.Content-Type} == 'text/csv'").unmarshal()
+					 .csv().bean("ConvertToResDataBean")
 	
 					/* XML */
 					.when().simple("${file:name.ext} == 'xml' || ${in.headers.Content-Type} == 'text/xml'")
@@ -69,7 +64,9 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 					/* JSON */
 					.when().simple("${file:name.ext} == 'json' || ${in.headers.Content-Type} == 'application/json'").to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
 						.unmarshal(restaurantjsonformat).to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
-					.otherwise().stop()
+					
+					/* Otherwise */	
+					.otherwise().stop()	
 				.end()
 
 				/* Validate */
