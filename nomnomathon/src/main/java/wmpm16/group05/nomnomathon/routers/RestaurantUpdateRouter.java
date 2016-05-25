@@ -54,23 +54,22 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 		 * Message Router in front of a number of Message Translator instances
 		 */
 		from("direct:resUpdate")
-				.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG&marker=loaded").choice()
+				.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG&marker=loaded")
+				.choice()
 
-				/* CSV */
-				// .when().simple("${file:name.ext} == 'csv' ||
-				// ${in.headers.Content-Type} == 'text/csv'").unmarshal()
-				// .csv().bean("resDataTranslator", "transCsv")
-
-				/* XML */
-				.when().simple("${file:name.ext} == 'xml' || ${in.headers.Content-Type} == 'text/xml'")
-				.unmarshal(restaurantxmlformat)
-				.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
-
-				/* JSON */
-				.when().simple("${file:name.ext} == 'json' || ${in.headers.Content-Type} == 'application/json'")
-				.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
-				.unmarshal(restaurantjsonformat)
-				.to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG").otherwise().stop()
+					/* CSV */
+					// .when().simple("${file:name.ext} == 'csv' ||
+					// ${in.headers.Content-Type} == 'text/csv'").unmarshal()
+					// .csv().bean("resDataTranslator", "transCsv")
+	
+					/* XML */
+					.when().simple("${file:name.ext} == 'xml' || ${in.headers.Content-Type} == 'text/xml'")
+						.unmarshal(restaurantxmlformat).to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
+	
+					/* JSON */
+					.when().simple("${file:name.ext} == 'json' || ${in.headers.Content-Type} == 'application/json'").to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
+						.unmarshal(restaurantjsonformat).to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
+					.otherwise().stop()
 				.end()
 
 				/* Validate */

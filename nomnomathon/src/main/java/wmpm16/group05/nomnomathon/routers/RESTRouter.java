@@ -56,9 +56,9 @@ public class RESTRouter extends RouteBuilder {
         from("direct:postOrder")
                 .choice()
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.SMS)
-                .to("direct:postOrderWithSMS")
+                	.to("direct:postOrderWithSMS")
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.REGULAR)
-                .to("direct:postOrderWithREGULAR")
+                	.to("direct:postOrderWithREGULAR")
                 .end();
 
         /*
@@ -67,17 +67,17 @@ public class RESTRouter extends RouteBuilder {
         * */
         from("direct:postOrderWithSMS")
                 .filter(simple("${in.body.type} == 'SMS' && ${in.body.text} contains 'hungry'")) /*IGNORE OTHER Messages */
-                .bean(SMSAuthBean.class)
-                .filter(simple("${in.body.userId.present} == true"))
-                .to("direct:enrichCustomerData")
-                .end()
+	                .bean(SMSAuthBean.class)
+	                .filter(simple("${in.body.userId.present} == true"))
+	                	.to("direct:enrichCustomerData")
+	                .end()
                 .end();
 
         /*extract customerId from header */
         from("direct:postOrderWithREGULAR")
                 .bean(RegularAuthBean.class)
                 .filter(simple("${in.body.userId.present} == true"))
-                .to("direct:enrichCustomerData")
+                	.to("direct:enrichCustomerData")
                 .end();
 
         /*enrich order-request with customer data from DB and transform to Order*/
@@ -92,19 +92,17 @@ public class RESTRouter extends RouteBuilder {
         		.bean(PollCustomerFromOrder.class);
 
         /*store order in DB*/
-        from("direct:storeOrder")
-        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.before?level=DEBUG")
-        		.bean(StoreOrderBean.class)
-        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
+        from("direct:storeOrder").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.before?level=DEBUG")
+        		.bean(StoreOrderBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
                 .choice()
                     .when(header("type").isEqualTo(OrderType.SMS))
-                    .to("direct:hungryDish")
+                    	.to("direct:hungryDish")
                     .otherwise()
-                    .to("direct:queryRestaurants");
+                    	.to("direct:queryRestaurants")
+                .end();
 
         from("direct:hungryDish")
-                .setBody().simple("{ \"menu.price\": { $gt: 0, $lt: 20 }}")
-                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.hungryDish?level=DEBUG")
+                .setBody().simple("{ \"menu.price\": { $gt: 0, $lt: 20 }}").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.hungryDish?level=DEBUG")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll")
                 .bean(RandomDishBean.class)
                 .setHeader("orderState").constant(OrderState.FULLFILLED) // just for DEMO without second part of process
@@ -118,10 +116,8 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:findAll");
 
         from("direct:findAll")
-                .setBody().simple("{\"menu.name\":{ $in: [${header.dishNames}]}}")
-                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
-                .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll")
-                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
+                .setBody().simple("{\"menu.name\":{ $in: [${header.dishNames}]}}").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
+                .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
                 .bean(QueryRestaurantBean.class)
                 /*choice or something here,  reject or next step in process*/
                 .to("direct:rejectOrder");
