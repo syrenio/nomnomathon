@@ -39,7 +39,7 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 		restaurantxmlformat.setUnmarshalType(RestaurantData.class);
 
 		/* Providing REST Endpoint for Restaurant Data Updates */
-		rest("/").// bindingMode(RestBindingMode.off).
+		rest("/").bindingMode(RestBindingMode.off).
 				post("/updateResData").to("direct:resUpdate");
 
 		/* File scan Endpoint for Restaurant Data Updates */
