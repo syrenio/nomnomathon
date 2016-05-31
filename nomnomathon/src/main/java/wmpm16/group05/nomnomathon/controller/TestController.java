@@ -90,7 +90,7 @@ public class TestController {
 	}
 	
 	@RequestMapping("/test/testRestaurantOrder")
-	public void testRestaurantOrder() {
+	public OrderRequestAnswer testRestaurantOrder() {
 		log.debug("START TestRestaurantOrder");
 		
 		try {
@@ -115,10 +115,12 @@ public class TestController {
 		log.debug(order);
 		
 		ProducerTemplate template = context.createProducerTemplate();
-		template.requestBody("direct:testRestaurantOrder", order);
+		OrderRequestAnswer answer = (OrderRequestAnswer) template.requestBody("direct:testRestaurantOrder", order);
 		
 		
 		log.debug("END TestRestaurantOrder");
+		
+		return answer;
 		
 	}
 	

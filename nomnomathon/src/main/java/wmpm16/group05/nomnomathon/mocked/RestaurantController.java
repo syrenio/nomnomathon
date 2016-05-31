@@ -47,12 +47,7 @@ public class RestaurantController {
 			log.debug("ERRROR Mapping!");
 			e.printStackTrace();
 		}
-		return OrderRequestAnswer.accepted;
-		
-		
-
+		double rnd = Math.random();
+		return rnd < 0.5 ? OrderRequestAnswer.accepted : OrderRequestAnswer.rejected;
 	}
-	
-	
-
 }
