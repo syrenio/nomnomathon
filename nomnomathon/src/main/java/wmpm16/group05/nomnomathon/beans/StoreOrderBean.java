@@ -53,7 +53,7 @@ public class StoreOrderBean {
 		*/
 		
 		exchange.setOut(exchange.getIn());
-		exchange.getOut().setHeader("order", order);
+		exchange.getOut().setHeader("orderId", order.getOrderId());
 		
 	}
 		
