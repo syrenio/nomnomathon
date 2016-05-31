@@ -2,7 +2,7 @@ package wmpm16.group05.nomnomathon.domain;
 
 public class Menu {
 	private String name;
-	private float price;
+	private double price;
 	
 	public Menu() {}
 	
@@ -12,10 +12,10 @@ public class Menu {
 	public void setName(String name) {
 		this.name = name;
 	}
-	public float getPrice() {
+	public double getPrice() {
 		return price;
 	}
-	public void setPrice(float price) {
+	public void setPrice(double price) {
 		this.price = price;
 	}
 }
