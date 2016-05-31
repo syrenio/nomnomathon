@@ -6,7 +6,6 @@ import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Created by Agnes on 21.05.16.
@@ -25,6 +24,6 @@ public class ExtractDishRestaurantBean {
         dishNames = dishNames.substring(0, dishNames.length() - 2);
 
         exchange.getIn().setHeader("dishNames", dishNames);
-        exchange.getIn().setHeader("order", order);
+
     }
 }
