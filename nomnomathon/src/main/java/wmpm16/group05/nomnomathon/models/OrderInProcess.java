@@ -11,6 +11,8 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class OrderInProcess {
 
@@ -94,11 +96,12 @@ public class OrderInProcess {
 		this.customer = customer;
 	}
 
-	public Optional<Long> getRestaurantid() {
+	@JsonIgnore
+	public Optional<Long> getRestaurantidoptional() {
 		return Optional.ofNullable(restaurantid);
 	}
 
-	public void setRestaurantid(Optional<Long> restaurantid) {
+	public void setRestaurantidoptional(Optional<Long> restaurantid) {
 		this.restaurantid = restaurantid.get() != null ? restaurantid.get() : null;
 	}
 
@@ -114,6 +117,18 @@ public class OrderInProcess {
 	public String toString() {
 		return "Order [orderId=" + orderId + ", state=" + state + ", customer=" + customer + ", restaurantid="
 				+ restaurantid + ", dishes=" + dishes + "]";
+	}
+
+	public void setOrderId(Long orderId) {
+		this.orderId = orderId;
+	}
+
+	public void setRestaurantid(Long restaurantid) {
+		this.restaurantid = restaurantid;
+	}
+	
+	public Long getRestaurantid() {
+		return this.restaurantid;
 	}
 
 	public void proceed(OrderState state) {

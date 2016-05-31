@@ -30,7 +30,7 @@ public class EnrichCustomer implements AggregationStrategy{
 		}
 		
 		if (orderRequest.getRestaurantId() != null) {
-			order.setRestaurantid(orderRequest.getRestaurantId());
+			order.setRestaurantidoptional(orderRequest.getRestaurantId());
 		}
 		
 		// Exchange transform OrderRequest to Order 

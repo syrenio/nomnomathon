@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
+import wmpm16.group05.nomnomathon.mocked.OrderRequestAnswer;
 import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
+import wmpm16.group05.nomnomathon.models.OrderState;
 
 
 
@@ -69,7 +71,7 @@ public class TestController {
 
 				@Override
 				public void configure() throws Exception {
-					from("direct:testRestaurantStatus").marshal().json(JsonLibrary.Jackson).setHeader("Exchange.HTTP_METHOD", constant("GET")).to("http://localhost:8080/external/restaurants/pizzza/capacity?METHOD=GET");
+					from("direct:testRestaurantStatus").marshal().json(JsonLibrary.Jackson).setHeader("Exchange.HTTP_METHOD", constant("GET")).to("http://localhost:8080/external/restaurants/pizzza/capacity");
 					
 				}});
 			log.debug("ROUTE added");
@@ -84,6 +86,39 @@ public class TestController {
 		
 		
 		log.debug("END TestRestaurantStatus");
+		
+	}
+	
+	@RequestMapping("/test/testRestaurantOrder")
+	public void testRestaurantOrder() {
+		log.debug("START TestRestaurantOrder");
+		
+		try {
+			context.addRoutes(new RouteBuilder() {
+
+				@Override
+				public void configure() throws Exception {
+					from("direct:testRestaurantOrder").to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG").marshal().json(JsonLibrary.Jackson).to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG").to("http://localhost:8080/external/restaurants/pizzza/order").unmarshal().json(JsonLibrary.Jackson, OrderRequestAnswer.class).to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG");
+					
+				}});
+			log.debug("ROUTE added");
+		} catch (Exception e) {
+			
+			log.error(e);
+		}
+		OrderInProcess order = new OrderInProcess();
+		order.addDish("Sushi");
+		order.addDish("Pizza");
+		order.setState(OrderState.CREATED);
+		order.setOrderId(123L);
+		
+		log.debug(order);
+		
+		ProducerTemplate template = context.createProducerTemplate();
+		template.requestBody("direct:testRestaurantOrder", order);
+		
+		
+		log.debug("END TestRestaurantOrder");
 		
 	}
 	
