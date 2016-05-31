@@ -1,13 +1,20 @@
 package wmpm16.group05.nomnomathon.routers;
 
+import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.bean.validator.BeanValidationException;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.component.jacksonxml.JacksonXMLDataFormat;
 import org.apache.camel.model.rest.RestBindingMode;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+
 import wmpm16.group05.nomnomathon.domain.RestaurantData;
+import wmpm16.group05.nomnomathon.exceptions.BeanValidationHandler;
+import wmpm16.group05.nomnomathon.exceptions.IllegalArgumentHandler;
 
 /**
  * RestaurantUpdateRouter using the Normalizer Pattern
@@ -28,15 +35,21 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 	@Value("${restaurantUpdate.collectionName}")
 	private String collectionName;
 	private String inputFolderPath;
-	private JacksonDataFormat restaurantjsonformat = new JacksonDataFormat();
-	private JacksonXMLDataFormat restaurantxmlformat = new JacksonXMLDataFormat();
+	private JacksonDataFormat restaurantjsonformat;
+	private JacksonXMLDataFormat restaurantxmlformat;
 
 	@Override
 	public void configure() throws Exception {
+		restaurantjsonformat = new JacksonDataFormat();
+		restaurantxmlformat = new JacksonXMLDataFormat();
 		inputFolderPath = System.getProperty("user.dir") + "/" + inputFolder;
-		restConfiguration().component("servlet").bindingMode(RestBindingMode.off);
 		restaurantjsonformat.setUnmarshalType(RestaurantData.class);
 		restaurantxmlformat.setUnmarshalType(RestaurantData.class);
+		
+		 /* GLOBAL Error handler on exception */
+        onException(BeanValidationException.class).handled(true).bean(BeanValidationHandler.class);
+        onException(IllegalArgumentException.class).handled(true).bean(IllegalArgumentHandler.class);
+
 
 		/* Providing REST Endpoint for Restaurant Data Updates */
 		rest("/").bindingMode(RestBindingMode.off).
@@ -66,11 +79,11 @@ public class RestaurantUpdateRouter extends RouteBuilder {
 						.unmarshal(restaurantjsonformat).to("log:wmpm16.group05.nomnomathon.routers.RestaurantUpdateRouter?level=DEBUG")
 					
 					/* Otherwise */	
-					.otherwise().stop()	
+					.otherwise().throwException(new IllegalArgumentException("Dataformat not supported")).stop()	
 				.end()
 
 				/* Validate */
-				.bean("resDataValidator")
+				.to("bean-validator://x")
 
 				/* Update Mongo DB */
 				.to("mongodb:mongoDb?database=" + dbName + "&collection=" + collectionName + "&operation=save")

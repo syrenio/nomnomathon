@@ -2,19 +2,37 @@ package wmpm16.group05.nomnomathon.domain;
 
 import java.util.ArrayList;
 
+import javax.validation.GroupSequence;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+
 public class RestaurantData {
+	@NotNull
+	@Min(0)
 	private int _id;
+	@NotNull
+	@Size(min = 2, max = 150)
 	private String name;
+	@NotNull
+	@Size(min = 4)
 	private String location;
+	@NotNull
+	@Size(min = 5, max = 5)
 	private String opening;
+	@NotNull
+	@Size(min = 5, max = 5)
 	private String closing;
+	@NotNull
+	@Size(min = 1, max = 20)
 	private ArrayList<String> categories;
+	@NotNull
+	@Size(min = 1)
 	private ArrayList<Menu> menu;
 	
 	public String getName() {
 		return name;
 	}
-
 
 	public void setName(String name) {
 		this.name = name;
@@ -81,6 +99,4 @@ public class RestaurantData {
 	public void set_id(int id) {
 		this._id = id;
 	}
-	
-
 }

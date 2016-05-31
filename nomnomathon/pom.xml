@@ -144,6 +144,11 @@
             <version>${camel.version}</version>
         </dependency>
         <dependency>
+        	   <groupId>org.apache.camel</groupId>
+            <artifactId>camel-bean-validator</artifactId>
+            <version>${camel.version}</version>
+        </dependency>
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>

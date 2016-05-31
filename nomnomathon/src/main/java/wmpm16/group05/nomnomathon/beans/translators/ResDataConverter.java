@@ -23,15 +23,15 @@ public class ResDataConverter {
 			dataList = row.subList(0, 5);
 			Menu item = new Menu();
 			item.setName(row.get(row.size() - 2));
-			item.setPrice(Float.parseFloat(row.get(row.size() - 1)));
+			item.setPrice(Float.parseFloat(row.get(row.size() - 1).replaceAll("\\s", "")));
 			menuItems.add(item);
 			categories = new ArrayList<String>(row.subList(5, row.size() - 2));
 		}
 		resData.setName(dataList.get(0));
 		resData.set_id(Integer.parseInt(dataList.get(1).replaceAll("\\s", "")));
-		resData.setLocation(dataList.get(2));
-		resData.setOpening(dataList.get(3));
-		resData.setClosing(dataList.get(4));
+		resData.setLocation(dataList.get(2).replaceAll("\\s", ""));
+		resData.setOpening(dataList.get(3).replaceAll("\\s", ""));
+		resData.setClosing(dataList.get(4).replaceAll("\\s", ""));
 		resData.setCats((ArrayList<String>) categories);
 		resData.setMenu((ArrayList<Menu>) menuItems);
 		return resData;
