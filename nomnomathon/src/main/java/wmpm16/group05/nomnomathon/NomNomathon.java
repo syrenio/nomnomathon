@@ -64,6 +64,7 @@ public class NomNomathon {
         orderRepository.deleteAll();
         //orderListEntryRepository.deleteAll();
 
+        //authcode: YmVybmQ6bm9tbm9t
         Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");
         customer.setMail("a.b@c.d");
