@@ -111,7 +111,9 @@ public class RESTRouter extends RouteBuilder {
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll")
                     .split(body())
                     .bean(RestaurantDataConverter.class)
-                    .aggregate(new RestaurantDataAggregation()).body().completionTimeout(100)
+                    .aggregate(constant(true), new RestaurantDataAggregation()).completionSize(5)
+                //constant ist needed in order to aggregate all messages into a single message
+                //stops aggregation when we have 5 restaurants aggregated (static value - maybe predicate helps)
                     .bean(RandomDishBean.class)
                     .end()
                 .setHeader("orderState").constant(OrderState.FULLFILLED) // just for DEMO without second part of process
@@ -140,7 +142,7 @@ public class RESTRouter extends RouteBuilder {
                 .filter(header("orderState").isEqualTo(OrderState.RESTAURANT_SELECT))
                 .setHeader("orderState").constant(OrderState.FULLFILLED) // just for DEMO without second part of process
                 .end()
-                .wireTap("direct:sendCustomerNotification")
+             //   .wireTap("direct:sendCustomerNotification")
                 .process(x -> {
                     System.out.println(x.getIn().getBody());
                 });
