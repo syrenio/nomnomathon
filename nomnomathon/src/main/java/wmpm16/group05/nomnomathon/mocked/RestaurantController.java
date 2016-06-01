@@ -1,12 +1,20 @@
 package wmpm16.group05.nomnomathon.mocked;
 
+import org.apache.log4j.Logger;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
-import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 
-import javax.websocket.server.PathParam;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
+import wmpm16.group05.nomnomathon.models.OrderInProcess;
+
+import java.io.IOException;
 
 /**
  * Created by syrenio on 04/05/16.
@@ -15,13 +23,25 @@ import javax.websocket.server.PathParam;
 @RequestMapping("/external/restaurants")
 public class RestaurantController {
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    @ResponseBody
-    public RestaurantCapacityResponse getRestaurant(@PathParam("id") String id){
-        double rnd = Math.random();
-        RestaurantCapacityResponse resp = new RestaurantCapacityResponse();
-        resp.setCapacityAvailable(rnd > 0.5);
-        return resp;
-    }
+	private final Logger log = Logger.getLogger(RestaurantController.class);
 
+	@RequestMapping(value = "/{id}/capacity", method = RequestMethod.GET)
+	@ResponseBody
+	public RestaurantCapacityResponse getRestaurant(@PathVariable String id) {
+		log.debug("Received status request with restaurantid " + id);
+		double rnd = Math.random();
+		RestaurantCapacityResponse resp = new RestaurantCapacityResponse();
+		resp.setCapacityAvailable(rnd > 0.5);
+		return resp;
+	}
+
+	@RequestMapping(value = "/{id}/order",  method = RequestMethod.POST)
+	@ResponseBody
+	public OrderRequestAnswer sendOrder(@PathVariable String id, @RequestBody OrderInProcess order) {
+		log.debug("Received order with restaurantid " + id + " and order " + order);
+
+		log.debug("Successfully mapped to: " + order);
+		double rnd = Math.random();
+		return rnd < 0.5 ? OrderRequestAnswer.accepted : OrderRequestAnswer.rejected;
+	}
 }
