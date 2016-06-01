@@ -46,7 +46,7 @@ public class QueryRestaurantBean {
         }
 
         if (exchange.getIn().getHeader("orderState") != OrderState.REJECTED_NO_RESTAURANTS) {
-            exchange.getIn().setHeader("orderState", OrderState.RESTAURANT_SELECT);
+            exchange.getIn().setHeader("orderState", OrderState.FULLFILLED);
         }
         /*contains all restaurant ids for capacity check*/
         exchange.getIn().setHeader("restaurants", restaurantIds);

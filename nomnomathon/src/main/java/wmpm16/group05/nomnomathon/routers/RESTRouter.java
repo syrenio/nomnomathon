@@ -141,22 +141,28 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:extractHungryDish")
                 .bean(RandomDishBean.class)
-                .to("direct:enrichOrderData")
+                .to("direct:checkRestaurantsAvailability")
                 .end();
 
         from("direct:extractRegularDish")
                 .enrich("direct:pollOrder", new DishesOrderAggregation())
                 .bean(QueryRestaurantBean.class)
+                .to("direct:checkRestaurantsAvailability")
                 .end();
 
-        from("direct:enrichOrderData")
-                .enrich("direct:pollOrder", new DishesOrderAggregation())
-                .to("direct:rejectOrder")
-                .end();
 
         /*poll order data from SQL DB*/
         from("direct:pollOrder")
                 .bean(PollOrder.class);
+
+        from("direct:checkRestaurantsAvailability")
+                .choice()
+                    .when(header("orderState").isEqualTo(OrderState.FULLFILLED))
+                        .to("direct:requestCapacity")
+                    .when((header("orderState").isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
+                        .to("direct:rejectOrder")
+                .end();
+
 
         /* TODO scatter-gather*/
         from("direct:requestCapacity")

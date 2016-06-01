@@ -20,25 +20,27 @@ import java.util.List;
 public class RandomDishBean {
 
     private Menu selectedDish;
-    private RestaurantData selectedRestaurant;
+    private List<RestaurantData> selectedRestaurant;
 
     public void process(Exchange exchange) {
         ArrayList<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
+        selectedRestaurant = new ArrayList<>();
         selectRandomRestaurant(restaurants);
-        exchange.getIn().setHeader("restaurantId", selectedRestaurant.get_id());
-        exchange.getIn().setHeader("restaurantName", selectedRestaurant.getName());
+        exchange.getIn().setHeader("restaurantId", selectedRestaurant.get(0).get_id());
+        exchange.getIn().setHeader("restaurantName", selectedRestaurant.get(0).getName());
         exchange.getIn().setHeader("dishName", selectedDish.getName());
         exchange.getIn().setHeader("dishPrice", selectedDish.getPrice());
+        exchange.getIn().setHeader("orderState", OrderState.FULLFILLED);
         System.out.println("restaurant: "+exchange.getIn().getHeader("restaurantName")+", "+exchange.getIn().getHeader("dishName"));
     }
 
     private void selectRandomRestaurant(ArrayList<RestaurantData> restaurants) {
-        selectedRestaurant = restaurants.get(calculateRandomValue(0, restaurants.size()-1));
+        selectedRestaurant.add(restaurants.get(calculateRandomValue(0, restaurants.size()-1)));
         selectRandomDish();
     }
 
     private void selectRandomDish() {
-        ArrayList<Menu> dishes = selectedRestaurant.getMenu();
+        ArrayList<Menu> dishes = selectedRestaurant.get(0).getMenu();
         selectedDish = dishes.get(calculateRandomValue(0, dishes.size()-1));
     }
 
