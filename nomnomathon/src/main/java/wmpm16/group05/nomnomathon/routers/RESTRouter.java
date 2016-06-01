@@ -148,6 +148,42 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:rejectOrder")
                 .end();
 
+        /* TODO scatter-gather*/
+        from("direct:requestCapacity")
+                /* TODO HTTP Call (multiple) */
+                /* TODO Aggregator to one List */
+                .to("direct:checkRestaurantAvailable");
+
+        /* TODO If one or more restaurants are available ,  ACCEPT OR REJECT*/
+        from("direct:checkRestaurantAvailable")
+                .choice()
+                .when(simple("${in.body.size} > 0")).to("direct:selectBestFitRestaurant")
+                .otherwise().to("direct:rejectOrder")
+                .end();
+
+        /* TODO select best restaurant for this order*/
+        from("direct:selectBestFitRestaurant")
+                .to("direct:checkCreditCard");
+
+        /* TODO */
+        from("direct:checkCreditCard")
+                /* TODO HTTP (mocked)*/
+                .choice()
+                .when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
+                .otherwise().to("direct:rejectOrder")
+                .end();
+
+        from("direct:sendOrderToRestaurant")
+                /* TODO HTTP */
+                .to("direct:updateOrder");
+
+        from("direct:updateOrder")
+                /* TODO Update order in db*/
+                .to("direct:finishOrder");
+
+        from("direct:finishOrder")
+                /* TODO set stuff for notification*/
+                .to("direct:notifyCustomer");
 
         /*reject order, update DB*/
         from("direct:rejectOrder")
