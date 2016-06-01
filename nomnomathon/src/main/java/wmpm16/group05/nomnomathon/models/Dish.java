@@ -10,8 +10,6 @@ public class Dish {
 	@GeneratedValue
 	private long id;
     private String dishName;
-    private long dishId;
-    private double quantity;
     private double price;
     
 	public String getDish() {
@@ -20,22 +18,6 @@ public class Dish {
 	
 	public void setDish(String dish) {
 		this.dishName = dish;
-	}
-	
-	public long getDishId() {
-		return dishId;
-	}
-	
-	public void setDishId(long dishId) {
-		this.dishId = dishId;
-	}
-	
-	public double getQuantity() {
-		return quantity;
-	}
-	
-	public void setQuantity(double quantity) {
-		this.quantity = quantity;
 	}
 	
 	public double getPrice() {
@@ -48,8 +30,7 @@ public class Dish {
 	
 	@Override
 	public String toString() {
-		return "Dish [dishName=" + dishName + ", dishId=" + dishId + ", quantity=" + quantity + ", price=" + price
-				+ "]";
+		return "Dish [dishName=" + dishName  + ", price=" + price + "]";
 	}
 
 }
