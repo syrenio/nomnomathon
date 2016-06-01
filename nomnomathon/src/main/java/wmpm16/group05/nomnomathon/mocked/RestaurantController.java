@@ -1,6 +1,7 @@
 package wmpm16.group05.nomnomathon.mocked;
 
 import org.apache.log4j.Logger;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,11 +20,12 @@ import java.io.IOException;
  * Created by syrenio on 04/05/16.
  */
 @RestController
+@RequestMapping("/external/restaurants")
 public class RestaurantController {
 
 	private final Logger log = Logger.getLogger(RestaurantController.class);
 
-	@RequestMapping(value = "/external/restaurants/{id}/capacity", method = RequestMethod.GET)
+	@RequestMapping(value = "/{id}/capacity", method = RequestMethod.GET)
 	@ResponseBody
 	public RestaurantCapacityResponse getRestaurant(@PathVariable String id) {
 		log.debug("Received status request with restaurantid " + id);
@@ -33,20 +35,12 @@ public class RestaurantController {
 		return resp;
 	}
 
-	@RequestMapping(value = "/external/restaurants/{id}/order", method = RequestMethod.POST)
+	@RequestMapping(value = "/{id}/order",  method = RequestMethod.POST)
 	@ResponseBody
-	public OrderRequestAnswer sendOrder(@PathVariable String id, @RequestBody String order) {
+	public OrderRequestAnswer sendOrder(@PathVariable String id, @RequestBody OrderInProcess order) {
 		log.debug("Received order with restaurantid " + id + " and order " + order);
 
-		ObjectMapper mapper = new ObjectMapper();
-		try {
-			OrderInProcess orderObj = mapper.readValue(order, OrderInProcess.class);
-			log.debug("Successfully mapped to: " + orderObj);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			log.debug("ERRROR Mapping!");
-			e.printStackTrace();
-		}
+		log.debug("Successfully mapped to: " + order);
 		double rnd = Math.random();
 		return rnd < 0.5 ? OrderRequestAnswer.accepted : OrderRequestAnswer.rejected;
 	}

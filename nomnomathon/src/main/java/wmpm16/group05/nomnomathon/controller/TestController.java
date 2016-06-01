@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.camel.CamelContext;
+import org.apache.camel.Exchange;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -71,7 +72,10 @@ public class TestController {
 
 				@Override
 				public void configure() throws Exception {
-					from("direct:testRestaurantStatus").marshal().json(JsonLibrary.Jackson).setHeader("Exchange.HTTP_METHOD", constant("GET")).to("http://localhost:8080/external/restaurants/pizzza/capacity");
+					from("direct:testRestaurantStatus")
+							.marshal().json(JsonLibrary.Jackson)
+							.setHeader("Exchange.HTTP_METHOD", constant("GET"))
+							.to("http://localhost:8080/external/restaurants/pizzza/capacity");
 					
 				}});
 			log.debug("ROUTE added");
@@ -98,7 +102,15 @@ public class TestController {
 
 				@Override
 				public void configure() throws Exception {
-					from("direct:testRestaurantOrder").to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG").marshal().json(JsonLibrary.Jackson).to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG").to("http://localhost:8080/external/restaurants/pizzza/order").unmarshal().json(JsonLibrary.Jackson, OrderRequestAnswer.class).to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG");
+					from("direct:testRestaurantOrder")
+							.to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG")
+							.marshal().json(JsonLibrary.Jackson)
+							.setHeader(Exchange.HTTP_METHOD, constant("POST"))
+							.setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
+							.to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG")
+							.to("http://localhost:8080/external/restaurants/pizzza/order")
+							.unmarshal().json(JsonLibrary.Jackson, OrderRequestAnswer.class)
+							.to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG");
 					
 				}});
 			log.debug("ROUTE added");
