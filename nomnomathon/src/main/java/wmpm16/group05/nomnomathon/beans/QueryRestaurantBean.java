@@ -3,8 +3,11 @@ package wmpm16.group05.nomnomathon.beans;
 import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import org.apache.camel.Exchange;
+import org.apache.camel.component.mail.MailBinding;
 import org.apache.log4j.Logger;
 import org.springframework.stereotype.Component;
+import wmpm16.group05.nomnomathon.domain.Menu;
+import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
@@ -20,43 +23,33 @@ import java.util.List;
 public class QueryRestaurantBean {
 
     public void process(Exchange exchange) {
-        System.out.println("query restaurant");
-        OrderInProcess order = exchange.getIn().getHeader("order", OrderInProcess.class);
-        List<Dish> dishesInOrder = order.getDishes();
-
-        List<BasicDBObject> restaurants = exchange.getIn().getBody(ArrayList.class);
-        System.out.println("results: " + restaurants.size() + " restaurant/s found");
-
-
-        List<BasicDBObject> dishes = new ArrayList<>();
-        BasicDBList menu = new BasicDBList();
-        for (BasicDBObject obj : restaurants) {
-            menu = (BasicDBList) obj.get("menu");
-        }
-        for (Object m : menu) {
-            dishes.add((BasicDBObject) m);
-        }
-
-        List<String> dishesName = new ArrayList<>();
-
-        for (BasicDBObject l : dishes) {
-            dishesName.add((String) l.get("name"));
-        }
-
-        for (Dish d : dishesInOrder) {
-            if(dishesName.contains(d.getDish())){
-                System.out.println(d.getDish()+" can be delivered");
-            }else{
-                System.out.println(d.getDish()+" cannot be delivered: no suitable restaurant found --> Order rejected");
-                exchange.getIn().setHeader("orderState", OrderState.REJECTED_NO_RESTAURANTS);
+        ArrayList<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
+        List<String> dishesInOrder = exchange.getIn().getHeader("dishesOrder", ArrayList.class);
+        List<Integer> restaurantIds = new ArrayList<>();
+        List<String> dishesToDeliver = new ArrayList<>();
+        for (String d : dishesInOrder) {
+            for (RestaurantData r : restaurants) {
+                List<Menu> menu = r.getMenu();
+                List<String> dishes = new ArrayList<>();
+                for (Menu m : menu) {
+                    dishes.add(m.getName());
+                }
+                if (dishes.contains(d)) {
+                    dishesToDeliver.add(d);
+                    if (!restaurantIds.contains(r.get_id())) {
+                        restaurantIds.add(r.get_id());
+                    }
+                } else {
+                    exchange.getIn().setHeader("orderState", OrderState.REJECTED_NO_RESTAURANTS);
+                }
             }
         }
-        
-        if (exchange.getIn().getHeader("orderState") != OrderState.REJECTED_NO_RESTAURANTS) {
-        	exchange.getIn().setHeader("orderState", OrderState.RESTAURANT_SELECT);
-        }
-        
 
+        if (exchange.getIn().getHeader("orderState") != OrderState.REJECTED_NO_RESTAURANTS) {
+            exchange.getIn().setHeader("orderState", OrderState.RESTAURANT_SELECT);
+        }
+        /*contains all restaurant ids for capacity check*/
+        exchange.getIn().setHeader("restaurants", restaurantIds);
     }
 
 
