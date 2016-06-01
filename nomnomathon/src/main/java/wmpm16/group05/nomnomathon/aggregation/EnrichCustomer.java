@@ -29,8 +29,8 @@ public class EnrichCustomer implements AggregationStrategy{
 			orderRequest.getDishes().forEach((String dishName) -> order.addDish(dishName));
 		}
 		
-		if (orderRequest.getRestaurantId() != null) {
-			order.setRestaurantidoptional(orderRequest.getRestaurantId());
+		if (orderRequest.getRestaurantId() != null && orderRequest.getRestaurantId().isPresent()) {
+			order.setRestaurantId(orderRequest.getRestaurantId().get());
 		}
 		
 		// Exchange transform OrderRequest to Order 

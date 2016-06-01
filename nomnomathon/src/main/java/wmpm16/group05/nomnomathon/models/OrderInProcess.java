@@ -22,7 +22,7 @@ public class OrderInProcess {
 	private OrderState state;
 	@ManyToOne
 	private Customer customer;
-	private Long restaurantid;
+	private Long restaurantId;
 	@ManyToMany
 	private List<Dish> dishes = new ArrayList<Dish>();
 
@@ -37,7 +37,7 @@ public class OrderInProcess {
 		result = prime * result + ((customer == null) ? 0 : customer.hashCode());
 		result = prime * result + ((dishes == null) ? 0 : dishes.hashCode());
 		result = prime * result + ((orderId == null) ? 0 : orderId.hashCode());
-		result = prime * result + ((restaurantid == null) ? 0 : restaurantid.hashCode());
+		result = prime * result + ((restaurantId == null) ? 0 : restaurantId.hashCode());
 		result = prime * result + ((state == null) ? 0 : state.hashCode());
 		return result;
 	}
@@ -66,10 +66,10 @@ public class OrderInProcess {
 				return false;
 		} else if (!orderId.equals(other.orderId))
 			return false;
-		if (restaurantid == null) {
-			if (other.restaurantid != null)
+		if (restaurantId == null) {
+			if (other.restaurantId != null)
 				return false;
-		} else if (!restaurantid.equals(other.restaurantid))
+		} else if (!restaurantId.equals(other.restaurantId))
 			return false;
 		if (state != other.state)
 			return false;
@@ -96,15 +96,6 @@ public class OrderInProcess {
 		this.customer = customer;
 	}
 
-	@JsonIgnore
-	public Optional<Long> getRestaurantidoptional() {
-		return Optional.ofNullable(restaurantid);
-	}
-
-	public void setRestaurantidoptional(Optional<Long> restaurantid) {
-		this.restaurantid = restaurantid.get() != null ? restaurantid.get() : null;
-	}
-
 	public List<Dish> getDishes() {
 		return dishes;
 	}
@@ -115,20 +106,20 @@ public class OrderInProcess {
 
 	@Override
 	public String toString() {
-		return "Order [orderId=" + orderId + ", state=" + state + ", customer=" + customer + ", restaurantid="
-				+ restaurantid + ", dishes=" + dishes + "]";
+		return "Order [orderId=" + orderId + ", state=" + state + ", customer=" + customer + ", restaurantId="
+				+ restaurantId + ", dishes=" + dishes + "]";
 	}
 
 	public void setOrderId(Long orderId) {
 		this.orderId = orderId;
 	}
 
-	public void setRestaurantid(Long restaurantid) {
-		this.restaurantid = restaurantid;
+	public void setRestaurantId(Long restaurantid) {
+		this.restaurantId = restaurantid;
 	}
 	
-	public Long getRestaurantid() {
-		return this.restaurantid;
+	public Long getRestaurantId() {
+		return this.restaurantId;
 	}
 
 	public void proceed(OrderState state) {
