@@ -21,6 +21,7 @@ public class RestaurantDataConverter {
         BasicDBObject objectRestaurant = exchange.getIn().getBody(BasicDBObject.class);
         RestaurantData data = new RestaurantData();
         data.set_id((int) objectRestaurant.get("_id"));
+        data.setName((String) objectRestaurant.get("name"));
         data.setLocation((String) objectRestaurant.get("location"));
         data.setOpening((String) objectRestaurant.get("opening"));
         data.setClosing((String) objectRestaurant.get("closing"));
