@@ -4,12 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
+import javax.persistence.*;
 
 @Entity
 public class OrderInProcess {
@@ -21,7 +16,7 @@ public class OrderInProcess {
 	@ManyToOne
 	private Customer customer;
 	private Long restaurantid;
-	@ManyToMany
+	@OneToMany(fetch = FetchType.EAGER)
 	private List<Dish> dishes = new ArrayList<Dish>();
 
 	public Long getOrderId() {
@@ -69,9 +64,7 @@ public class OrderInProcess {
 				return false;
 		} else if (!restaurantid.equals(other.restaurantid))
 			return false;
-		if (state != other.state)
-			return false;
-		return true;
+		return state == other.state;
 	}
 
 	public void setOrderId(long orderId) {
