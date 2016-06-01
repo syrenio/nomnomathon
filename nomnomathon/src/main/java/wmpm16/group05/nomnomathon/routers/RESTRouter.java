@@ -97,40 +97,57 @@ public class RESTRouter extends RouteBuilder {
                 .bean(PollCustomerFromOrder.class);
 
         /*store order in DB*/
-        from("direct:storeOrder").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.before?level=DEBUG")
+        from("direct:storeOrder")
                 .bean(StoreOrderBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
-                .choice()
-                .when(header("type").isEqualTo(OrderType.SMS))
-                .to("direct:hungryDish")
-                .otherwise()
-                .to("direct:queryRestaurants")
-                .end();
+                    .choice()
+                        .when(header("type").isEqualTo(OrderType.SMS))
+                            .to("direct:hungryDish")
+                        .otherwise()
+                            .to("direct:queryRestaurants")
+                    .end();
 
         from("direct:hungryDish")
                 .setBody().simple("{ \"menu.price\": { $gt: 0, $lt: 20 }}")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll")
-                    .split(body())
-                    .bean(RestaurantDataConverter.class)
-                    .aggregate(constant(true), new RestaurantDataAggregation()).completionSize(5)
-                //constant ist needed in order to aggregate all messages into a single message
-                //stops aggregation when we have 5 restaurants aggregated (static value - maybe predicate helps)
-                    .bean(RandomDishBean.class)
-                    .end()
-                .setHeader("orderState").constant(OrderState.FULLFILLED) // just for DEMO without second part of process
-                .to("direct:rejectOrder");
+                .to("direct:splitRestaurants");
 
 
         /*query restaurants for dishes*/
         from("direct:queryRestaurants")
-                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.queryRestaurants?level=DEBUG")
                 .bean(ExtractDishRestaurantBean.class)
                 .to("direct:findAll");
 
         from("direct:findAll")
                 .setBody().simple("{\"menu.name\":{ $in: [${header.dishNames}]}}").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
+                .to("direct:splitRestaurants");
+
+
+        from("direct:splitRestaurants")
+                .split(body())
+                    .bean(RestaurantDataConverter.class)
+                    .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(10)
+                     //constant ist needed in order to aggregate all messages into a single message
+                     //stops aggregation after 10 milliseconds
+                    .choice()
+                        .when(header("type").isEqualTo(OrderType.SMS))
+                            .to("direct:extractHungryDish")
+                        .when(header("type").isEqualTo(OrderType.REGULAR))
+                            .to("direct:extractRegularDish")
+                    .end()
+                .end();
+
+
+        from("direct:extractHungryDish")
+                .bean(RandomDishBean.class)
+                .to("direct:rejectOrder")
+                .end();
+
+        from("direct:extractRegularDish")
                 .bean(QueryRestaurantBean.class)
-                .to("direct:rejectOrder");
+                .to("direct:rejectOrder")
+                .end();
+
 
         /*reject order, update DB*/
         from("direct:rejectOrder")
@@ -142,7 +159,7 @@ public class RESTRouter extends RouteBuilder {
                 .filter(header("orderState").isEqualTo(OrderState.RESTAURANT_SELECT))
                 .setHeader("orderState").constant(OrderState.FULLFILLED) // just for DEMO without second part of process
                 .end()
-             //   .wireTap("direct:sendCustomerNotification")
+                .wireTap("direct:sendCustomerNotification")
                 .process(x -> {
                     System.out.println(x.getIn().getBody());
                 });

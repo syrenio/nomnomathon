@@ -18,7 +18,7 @@ import java.util.List;
  */
 @Component
 public class RandomDishBean {
-//sammeln aller Restaurants (extra bean)
+
     private Menu selectedDish;
     private RestaurantData selectedRestaurant;
 
