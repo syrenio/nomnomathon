@@ -11,6 +11,7 @@ import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.springframework.stereotype.Component;
+import wmpm16.group05.nomnomathon.aggregation.DishesOrderAggregation;
 import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
 import wmpm16.group05.nomnomathon.aggregation.RestaurantDataAggregation;
 import wmpm16.group05.nomnomathon.beans.*;
@@ -140,13 +141,22 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:extractHungryDish")
                 .bean(RandomDishBean.class)
-                .to("direct:rejectOrder")
+                .to("direct:enrichOrderData")
                 .end();
 
         from("direct:extractRegularDish")
+                .enrich("direct:pollOrder", new DishesOrderAggregation())
                 .bean(QueryRestaurantBean.class)
+                .end();
+
+        from("direct:enrichOrderData")
+                .enrich("direct:pollOrder", new DishesOrderAggregation())
                 .to("direct:rejectOrder")
                 .end();
+
+        /*poll order data from SQL DB*/
+        from("direct:pollOrder")
+                .bean(PollOrder.class);
 
         /* TODO scatter-gather*/
         from("direct:requestCapacity")
