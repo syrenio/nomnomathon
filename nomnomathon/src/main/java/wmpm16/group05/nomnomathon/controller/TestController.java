@@ -104,11 +104,12 @@ public class TestController {
 				public void configure() throws Exception {
 					from("direct:testRestaurantOrder")
 							.to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG")
+							.setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/restaurants/${body.restaurantId}/order"))
 							.marshal().json(JsonLibrary.Jackson)
 							.setHeader(Exchange.HTTP_METHOD, constant("POST"))
 							.setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
 							.to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG")
-							.to("http://localhost:8080/external/restaurants/pizzza/order")
+							.to("http://dummyhost")
 							.unmarshal().json(JsonLibrary.Jackson, OrderRequestAnswer.class)
 							.to("log:wmpm16.group05.nomnomathon.controller.TestController.TestOrder?level=DEBUG");
 					
@@ -123,6 +124,7 @@ public class TestController {
 		order.addDish("Pizza");
 		order.setState(OrderState.CREATED);
 		order.setOrderId(123L);
+		order.setRestaurantId(123L);
 		
 		log.debug(order);
 		
