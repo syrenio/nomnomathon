@@ -3,8 +3,12 @@ package wmpm16.group05.nomnomathon.routers;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.mongodb.BasicDBObject;
+
+import java.util.List;
+
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.apache.camel.Expression;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -19,6 +23,7 @@ import wmpm16.group05.nomnomathon.converter.RestaurantDataConverter;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
+import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
 import wmpm16.group05.nomnomathon.models.OrderState;
@@ -31,9 +36,7 @@ import wmpm16.group05.nomnomathon.models.OrderState;
 @Component
 public class RESTRouter extends RouteBuilder {
 
-
-
-    @Override
+	@Override
     public void configure() throws Exception {
 
         restConfiguration()
@@ -155,6 +158,14 @@ public class RESTRouter extends RouteBuilder {
         from("direct:pollOrder")
                 .bean(PollOrder.class);
 
+        /**
+         * MAINTAINER: 
+         * PRECONDITIONS
+         * - BODY
+         * -- 
+         * - HEADER
+         * --
+         */
         from("direct:checkRestaurantsAvailability")
                 .choice()
                     .when(header("orderState").isEqualTo(OrderState.FULLFILLED))
@@ -165,12 +176,50 @@ public class RESTRouter extends RouteBuilder {
 
 
         /* TODO scatter-gather*/
+        /**
+         * MAINTAINER: MWEIK
+         * PRECONDITIONS
+         * - BODY
+         * -- A List<RestaurantData> of all MATCHING Restaurants
+         * - HEADER
+         * -- orderId : Id of the order
+         * - HEADER
+         * --
+         */
+        Processor p = new Processor() {
+			
+			@SuppressWarnings("unchecked")
+			@Override
+			public void process(Exchange arg0) throws Exception {
+				//TODO Finalize task...
+				arg0.getIn(List.class).stream().filter(o -> o instanceof RestaurantData).map(rd -> (RestaurantData) rd);
+				
+				
+			}
+		};
+        
         from("direct:requestCapacity")
                 /* TODO HTTP Call (multiple) */
+        		.process(p)
+        		.recipientList(header("matching-restaurants"))
                 /* TODO Aggregator to one List */
                 .to("direct:checkRestaurantAvailable");
-
+  
+        
+        
+        		
         /* TODO If one or more restaurants are available ,  ACCEPT OR REJECT*/
+        /**
+         * MAINTAINER: 
+         * PRECONDITIONS
+         * - BODY
+         * -- A List<RestaurantData> of AVAILABLE Restaurants
+         * - HEADER
+         * -- orderId : Id of the order
+         * POSTCONDITIONS
+         * - BODY
+         * -- An OrderInProcess with restaurant an dishes with prices.
+         */
         from("direct:checkRestaurantAvailable")
                 .choice()
                 .when(simple("${in.body.size} > 0")).to("direct:selectBestFitRestaurant")
@@ -182,6 +231,14 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:checkCreditCard");
 
         /* TODO */
+        /**
+         * MAINTAINER: MWEIK
+         * PRECONDITIONS
+         * - BODY
+         * -- 
+         * - HEADER
+         * --
+         */
         from("direct:checkCreditCard")
                 /* TODO HTTP (mocked)*/
                 .choice()
