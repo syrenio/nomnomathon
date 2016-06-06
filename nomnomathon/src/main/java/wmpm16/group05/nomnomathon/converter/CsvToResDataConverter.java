@@ -1,4 +1,4 @@
-package wmpm16.group05.nomnomathon.beans.translators;
+package wmpm16.group05.nomnomathon.converter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,7 @@ import wmpm16.group05.nomnomathon.domain.RestaurantData;
 
 @Component("ConvertToResDataBean")
 
-public class ResDataConverter {
+public class CsvToResDataConverter {
 	private List<String> dataList;
 	private ArrayList<String> categories;
 	private ArrayList<Menu> menuItems;

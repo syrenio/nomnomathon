@@ -14,7 +14,7 @@ import java.util.ArrayList;
  * Created by Agnes on 31.05.16.
  */
 @Component
-public class RestaurantDataConverter {
+public class DBObjectToResDataConverter {
 
 
     public void process(Exchange exchange) {

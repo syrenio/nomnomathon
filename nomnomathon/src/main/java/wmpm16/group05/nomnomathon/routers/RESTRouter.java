@@ -19,7 +19,7 @@ import wmpm16.group05.nomnomathon.aggregation.DishesOrderAggregation;
 import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
 import wmpm16.group05.nomnomathon.aggregation.RestaurantDataAggregation;
 import wmpm16.group05.nomnomathon.beans.*;
-import wmpm16.group05.nomnomathon.converter.RestaurantDataConverter;
+import wmpm16.group05.nomnomathon.converter.DBObjectToResDataConverter;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
@@ -129,7 +129,7 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:splitRestaurants")
                 .split(body())
-                    .bean(RestaurantDataConverter.class)
+                    .bean(DBObjectToResDataConverter.class)
                     .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(10)
                      //constant ist needed in order to aggregate all messages into a single message
                      //stops aggregation after 10 milliseconds
