@@ -4,15 +4,18 @@ package wmpm16.group05.nomnomathon.domain;
  * Created by syrenio on 5/4/2016.
  */
 public class RestaurantCapacityResponse {
-        private boolean capacityAvailable;
+        @Override
+	public String toString() {
+		return "RestaurantCapacityResponse [capacityAvailable=" + capacityAvailable + ", restaurantId=" + restaurantId
+				+ ", requestid=" + requestid + "]";
+	}
+		private boolean capacityAvailable;
         private Long restaurantId;
         private Long requestid;
 
-        public RestaurantCapacityResponse(boolean capacityAvailable, Long restaurantId, Long requestId) {
+        public RestaurantCapacityResponse() {
 			super();
-			this.capacityAvailable = capacityAvailable;
-			this.restaurantId = restaurantId;
-			this.requestid = requestId;
+			
 		}
         public RestaurantCapacityResponse(Long restaurantId, Long requestid) {
 			super();

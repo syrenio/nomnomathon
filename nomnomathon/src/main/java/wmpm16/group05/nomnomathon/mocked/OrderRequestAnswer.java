@@ -2,6 +2,10 @@ package wmpm16.group05.nomnomathon.mocked;
 
 public class OrderRequestAnswer {
 	
+	@Override
+	public String toString() {
+		return "OrderRequestAnswer [answer=" + answer + ", restaurantId=" + restaurantId + ", orderId=" + orderId + "]";
+	}
 	public enum OrderRequestState {
 		accepted, rejected;
 	}

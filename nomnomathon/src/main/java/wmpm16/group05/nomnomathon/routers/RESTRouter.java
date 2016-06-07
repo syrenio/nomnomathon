@@ -1,8 +1,13 @@
 package wmpm16.group05.nomnomathon.routers;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicLong;
 import org.apache.camel.Exchange;
@@ -199,10 +204,26 @@ public class RESTRouter extends RouteBuilder {
 			@Override
 			public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
 				log.debug("Received answers: " + oldExchange + " / " + newExchange + " from " + newExchange.getProperty(Exchange.RECIPIENT_LIST_ENDPOINT, String.class));
-		        OrderRequestAnswer newBody = newExchange.getIn().getBody(OrderRequestAnswer.class);
-		        ArrayList<OrderRequestAnswer> list = null;
+				String value = newExchange.getIn().getBody(String.class);
+				log.debug(value);
+		        ObjectMapper mapper = new ObjectMapper();
+		       
+		        RestaurantCapacityResponse newBody = null;
+				try {
+					newBody = mapper.readValue(value, RestaurantCapacityResponse.class);
+				} catch (JsonParseException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JsonMappingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		        ArrayList<RestaurantCapacityResponse> list = null;
 		        if (oldExchange == null) {
-		            list = new ArrayList<OrderRequestAnswer>();
+		            list = new ArrayList<RestaurantCapacityResponse>();
 		            list.add(newBody);
 		            newExchange.getIn().setBody(list);
 		            return newExchange;
@@ -218,10 +239,11 @@ public class RESTRouter extends RouteBuilder {
         		.process(new MatchingRestaurantsToReceipientListProcessor())
         		/* load order */
         		.to("direct:pollOrder")
+        		.setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
         		.recipientList(header(MATCHING_RESTAURANTS))
                 /* Aggregate */
         		//xpath("/RestaurantCapacityResponse/requestid"
-        		.aggregate(constant("/RestaurantCapacityResponse/requestid"),strategy).completionTimeout(2000L).completionSize(header(MATCHING_RESTAURANTS_SIZE))
+        		.aggregationStrategy(strategy)
         		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
         		.process(new Processor() {
 					

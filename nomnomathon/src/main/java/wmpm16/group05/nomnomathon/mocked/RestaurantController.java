@@ -23,7 +23,7 @@ public class RestaurantController {
 
 	private final Logger log = Logger.getLogger(RestaurantController.class);
 
-	@RequestMapping(value = "/{id}/{requestid}/capacity", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
+	@RequestMapping(value = "/{id}/{requestid}/capacity", method = RequestMethod.GET)
 	@ResponseBody
 	public RestaurantCapacityResponse getRestaurant(@PathVariable String id, @PathVariable String requestid) {
 		log.debug("Received status request with restaurantid " + id + " and requestid " + requestid);
