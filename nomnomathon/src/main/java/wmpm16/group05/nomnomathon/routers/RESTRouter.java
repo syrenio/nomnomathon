@@ -198,7 +198,7 @@ public class RESTRouter extends RouteBuilder {
 			@SuppressWarnings("unchecked")
 			@Override
 			public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-				log.debug("Received answers: " + oldExchange + " / " + newExchange);
+				log.debug("Received answers: " + oldExchange + " / " + newExchange + " from " + newExchange.getProperty(Exchange.RECIPIENT_LIST_ENDPOINT, String.class));
 		        OrderRequestAnswer newBody = newExchange.getIn().getBody(OrderRequestAnswer.class);
 		        ArrayList<OrderRequestAnswer> list = null;
 		        if (oldExchange == null) {
@@ -220,8 +220,17 @@ public class RESTRouter extends RouteBuilder {
         		.to("direct:pollOrder")
         		.recipientList(header(MATCHING_RESTAURANTS))
                 /* Aggregate */
-        		.aggregate(xpath("/RestaurantCapacityResponse/requestid"),strategy).completionTimeout(2000L).completionSize(header(MATCHING_RESTAURANTS_SIZE))
+        		//xpath("/RestaurantCapacityResponse/requestid"
+        		.aggregate(constant("/RestaurantCapacityResponse/requestid"),strategy).completionTimeout(2000L).completionSize(header(MATCHING_RESTAURANTS_SIZE))
         		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
+        		.process(new Processor() {
+					
+					@Override
+					public void process(Exchange arg0) throws Exception {
+						log.debug(arg0.getProperty("CamelAggregatedCompletedBy", String.class));
+						
+					}
+				})
         		.to("direct:checkRestaurantAvailable");
   
         

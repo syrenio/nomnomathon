@@ -26,7 +26,7 @@ public class RestaurantController {
 	@RequestMapping(value = "/{id}/{requestid}/capacity", method = RequestMethod.GET, produces = MediaType.APPLICATION_XML_VALUE)
 	@ResponseBody
 	public RestaurantCapacityResponse getRestaurant(@PathVariable String id, @PathVariable String requestid) {
-		log.debug("Received status request with restaurantid " + id);
+		log.debug("Received status request with restaurantid " + id + " and requestid " + requestid);
 		double rnd = Math.random();
 		RestaurantCapacityResponse resp = new RestaurantCapacityResponse(Long.valueOf(id), Long.valueOf(requestid));
 		resp.setCapacityAvailable(rnd > 0.5);
