@@ -2,11 +2,7 @@ package wmpm16.group05.nomnomathon.models;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
-
 import javax.persistence.*;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class OrderInProcess {

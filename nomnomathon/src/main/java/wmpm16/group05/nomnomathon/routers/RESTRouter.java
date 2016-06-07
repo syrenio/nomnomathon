@@ -2,13 +2,10 @@ package wmpm16.group05.nomnomathon.routers;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.mongodb.BasicDBObject;
 
-import java.util.List;
-
-import org.apache.camel.CamelContext;
+import java.util.ArrayList;
+import java.util.concurrent.atomic.AtomicLong;
 import org.apache.camel.Exchange;
-import org.apache.camel.Expression;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.model.dataformat.JsonLibrary;
@@ -23,9 +20,9 @@ import wmpm16.group05.nomnomathon.converter.RestaurantDataConverter;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
-import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
+import wmpm16.group05.nomnomathon.mocked.OrderRequestAnswer;
 import wmpm16.group05.nomnomathon.models.OrderState;
 
 
@@ -35,6 +32,12 @@ import wmpm16.group05.nomnomathon.models.OrderState;
  */
 @Component
 public class RESTRouter extends RouteBuilder {
+
+	public static final String MATCHING_RESTAURANTS_SIZE = "MATCHING_RESTAURANTS_SIZE";
+	public static final String MATCHING_RESTAURANTS = "matching-restaurants";
+	public static final String MATCHING_REQUEST = "REQUESTID";
+	//THIS IS JUST FOR TESTPURPOSE
+	public static final AtomicLong REQUESTCOUNTER = new AtomicLong();
 
 	@Override
     public void configure() throws Exception {
@@ -175,35 +178,51 @@ public class RESTRouter extends RouteBuilder {
                 .end();
 
 
-        /* TODO scatter-gather*/
         /**
+         * ROUTE: direct:requestCapacity
+         * PATTERN: SCATTER-GETTER
          * MAINTAINER: MWEIK
+         * 
          * PRECONDITIONS
          * - BODY
          * -- A List<RestaurantData> of all MATCHING Restaurants
          * - HEADER
          * -- orderId : Id of the order
-         * - HEADER
-         * --
+         * 
+         * POSTCONDITIONS
+         * - BODY
+         * -- 
          */
-        Processor p = new Processor() {
+ 		AggregationStrategy strategy = new AggregationStrategy() {
 			
 			@SuppressWarnings("unchecked")
 			@Override
-			public void process(Exchange arg0) throws Exception {
-				//TODO Finalize task...
-				arg0.getIn(List.class).stream().filter(o -> o instanceof RestaurantData).map(rd -> (RestaurantData) rd);
-				
-				
-			}
+			public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+				log.debug("Received answers: " + oldExchange + " / " + newExchange);
+		        OrderRequestAnswer newBody = newExchange.getIn().getBody(OrderRequestAnswer.class);
+		        ArrayList<OrderRequestAnswer> list = null;
+		        if (oldExchange == null) {
+		            list = new ArrayList<OrderRequestAnswer>();
+		            list.add(newBody);
+		            newExchange.getIn().setBody(list);
+		            return newExchange;
+		        } else {
+		            list = oldExchange.getIn().getBody(ArrayList.class);
+		            list.add(newBody);
+		            return oldExchange;
+		        }
+		    }
 		};
-        
         from("direct:requestCapacity")
-                /* TODO HTTP Call (multiple) */
-        		.process(p)
-        		.recipientList(header("matching-restaurants"))
-                /* TODO Aggregator to one List */
-                .to("direct:checkRestaurantAvailable");
+                /* create receipientlist */
+        		.process(new MatchingRestaurantsToReceipientListProcessor())
+        		/* load order */
+        		.to("direct:pollOrder")
+        		.recipientList(header(MATCHING_RESTAURANTS))
+                /* Aggregate */
+        		.aggregate(xpath("/RestaurantCapacityResponse/requestid"),strategy).completionTimeout(2000L).completionSize(header(MATCHING_RESTAURANTS_SIZE))
+        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
+        		.to("direct:checkRestaurantAvailable");
   
         
         
