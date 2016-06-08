@@ -7,13 +7,16 @@ import java.util.Optional;
 
 import org.apache.camel.CamelContext;
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.impl.DefaultExchange;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.log4j.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.Order;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -129,12 +132,7 @@ public class TestController {
 
 			log.error(e);
 		}
-		OrderInProcess order = new OrderInProcess();
-		order.addDish("Sushi");
-		order.addDish("Pizza");
-		order.setState(OrderState.CREATED);
-		order.setOrderId(123L);
-		order.setRestaurantId(123L);
+		OrderInProcess order = createOrderInProcess();
 
 		log.debug(order);
 
@@ -151,13 +149,8 @@ public class TestController {
 	public void requestCapacity() {
 		log.debug("START requestcapacity");
 		ProducerTemplate template = context.createProducerTemplate();
-		
-		OrderInProcess order = new OrderInProcess();
-		order.addDish("Sushi");
-		order.addDish("Pizza");
-		order.setState(OrderState.CREATED);
-		order.setOrderId(123L);
-		order.setRestaurantId(123L);
+
+		OrderInProcess order = createOrderInProcess();
 		
 		template.requestBody("direct:storeOrder", order);
 
@@ -180,6 +173,14 @@ public class TestController {
 		log.debug("END requestcapacity");
 	}
 
+	private OrderInProcess createOrderInProcess() {
+		OrderInProcess order = new OrderInProcess();
+		order.addDish("Sushi");
+		order.addDish("Pizza");
+		order.setState(OrderState.CREATED);
+		return order;
+	}
+
 	@RequestMapping("/test/creditCard")
 	@ResponseBody
 	public Object testCreditCard() {
@@ -193,5 +194,29 @@ public class TestController {
 		return ret;
 	}
 
+	@RequestMapping("/test/updateOrder")
+	@ResponseBody
+	public Object testUpdateOrder() {
+		ProducerTemplate template = context.createProducerTemplate();
+
+		OrderInProcess order = createOrderInProcess();
+
+		Exchange exchange = new DefaultExchange(template.getCamelContext());
+
+		exchange.getIn().setBody(order);
+		template.send("direct:storeOrder", exchange);
+
+		Object orderId = exchange.getIn().getHeader("orderId");
+		Object o = template.requestBodyAndHeader("direct:loadOrder", null, "orderId", orderId);
+
+		System.out.println(o);
+
+		order = (OrderInProcess) o;
+		order.setRestaurantId(444L);
+		order.setState(OrderState.FULLFILLED);
+
+		Object ret = template.sendBody("direct:updateOrder", ExchangePattern.InOut, order);
+		return ret;
+	}
 
 }

@@ -29,6 +29,7 @@ import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
 import wmpm16.group05.nomnomathon.mocked.OrderRequestAnswer;
 import wmpm16.group05.nomnomathon.mocked.PaymentRequestAnswer;
+import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
 
 
@@ -308,7 +309,9 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:updateOrder");
 
         from("direct:updateOrder")
-                /* TODO Update order in db*/
+                /* TODO Update order in db, needs more info */
+				.process(x->x.getIn().getBody(OrderInProcess.class).setState(OrderState.FULLFILLED))
+				.bean(UpdateOrderBean.class)
                 .to("direct:finishOrder");
 
         from("direct:finishOrder")
@@ -331,6 +334,10 @@ public class RESTRouter extends RouteBuilder {
                 });
 
         /* Next processes*/
+
+		from("direct:loadOrder")
+				.bean(LoadOrderBean.class)
+				.end();
 
         from("direct:start")
                 .process(new Processor() {
