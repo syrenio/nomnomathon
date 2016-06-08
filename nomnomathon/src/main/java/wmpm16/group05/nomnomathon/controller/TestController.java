@@ -15,6 +15,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import wmpm16.group05.nomnomathon.beans.StoreOrderBean;
@@ -178,5 +179,19 @@ public class TestController {
 
 		log.debug("END requestcapacity");
 	}
+
+	@RequestMapping("/test/creditCard")
+	@ResponseBody
+	public Object testCreditCard() {
+		ProducerTemplate template = context.createProducerTemplate();
+
+		HashMap<String, Object> headers = new HashMap<>();
+		headers.put("creditCard", "123456789");
+		headers.put("amount",123.34d);
+
+		Object ret = template.requestBodyAndHeaders("direct:checkCreditCard", null, headers);
+		return ret;
+	}
+
 
 }

@@ -28,6 +28,7 @@ import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
 import wmpm16.group05.nomnomathon.mocked.OrderRequestAnswer;
+import wmpm16.group05.nomnomathon.mocked.PaymentRequestAnswer;
 import wmpm16.group05.nomnomathon.models.OrderState;
 
 
@@ -280,21 +281,27 @@ public class RESTRouter extends RouteBuilder {
         from("direct:selectBestFitRestaurant")
                 .to("direct:checkCreditCard");
 
+
         /* TODO */
-        /**
-         * MAINTAINER: MWEIK
-         * PRECONDITIONS
-         * - BODY
-         * -- 
-         * - HEADER
-         * --
-         */
-        from("direct:checkCreditCard")
-                /* TODO HTTP (mocked)*/
-                .choice()
-                .when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
-                .otherwise().to("direct:rejectOrder")
-                .end();
+		/**
+		 * MAINTAINER: BeLa
+		 * PRECONDITIONS
+		 * - BODY
+		 * --
+		 * - HEADER
+		 * --creditCard
+		 * --amount
+		 */
+		from("direct:checkCreditCard")
+				.setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/creditcards/${header.creditCard}?amount=${header.amount}"))
+				.setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
+				.to("http://dummyHost")
+				.unmarshal().json(JsonLibrary.Jackson,PaymentRequestAnswer.class)
+				.choice()
+				.when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
+				.otherwise().to("direct:rejectOrder")
+				.end();
+
 
         from("direct:sendOrderToRestaurant")
                 /* TODO HTTP */

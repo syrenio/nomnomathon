@@ -1,5 +1,20 @@
 package wmpm16.group05.nomnomathon.mocked;
 
-public enum PaymentRequestAnswer {
-	accepted, rejected;
+
+public class PaymentRequestAnswer {
+	private Boolean liquid = false;
+
+	public PaymentRequestAnswer(){}
+
+	public PaymentRequestAnswer(Boolean liquid) {
+		this.liquid = liquid;
+	}
+
+	public Boolean getLiquid() {
+		return liquid;
+	}
+
+	public void setLiquid(Boolean liquid) {
+		this.liquid = liquid;
+	}
 }
