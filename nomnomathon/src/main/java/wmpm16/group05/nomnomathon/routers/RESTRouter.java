@@ -58,8 +58,8 @@ public class RESTRouter extends RouteBuilder {
 	public static final String HEADER_RESTAURANT_ID = "restaurantId";
 	public static final String HEADER_DISHES_ORDER = "dishesOrder";
 	public static final String HEADER_DISHES_PRICES = "dishesPrices";
-    public static final String HEADER_ORDER_TOTAL_PRICE_OF_DISHES = "orderTotalPrice";
 	public static final String HEADER_AMOUNT = "amount";
+	public static final String HEADER_ORDER_STATE = "orderState";
 
 	@Override
     public void configure() throws Exception {
@@ -132,7 +132,7 @@ public class RESTRouter extends RouteBuilder {
                         .when(header("type").isEqualTo(OrderType.SMS))
                             .to("direct:hungryDish")
                         .otherwise()
-                            .to("direct:queryRestaurants")
+                            .to("direct:regularDish")
                     .end();
 
         from("direct:hungryDish")
@@ -142,7 +142,7 @@ public class RESTRouter extends RouteBuilder {
 
 
         /*query restaurants for dishes*/
-        from("direct:queryRestaurants")
+        from("direct:regularDish")
                 .bean(ExtractDishRestaurantBean.class)
                 .to("direct:findAll");
 
