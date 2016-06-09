@@ -4,6 +4,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
 import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
+import wmpm16.group05.nomnomathon.routers.RESTRouter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ public class DishesOrderAggregation implements AggregationStrategy {
             dishesInOrderNames.add(d.getDish());
         }
 
-        oldExchange.getIn().setHeader("dishesOrder", dishesInOrderNames);
+        oldExchange.getIn().setHeader(RESTRouter.HEADER_DISHES_ORDER, dishesInOrderNames);
 
         return oldExchange;
     }

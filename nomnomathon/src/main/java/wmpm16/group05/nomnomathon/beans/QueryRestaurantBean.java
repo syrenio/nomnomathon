@@ -11,6 +11,7 @@ import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
+import wmpm16.group05.nomnomathon.routers.RESTRouter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +25,7 @@ public class QueryRestaurantBean {
 
     public void process(Exchange exchange) {
         ArrayList<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
-        List<String> dishesInOrder = exchange.getIn().getHeader("dishesOrder", ArrayList.class);
+        List<String> dishesInOrder = exchange.getIn().getHeader(RESTRouter.HEADER_DISHES_ORDER, ArrayList.class);
         List<Integer> restaurantIds = new ArrayList<>();
         List<String> dishesToDeliver = new ArrayList<>();
         for (String d : dishesInOrder) {

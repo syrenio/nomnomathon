@@ -8,12 +8,18 @@ import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
+
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.http.HttpMethods;
+import org.apache.camel.component.mongodb.MongoDbConstants;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
@@ -50,6 +56,8 @@ public class RESTRouter extends RouteBuilder {
 	//THIS IS JUST FOR TESTPURPOSE
 	public static final AtomicLong REQUESTCOUNTER = new AtomicLong();
 	public static final String HEADER_RESTAURANT_ID = "restaurantId";
+	public static final String HEADER_DISHES_ORDER = "dishesOrder";
+	public static final String HEADER_DISHES_PRICES = "dishesPrices";
 
 	@Override
     public void configure() throws Exception {
@@ -249,9 +257,25 @@ public class RESTRouter extends RouteBuilder {
         /* TODO select best restaurant for this order*/
         from("direct:selectBestFitRestaurant")
 				.process(x->{
-					log.info("selectBestFitRestaurant out of: " + x.getIn().getBody(ArrayList.class).size());
+					/*FIXME*/
 					RestaurantCapacityResponse resp  = (RestaurantCapacityResponse) x.getIn().getBody(ArrayList.class).get(0);
 					x.getIn().setHeader(HEADER_RESTAURANT_ID, resp.getRestaurantId());
+					log.info("selectBestFitRestaurant " + resp.getRestaurantId() + " out of: " + x.getIn().getBody(ArrayList.class).size());
+				})
+				.setBody(header(HEADER_RESTAURANT_ID))
+				.to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById&writeResultAsHeader=true")
+				.process(x->{
+					List<String> dishNames = x.getIn().getHeader(HEADER_DISHES_ORDER,List.class);
+					BasicDBObject rest = x.getIn().getBody(BasicDBObject.class);
+					BasicDBList menu = (BasicDBList) rest.get("menu");
+					BigDecimal sum = new BigDecimal(0d);
+					for (Object entry : menu) {
+						BasicDBObject obj = (BasicDBObject) entry;
+						if(dishNames.contains(obj.getString("name"))){
+							sum = sum.add(BigDecimal.valueOf(obj.getDouble("price")));
+						}
+					}
+					log.info("selectBestFitRestaurant calculate prices " + sum);
 				})
                 .to("direct:checkCreditCard");
 
