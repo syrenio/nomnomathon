@@ -30,7 +30,7 @@ public class RandomDishBean {
         exchange.getIn().setHeader("restaurantName", selectedRestaurant.get(0).getName());
         exchange.getIn().setHeader("dishName", selectedDish.getName());
         exchange.getIn().setHeader("dishPrice", selectedDish.getPrice());
-        exchange.getIn().setHeader("orderState", OrderState.FULLFILLED);
+        exchange.getIn().setHeader("orderState", OrderState.ENRICHED);
         System.out.println("restaurant: "+exchange.getIn().getHeader("restaurantName")+", "+exchange.getIn().getHeader("dishName"));
     }
 

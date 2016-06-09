@@ -182,7 +182,7 @@ public class RESTRouter extends RouteBuilder {
          */
         from("direct:checkRestaurantsAvailability")
                 .choice()
-                    .when(header("orderState").isEqualTo(OrderState.FULLFILLED))
+                    .when(header("orderState").isEqualTo(OrderState.ENRICHED))
                         .to("direct:requestCapacity")
                     .when((header("orderState").isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
                         .to("direct:rejectOrder")
@@ -265,9 +265,6 @@ public class RESTRouter extends RouteBuilder {
 		 * --amount
 		 */
 		from("direct:checkCreditCard")
-				.process(x->{
-					System.out.println(x);
-				})
 				.bean(PrepareForCreditCheckBean.class)
 				.setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/creditcards/${header.creditCard}?amount=${header.amount}"))
 				.setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
@@ -285,8 +282,10 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:updateOrder");
 
         from("direct:updateOrder")
-                /* TODO Update order in db, needs more info */
-				.process(x->x.getIn().getBody(OrderInProcess.class).setState(OrderState.FULLFILLED))
+                /* TODO Update order in db, needs more info*/
+				.process(x->{
+					x.getIn().getBody(OrderInProcess.class).setState(OrderState.FULLFILLED);
+				})
 				.bean(UpdateOrderBean.class)
                 .to("direct:finishOrder");
 
