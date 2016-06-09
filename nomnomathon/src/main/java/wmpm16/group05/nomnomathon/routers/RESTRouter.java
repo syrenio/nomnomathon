@@ -28,10 +28,7 @@ import org.apache.camel.processor.aggregate.AggregationStrategy;
 import org.apache.camel.processor.aggregate.GroupedExchangeAggregationStrategy;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
-import wmpm16.group05.nomnomathon.aggregation.CapacityAggregationStrategy;
-import wmpm16.group05.nomnomathon.aggregation.DishesOrderAggregation;
-import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
-import wmpm16.group05.nomnomathon.aggregation.RestaurantDataAggregation;
+import wmpm16.group05.nomnomathon.aggregation.*;
 import wmpm16.group05.nomnomathon.beans.*;
 import wmpm16.group05.nomnomathon.converter.DBObjectToResDataConverter;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
@@ -61,6 +58,7 @@ public class RESTRouter extends RouteBuilder {
 	public static final String HEADER_RESTAURANT_ID = "restaurantId";
 	public static final String HEADER_DISHES_ORDER = "dishesOrder";
 	public static final String HEADER_DISHES_PRICES = "dishesPrices";
+    public static final String HEADER_ORDER_TOTAL_PRICE_OF_DISHES = "orderTotalPrice";
 	public static final String HEADER_AMOUNT = "amount";
 
 	@Override
@@ -185,14 +183,7 @@ public class RESTRouter extends RouteBuilder {
         from("direct:pollOrder")
                 .bean(PollOrder.class);
 
-        /**
-         * MAINTAINER: 
-         * PRECONDITIONS
-         * - BODY
-         * -- 
-         * - HEADER
-         * --
-         */
+
         from("direct:checkRestaurantsAvailability")
                 .choice()
                     .when(header("orderState").isEqualTo(OrderState.ENRICHED))
@@ -206,13 +197,13 @@ public class RESTRouter extends RouteBuilder {
          * ROUTE: direct:requestCapacity
          * PATTERN: SCATTER-GETTER
          * MAINTAINER: MWEIK
-         * 
+         *
          * PRECONDITIONS
          * - BODY
          * -- A List<RestaurantData> of all MATCHING Restaurants
          * - HEADER
          * -- orderId : Id of the order
-         * 
+         *
          * POSTCONDITIONS
          * - BODY
          * -- 
@@ -238,18 +229,8 @@ public class RESTRouter extends RouteBuilder {
                 })
         		.to("direct:checkRestaurantAvailable");
 
+
         /* TODO If one or more restaurants are available ,  ACCEPT OR REJECT*/
-        /**
-         * MAINTAINER: 
-         * PRECONDITIONS
-         * - BODY
-         * -- A List<RestaurantData> of AVAILABLE Restaurants
-         * - HEADER
-         * -- orderId : Id of the order
-         * POSTCONDITIONS
-         * - BODY
-         * -- An OrderInProcess with restaurant an dishes with prices.
-         */
         from("direct:checkRestaurantAvailable")
                 .choice()
                 .when(simple("${in.body.size} > 0"))
@@ -259,33 +240,17 @@ public class RESTRouter extends RouteBuilder {
                 .end();
 
         /* TODO select best restaurant for this order*/
+        /* MAINTAINER: see issue #19
+         */
         from("direct:selectBestFitRestaurant")
-				.process(x->{
-					/*FIXME*/
-					RestaurantCapacityResponse resp  = (RestaurantCapacityResponse) x.getIn().getBody(ArrayList.class).get(0);
-					x.getIn().setHeader(HEADER_RESTAURANT_ID, resp.getRestaurantId());
-					log.info("selectBestFitRestaurant " + resp.getRestaurantId() + " out of: " + x.getIn().getBody(ArrayList.class).size());
-				})
-				.setBody(header(HEADER_RESTAURANT_ID))
-				.to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById&writeResultAsHeader=true")
-				.process(x->{
-					List<String> dishNames = x.getIn().getHeader(HEADER_DISHES_ORDER,List.class);
-					Map<String,Double> dishesPrices = new HashMap<>();
-					BasicDBObject rest = x.getIn().getBody(BasicDBObject.class);
-					BasicDBList menu = (BasicDBList) rest.get("menu");
-					BigDecimal sum = new BigDecimal(0d);
-					for (Object entry : menu) {
-						BasicDBObject obj = (BasicDBObject) entry;
-						if(dishNames.contains(obj.getString("name"))){
-							sum = sum.add(BigDecimal.valueOf(obj.getDouble("price")));
-							dishesPrices.put(obj.getString("name"),obj.getDouble("price"));
-						}
-					}
-					log.info("selectBestFitRestaurant calculate prices " + sum);
-					x.getIn().setHeader(HEADER_AMOUNT, sum.doubleValue());
-					x.getIn().setHeader(HEADER_DISHES_PRICES, dishesPrices);
-				})
-                .to("direct:checkCreditCard");
+				.split(body()).setBody(simple("${in.body.restaurantId}"))
+				    .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById")
+				        .bean(DBObjectToResDataConverter.class)
+				    .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(100)
+                        .bean(SelectBestFitRestaurantBean.class)
+                        .to("direct:checkCreditCard")
+                .end();
+
 
 
         /* TODO */
