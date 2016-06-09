@@ -9,9 +9,12 @@ import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
+import wmpm16.group05.nomnomathon.routers.RESTRouter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Agnes on 22.05.16.
@@ -26,26 +29,25 @@ public class RandomDishBean {
         ArrayList<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
         selectedRestaurant = new ArrayList<>();
         selectRandomRestaurant(restaurants);
-        exchange.getIn().setHeader("restaurantId", selectedRestaurant.get(0).get_id());
-        exchange.getIn().setHeader("restaurantName", selectedRestaurant.get(0).getName());
-        exchange.getIn().setHeader("dishName", selectedDish.getName());
-        exchange.getIn().setHeader("dishPrice", selectedDish.getPrice());
-        exchange.getIn().setHeader("orderState", OrderState.ENRICHED);
-        System.out.println("restaurant: "+exchange.getIn().getHeader("restaurantName")+", "+exchange.getIn().getHeader("dishName"));
+        Map<String, Double> dishesPrices = new HashMap<>();
+        dishesPrices.put(selectedDish.getName(), selectedDish.getPrice());
+        exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANT_ID, selectedRestaurant.get(0).get_id());
+        exchange.getIn().setHeader(RESTRouter.HEADER_DISHES_PRICES, dishesPrices);
+        exchange.getIn().setHeader(RESTRouter.HEADER_ORDER_STATE, OrderState.ENRICHED);
     }
 
     private void selectRandomRestaurant(ArrayList<RestaurantData> restaurants) {
-        selectedRestaurant.add(restaurants.get(calculateRandomValue(0, restaurants.size()-1)));
+        selectedRestaurant.add(restaurants.get(calculateRandomValue(0, restaurants.size() - 1)));
         selectRandomDish();
     }
 
     private void selectRandomDish() {
         ArrayList<Menu> dishes = selectedRestaurant.get(0).getMenu();
-        selectedDish = dishes.get(calculateRandomValue(0, dishes.size()-1));
+        selectedDish = dishes.get(calculateRandomValue(0, dishes.size() - 1));
     }
 
     private int calculateRandomValue(int min, int max) {
-        int r = min + (int)(Math.random() * ((max - min) + 1));
+        int r = min + (int) (Math.random() * ((max - min) + 1));
         return r;
     }
 }

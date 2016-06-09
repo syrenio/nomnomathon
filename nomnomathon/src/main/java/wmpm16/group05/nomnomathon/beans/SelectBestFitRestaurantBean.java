@@ -25,14 +25,12 @@ public class SelectBestFitRestaurantBean {
         Map<Integer, Integer> restauransTotalPrices = new HashMap<>();
         PriorityQueue<Integer> pricesQueue = new PriorityQueue<>();
         Map<String, Double> dishesPrices = new HashMap<>();
-        BigDecimal sum = new BigDecimal(0d);
         for (RestaurantData r : restaurants) {
             int sumPrices = 0;
             for (Menu m : r.getMenu()) {
                 if (disheNames.contains(m.getName())) {
                     sumPrices += m.getPrice();
                     dishesPrices.put(m.getName(), m.getPrice());
-                    sum = sum.add(BigDecimal.valueOf(m.getPrice()));
                 }
             }
             restauransTotalPrices.put(sumPrices, r.get_id());
@@ -41,9 +39,8 @@ public class SelectBestFitRestaurantBean {
         int bestPrice = pricesQueue.poll();
         int selectedRestaurantId = restauransTotalPrices.get(bestPrice);
 
-        exchange.getIn().setHeader(RESTRouter.HEADER_ORDER_TOTAL_PRICE_OF_DISHES, dishesPrices);
         exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANT_ID, selectedRestaurantId);
-        exchange.getIn().setHeader(RESTRouter.HEADER_AMOUNT, sum.doubleValue());
+        exchange.getIn().setHeader(RESTRouter.HEADER_AMOUNT, bestPrice);
         exchange.getIn().setHeader(RESTRouter.HEADER_DISHES_PRICES, dishesPrices);
     }
 }
