@@ -10,7 +10,9 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
 import com.mongodb.BasicDBList;
@@ -39,6 +41,7 @@ import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
 import wmpm16.group05.nomnomathon.mocked.OrderRequestAnswer;
 import wmpm16.group05.nomnomathon.mocked.PaymentRequestAnswer;
+import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
 
@@ -58,6 +61,7 @@ public class RESTRouter extends RouteBuilder {
 	public static final String HEADER_RESTAURANT_ID = "restaurantId";
 	public static final String HEADER_DISHES_ORDER = "dishesOrder";
 	public static final String HEADER_DISHES_PRICES = "dishesPrices";
+	public static final String HEADER_AMOUNT = "amount";
 
 	@Override
     public void configure() throws Exception {
@@ -266,6 +270,7 @@ public class RESTRouter extends RouteBuilder {
 				.to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById&writeResultAsHeader=true")
 				.process(x->{
 					List<String> dishNames = x.getIn().getHeader(HEADER_DISHES_ORDER,List.class);
+					Map<String,Double> dishesPrices = new HashMap<>();
 					BasicDBObject rest = x.getIn().getBody(BasicDBObject.class);
 					BasicDBList menu = (BasicDBList) rest.get("menu");
 					BigDecimal sum = new BigDecimal(0d);
@@ -273,9 +278,12 @@ public class RESTRouter extends RouteBuilder {
 						BasicDBObject obj = (BasicDBObject) entry;
 						if(dishNames.contains(obj.getString("name"))){
 							sum = sum.add(BigDecimal.valueOf(obj.getDouble("price")));
+							dishesPrices.put(obj.getString("name"),obj.getDouble("price"));
 						}
 					}
 					log.info("selectBestFitRestaurant calculate prices " + sum);
+					x.getIn().setHeader(HEADER_AMOUNT, sum.doubleValue());
+					x.getIn().setHeader(HEADER_DISHES_PRICES, dishesPrices);
 				})
                 .to("direct:checkCreditCard");
 
@@ -314,6 +322,12 @@ public class RESTRouter extends RouteBuilder {
 					OrderInProcess order = x.getIn().getBody(OrderInProcess.class);
 					order.setRestaurantId(x.getIn().getHeader(HEADER_RESTAURANT_ID, Long.class));
 					order.setState(OrderState.FULLFILLED);
+					/*set prices for dishes*/
+					Map<String, Double> dishPrices = x.getIn().getHeader(HEADER_DISHES_PRICES, Map.class);
+					for (Dish dish : order.getDishes()) {
+						Double price = dishPrices.getOrDefault(dish.getDish(), 0d);
+						dish.setPrice(price);
+					}
 				})
 				.bean(UpdateOrderBean.class)
                 .to("direct:finishOrder");
