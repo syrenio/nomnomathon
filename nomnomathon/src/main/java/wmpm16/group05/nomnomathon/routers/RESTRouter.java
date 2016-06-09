@@ -13,10 +13,14 @@ import java.util.concurrent.atomic.AtomicLong;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
+import org.apache.camel.component.http.HttpMethods;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+import org.apache.camel.processor.aggregate.GroupedExchangeAggregationStrategy;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import wmpm16.group05.nomnomathon.aggregation.CapacityAggregationStrategy;
 import wmpm16.group05.nomnomathon.aggregation.DishesOrderAggregation;
 import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
 import wmpm16.group05.nomnomathon.aggregation.RestaurantDataAggregation;
@@ -200,66 +204,27 @@ public class RESTRouter extends RouteBuilder {
          * - BODY
          * -- 
          */
- 		AggregationStrategy strategy = new AggregationStrategy() {
-			
-			@SuppressWarnings("unchecked")
-			@Override
-			public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
-				log.debug("Received answers: " + oldExchange + " / " + newExchange + " from " + newExchange.getProperty(Exchange.RECIPIENT_LIST_ENDPOINT, String.class));
-				String value = newExchange.getIn().getBody(String.class);
-				log.debug(value);
-		        ObjectMapper mapper = new ObjectMapper();
-		       
-		        RestaurantCapacityResponse newBody = null;
-				try {
-					newBody = mapper.readValue(value, RestaurantCapacityResponse.class);
-				} catch (JsonParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JsonMappingException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-		        ArrayList<RestaurantCapacityResponse> list = null;
-		        if (oldExchange == null) {
-		            list = new ArrayList<RestaurantCapacityResponse>();
-		            list.add(newBody);
-		            newExchange.getIn().setBody(list);
-		            return newExchange;
-		        } else {
-		            list = oldExchange.getIn().getBody(ArrayList.class);
-		            list.add(newBody);
-		            return oldExchange;
-		        }
-		    }
-		};
+ 		AggregationStrategy strategy = new CapacityAggregationStrategy();
         from("direct:requestCapacity")
                 /* create receipientlist */
         		.process(new MatchingRestaurantsToReceipientListProcessor())
+				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON_VALUE))
+				.setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.GET))
+				.setBody(constant(null))
+				.recipientList(header(MATCHING_RESTAURANTS)).delimiter(",").parallelProcessing()
+				.unmarshal().json(JsonLibrary.Jackson, RestaurantCapacityResponse.class)
+				.aggregate(constant(true), strategy).completionTimeout(1000).completionSize(header(MATCHING_RESTAURANTS_SIZE))
+				//.aggregationStrategy()
         		/* load order */
-        		.to("direct:pollOrder")
-        		.setHeader(Exchange.CONTENT_TYPE, constant("application/json"))
-        		.recipientList(header(MATCHING_RESTAURANTS))
+        		//.to("direct:pollOrder")
                 /* Aggregate */
         		//xpath("/RestaurantCapacityResponse/requestid"
-        		.aggregationStrategy(strategy)
         		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
-        		.process(new Processor() {
-					
-					@Override
-					public void process(Exchange arg0) throws Exception {
-						log.debug(arg0.getProperty("CamelAggregatedCompletedBy", String.class));
-						
-					}
-				})
+        		.process(arg0 -> {
+                    log.debug(arg0.getProperty("CamelAggregatedCompletedBy", String.class));
+                })
         		.to("direct:checkRestaurantAvailable");
-  
-        
-        
-        		
+
         /* TODO If one or more restaurants are available ,  ACCEPT OR REJECT*/
         /**
          * MAINTAINER: 
@@ -274,12 +239,18 @@ public class RESTRouter extends RouteBuilder {
          */
         from("direct:checkRestaurantAvailable")
                 .choice()
-                .when(simple("${in.body.size} > 0")).to("direct:selectBestFitRestaurant")
-                .otherwise().to("direct:rejectOrder")
+                .when(simple("${in.body.size} > 0"))
+					.to("direct:selectBestFitRestaurant")
+                .otherwise()
+					.to("direct:rejectOrder")
                 .end();
 
         /* TODO select best restaurant for this order*/
         from("direct:selectBestFitRestaurant")
+				.process(x->{
+					log.info("selectBestFitRestaurant out of: " + x.getIn().getBody(ArrayList.class).size());
+					x.getIn().setBody(x.getIn().getBody(ArrayList.class).get(0));
+				})
                 .to("direct:checkCreditCard");
 
 
@@ -294,8 +265,13 @@ public class RESTRouter extends RouteBuilder {
 		 * --amount
 		 */
 		from("direct:checkCreditCard")
+				.process(x->{
+					System.out.println(x);
+				})
+				.bean(PrepareForCreditCheckBean.class)
 				.setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/creditcards/${header.creditCard}?amount=${header.amount}"))
 				.setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
+				.setBody(constant(null))
 				.to("http://dummyHost")
 				.unmarshal().json(JsonLibrary.Jackson,PaymentRequestAnswer.class)
 				.choice()

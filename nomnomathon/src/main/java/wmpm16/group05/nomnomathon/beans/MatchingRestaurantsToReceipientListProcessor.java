@@ -17,10 +17,16 @@ public class MatchingRestaurantsToReceipientListProcessor implements Processor {
 	@Override
 	public void process(Exchange exchange) throws Exception {
 		Long requestid = RESTRouter.REQUESTCOUNTER.get();
-		int size = exchange.getIn().getBody(List.class).stream().filter(o -> o instanceof RestaurantData).mapToInt(o -> 1).sum();
-		String receipients = exchange.getIn().getBody(List.class).stream().filter(o -> o instanceof RestaurantData).map(rd -> "http://localhost:8080/external/restaurants/" + String.valueOf(((RestaurantData)rd).get_id()) + "/" + String.valueOf(requestid) + "/capacity").collect(Collectors.joining(",")).toString();
-		log.debug("Receipients String: " + receipients);
-		exchange.getIn().setHeader(RESTRouter.MATCHING_RESTAURANTS, receipients);
+		int size = exchange.getIn().getBody(List.class).stream()
+				.filter(o -> o instanceof RestaurantData).mapToInt(o -> 1).sum();
+		String recipients = exchange.getIn().getBody(List.class).stream()
+				.filter(o -> o instanceof RestaurantData)
+				.map(rd -> "http://localhost:8080/external/restaurants/" +
+						String.valueOf(((RestaurantData)rd).get_id()) + "/" +
+						String.valueOf(requestid) + "/capacity")
+				.collect(Collectors.joining(",")).toString();
+		log.debug("Recipients String: " + recipients);
+		exchange.getIn().setHeader(RESTRouter.MATCHING_RESTAURANTS, recipients);
 		exchange.getIn().setHeader(RESTRouter.MATCHING_RESTAURANTS_SIZE, size);
 		exchange.getIn().setHeader(RESTRouter.MATCHING_REQUEST, requestid);
 		

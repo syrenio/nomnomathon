@@ -66,6 +66,7 @@ public class NomNomathonConfig {
         customer.setMail("a.b@c.d");
         customer.setNotificationType(CustomerNotificationType.MAIL);;
         customer.setAddress("Percostraße 27, 1220 Wien");
+        customer.setCreditCard("5487765682447742");
         customerRepository.save(customer);
         
         //authcode: Ym11OjEyMzQ1
@@ -74,6 +75,7 @@ public class NomNomathonConfig {
         customer.setMail("bernhard.mueller@gmx.at");
         customer.setNotificationType(CustomerNotificationType.MAIL);;
         customer.setAddress("Percostraße 25, 1220 Wien");
+        customer.setCreditCard("4411948396385770");
         customerRepository.save(customer);
         
         //authcode: bWF3ZToxMjM0NQ==
@@ -82,6 +84,7 @@ public class NomNomathonConfig {
         customer.setMail("martin@weik.at");
         customer.setNotificationType(CustomerNotificationType.MAIL);;
         customer.setAddress("blabla, 1234 Wien");
+        customer.setCreditCard("342503083304998");
         customerRepository.save(customer);
     }
 }
