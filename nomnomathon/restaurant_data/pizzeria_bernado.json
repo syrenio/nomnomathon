@@ -1,0 +1,26 @@
+{
+
+	"name": "Pizzeria Bernado",
+	"_id": 6,
+	"location": "1160",
+	"opening": "12:00",
+	"closing": "23:00",
+	"categories": [
+
+		"italian",
+		"american"
+
+	],
+
+	"menu": [{
+		"name": "pizza",
+		"price": 26.99
+	}, {
+		"name": "pasta",
+		"price": 15.99
+	}, {
+		"name": "burger",
+		"price": 10.99
+	}]
+}
+
