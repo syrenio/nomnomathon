@@ -15,6 +15,7 @@ public class LoadOrderBean {
     public void load(Exchange exchange){
         Long orderId = exchange.getIn().getHeader("orderId", Long.class);
         OrderInProcess order = orderRepository.findOne(orderId);
+        exchange.getOut().setHeaders(exchange.getIn().getHeaders());
         exchange.getOut().setBody(order);
     }
 }

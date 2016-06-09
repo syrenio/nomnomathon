@@ -19,6 +19,6 @@ public class CreditCardController {
 	public PaymentRequestAnswer getRestaurant(@PathVariable String creditCard, @RequestParam(value = "amount") BigDecimal amount) {
 		log.debug("Received payment request for CreditCard " + creditCard + " and amount " + amount);
 		double rnd = Math.random();
-		return new PaymentRequestAnswer(rnd < 0.5);
+		return new PaymentRequestAnswer(true); //rnd < 0.5
 	}
 }

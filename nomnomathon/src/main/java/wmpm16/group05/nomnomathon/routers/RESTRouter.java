@@ -49,6 +49,7 @@ public class RESTRouter extends RouteBuilder {
 	public static final String MATCHING_REQUEST = "REQUESTID";
 	//THIS IS JUST FOR TESTPURPOSE
 	public static final AtomicLong REQUESTCOUNTER = new AtomicLong();
+	public static final String HEADER_RESTAURANT_ID = "restaurantId";
 
 	@Override
     public void configure() throws Exception {
@@ -249,7 +250,8 @@ public class RESTRouter extends RouteBuilder {
         from("direct:selectBestFitRestaurant")
 				.process(x->{
 					log.info("selectBestFitRestaurant out of: " + x.getIn().getBody(ArrayList.class).size());
-					x.getIn().setBody(x.getIn().getBody(ArrayList.class).get(0));
+					RestaurantCapacityResponse resp  = (RestaurantCapacityResponse) x.getIn().getBody(ArrayList.class).get(0);
+					x.getIn().setHeader(HEADER_RESTAURANT_ID, resp.getRestaurantId());
 				})
                 .to("direct:checkCreditCard");
 
@@ -283,8 +285,11 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:updateOrder")
                 /* TODO Update order in db, needs more info*/
+				.bean(LoadOrderBean.class)
 				.process(x->{
-					x.getIn().getBody(OrderInProcess.class).setState(OrderState.FULLFILLED);
+					OrderInProcess order = x.getIn().getBody(OrderInProcess.class);
+					order.setRestaurantId(x.getIn().getHeader(HEADER_RESTAURANT_ID, Long.class));
+					order.setState(OrderState.FULLFILLED);
 				})
 				.bean(UpdateOrderBean.class)
                 .to("direct:finishOrder");
