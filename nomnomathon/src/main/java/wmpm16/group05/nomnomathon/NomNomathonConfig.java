@@ -12,6 +12,7 @@ import org.springframework.context.annotation.*;
 import com.mongodb.Mongo;
 import com.mongodb.MongoClient;
 
+import wmpm16.group05.nomnomathon.database.DatabaseSeeder;
 import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.CustomerNotificationType;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
@@ -25,15 +26,12 @@ public class NomNomathonConfig {
     private static final String CAMEL_URL_MAPPING = "/api/*";
     private static final String CAMEL_SERVLET_NAME = "CamelServlet";
 
+    @Autowired
+    private DatabaseSeeder databaseSeeder;
+
     @Value("${mongoDB.host}")
     private String mongoHost;
 
-    @Autowired
-    CustomerRepository customerRepository;
-    @Autowired
-    DishRepository dishRepository;
-    @Autowired
-    OrderRepository orderRepository;
     //@Autowired
     //OrderListEntryRepository orderListEntryRepository;
     
@@ -54,37 +52,6 @@ public class NomNomathonConfig {
     @PostConstruct
     public void initDB(){
         System.out.println("<--- INIT DB STUFF --->");
-
-        customerRepository.deleteAll();
-        dishRepository.deleteAll();
-        orderRepository.deleteAll();
-        //orderListEntryRepository.deleteAll();
-
-        //authcode: YmVybmQ6bm9tbm9t
-        Customer customer = new Customer("bernd","bernd","test","nomnom");
-        customer.setPhoneNumber("+4368012345678");
-        customer.setMail("a.b@c.d");
-        customer.setNotificationType(CustomerNotificationType.MAIL);;
-        customer.setAddress("Percostraße 27, 1220 Wien");
-        customer.setCreditCard("5487765682447742");
-        customerRepository.save(customer);
-        
-        //authcode: Ym11OjEyMzQ1
-        customer = new Customer("bmu","Bernhard","Müller","12345");
-        customer.setPhoneNumber("+4369981259747");
-        customer.setMail("bernhard.mueller@gmx.at");
-        customer.setNotificationType(CustomerNotificationType.MAIL);;
-        customer.setAddress("Percostraße 25, 1220 Wien");
-        customer.setCreditCard("4411948396385770");
-        customerRepository.save(customer);
-        
-        //authcode: bWF3ZToxMjM0NQ==
-        customer = new Customer("mawe","Martin","Weik","12345");
-        customer.setPhoneNumber("+4369912345678");
-        customer.setMail("martin@weik.at");
-        customer.setNotificationType(CustomerNotificationType.MAIL);;
-        customer.setAddress("blabla, 1234 Wien");
-        customer.setCreditCard("342503083304998");
-        customerRepository.save(customer);
+        databaseSeeder.seed();
     }
 }
