@@ -1,33 +1,26 @@
 package wmpm16.group05.nomnomathon.aggregation;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
-import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
-
-import java.io.IOException;
-import java.util.ArrayList;
 
 public class CapacityAggregationStrategy implements AggregationStrategy{
-    @Override
-    public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+	   public Exchange aggregate(Exchange oldExchange, Exchange newExchange) {
+	        if (oldExchange == null) {
+	            List<Long> ids = new ArrayList<>();
+	            Long newId= Long.parseLong(newExchange.getIn().getBody(String.class));
+	            /* All ids = -1 indicate the restaurant has no capacity and are therefore not added */
+	            if(newId > -1){ids.add(newId);}
+	            newExchange.getIn().setBody(ids);
+	            return newExchange;
+	        }
+	        List<Long> ids = oldExchange.getIn().getBody(ArrayList.class);
+            Long newId= Long.parseLong(newExchange.getIn().getBody(String.class));
+	        if(newId > -1){ids.add(newId);}
+	        oldExchange.getIn().setBody(ids);
+	        return oldExchange;
+	    }
 
-        //log.debug("Received answers: " + oldExchange + " / " + newExchange + " from " + newExchange.getProperty(Exchange.RECIPIENT_LIST_ENDPOINT, String.class));
-        //log.debug(value);
-
-        RestaurantCapacityResponse newBody = newExchange.getIn().getBody(RestaurantCapacityResponse.class);
-        ArrayList<RestaurantCapacityResponse> list = null;
-        if (oldExchange == null) {
-            list = new ArrayList<RestaurantCapacityResponse>();
-            list.add(newBody);
-            newExchange.getIn().setBody(list);
-            return newExchange;
-        } else {
-            list = oldExchange.getIn().getBody(ArrayList.class);
-            list.add(newBody);
-            return oldExchange;
-        }
-    }
 }

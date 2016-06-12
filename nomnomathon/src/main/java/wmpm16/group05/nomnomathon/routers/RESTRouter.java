@@ -191,6 +191,14 @@ public class RESTRouter extends RouteBuilder {
                     .when((header("orderState").isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
                         .to("direct:rejectOrder")
                 .end();
+        
+        
+        from("direct:requestCapacity")     
+	        .setBody(constant(null))
+	        .recipientList(header("restaurants"))
+	        .parallelProcessing()
+	        .aggregationStrategy(new CapacityAggregationStrategy())
+	        .to("direct:checkRestaurantAvailable");
 
 
         /**
@@ -208,26 +216,26 @@ public class RESTRouter extends RouteBuilder {
          * - BODY
          * -- 
          */
- 		AggregationStrategy strategy = new CapacityAggregationStrategy();
-        from("direct:requestCapacity")
-                /* create receipientlist */
-        		.process(new MatchingRestaurantsToReceipientListProcessor())
-				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON_VALUE))
-				.setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.GET))
-				.setBody(constant(null))
-				.recipientList(header(MATCHING_RESTAURANTS)).delimiter(",").parallelProcessing()
-				.unmarshal().json(JsonLibrary.Jackson, RestaurantCapacityResponse.class)
-				.aggregate(constant(true), strategy).completionTimeout(1000).completionSize(header(MATCHING_RESTAURANTS_SIZE))
-				//.aggregationStrategy()
-        		/* load order */
-        		//.to("direct:pollOrder")
-                /* Aggregate */
-        		//xpath("/RestaurantCapacityResponse/requestid"
-        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
-        		.process(arg0 -> {
-                    log.debug(arg0.getProperty("CamelAggregatedCompletedBy", String.class));
-                })
-        		.to("direct:checkRestaurantAvailable");
+// 		AggregationStrategy strategy = new CapacityAggregationStrategy();
+//        from("direct:requestCapacity")
+//                /* create receipientlist */
+//        		.process(new MatchingRestaurantsToReceipientListProcessor())
+//				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON_VALUE))
+//				.setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.GET))
+//				.setBody(constant(null))
+//				.recipientList(header(MATCHING_RESTAURANTS)).delimiter(",").parallelProcessing()
+//				.unmarshal().json(JsonLibrary.Jackson, RestaurantCapacityResponse.class)
+//				.aggregate(constant(true), strategy).completionTimeout(1000).completionSize(header(MATCHING_RESTAURANTS_SIZE))
+//				//.aggregationStrategy()
+//        		/* load order */
+//        		//.to("direct:pollOrder")
+//                /* Aggregate */
+//        		//xpath("/RestaurantCapacityResponse/requestid"
+//        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
+//        		.process(arg0 -> {
+//                    log.debug(arg0.getProperty("CamelAggregatedCompletedBy", String.class));
+//                })
+//        		.to("direct:checkRestaurantAvailable");
 
 
         /* TODO If one or more restaurants are available ,  ACCEPT OR REJECT*/
@@ -242,9 +250,8 @@ public class RESTRouter extends RouteBuilder {
         /* TODO select best restaurant for this order*/
         /* MAINTAINER: see issue #19
          */
-        from("direct:selectBestFitRestaurant")
-				.split(body()).setBody(simple("${in.body.restaurantId}"))
-				    .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById")
+        from("direct:selectBestFitRestaurant")    		
+				.split(body()).to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById")
 				        .bean(DBObjectToResDataConverter.class)
 				    .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(100)
                         .bean(SelectBestFitRestaurantBean.class)

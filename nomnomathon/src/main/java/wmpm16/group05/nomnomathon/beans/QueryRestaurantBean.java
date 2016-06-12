@@ -24,9 +24,10 @@ import java.util.List;
 public class QueryRestaurantBean {
 
     public void process(Exchange exchange) {
+    	String uri = "http://localhost:8080/external/restaurants/%s/capacity";
         ArrayList<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
         List<String> dishesInOrder = exchange.getIn().getHeader(RESTRouter.HEADER_DISHES_ORDER, ArrayList.class);
-        List<Integer> restaurantIds = new ArrayList<>();
+        List<String> restaurantIds = new ArrayList<>();
         List<String> dishesToDeliver = new ArrayList<>();
         for (String d : dishesInOrder) {
             for (RestaurantData r : restaurants) {
@@ -38,7 +39,8 @@ public class QueryRestaurantBean {
                 if (dishes.contains(d)) {
                     dishesToDeliver.add(d);
                     if (!restaurantIds.contains(r.get_id())) {
-                        restaurantIds.add(r.get_id());
+                    	/* Add a restaurant uri as String e.g. "http://localhost:8080/external/restaurants/2/capacity" */
+                        restaurantIds.add(String.format(uri,r.get_id()));
                     }
                 } else {
                     exchange.getIn().setHeader("orderState", OrderState.REJECTED_NO_RESTAURANTS);
@@ -51,7 +53,6 @@ public class QueryRestaurantBean {
         }
         /*contains all restaurant ids for capacity check*/
         exchange.getIn().setHeader("restaurants", restaurantIds);
-    }
-
+   }
 
 }
