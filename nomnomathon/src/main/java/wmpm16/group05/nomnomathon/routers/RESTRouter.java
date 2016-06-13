@@ -34,6 +34,7 @@ import wmpm16.group05.nomnomathon.converter.DBObjectToResDataConverter;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
+import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
 import wmpm16.group05.nomnomathon.mocked.OrderRequestAnswer;
@@ -192,59 +193,32 @@ public class RESTRouter extends RouteBuilder {
                         .to("direct:rejectOrder")
                 .end();
         
-        
+        /**
+         *  Maintainer: till
+         *  Scatter-Gather: Ask all possible restaurants for their capacity.
+         *  Given they have capacity, they answer with their ID, else -1.
+         */
         from("direct:requestCapacity")     
 	        .setBody(constant(null))
 	        .recipientList(header("restaurants"))
-	        .parallelProcessing()
-	        .aggregationStrategy(new CapacityAggregationStrategy())
+	        	.parallelProcessing()
+	        	.aggregationStrategy(new CapacityAggregationStrategy())
+	        .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
 	        .to("direct:checkRestaurantAvailable");
 
-
         /**
-         * ROUTE: direct:requestCapacity
-         * PATTERN: SCATTER-GETTER
-         * MAINTAINER: MWEIK
-         *
-         * PRECONDITIONS
-         * - BODY
-         * -- A List<RestaurantData> of all MATCHING Restaurants
-         * - HEADER
-         * -- orderId : Id of the order
-         *
-         * POSTCONDITIONS
-         * - BODY
-         * -- 
-         */
-// 		AggregationStrategy strategy = new CapacityAggregationStrategy();
-//        from("direct:requestCapacity")
-//                /* create receipientlist */
-//        		.process(new MatchingRestaurantsToReceipientListProcessor())
-//				.setHeader(Exchange.CONTENT_TYPE, constant(MediaType.APPLICATION_JSON_VALUE))
-//				.setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.GET))
-//				.setBody(constant(null))
-//				.recipientList(header(MATCHING_RESTAURANTS)).delimiter(",").parallelProcessing()
-//				.unmarshal().json(JsonLibrary.Jackson, RestaurantCapacityResponse.class)
-//				.aggregate(constant(true), strategy).completionTimeout(1000).completionSize(header(MATCHING_RESTAURANTS_SIZE))
-//				//.aggregationStrategy()
-//        		/* load order */
-//        		//.to("direct:pollOrder")
-//                /* Aggregate */
-//        		//xpath("/RestaurantCapacityResponse/requestid"
-//        		.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
-//        		.process(arg0 -> {
-//                    log.debug(arg0.getProperty("CamelAggregatedCompletedBy", String.class));
-//                })
-//        		.to("direct:checkRestaurantAvailable");
-
-
-        /* TODO If one or more restaurants are available ,  ACCEPT OR REJECT*/
+        * Maintainer: till
+        * Message Filter: Drop all non valid Restaurant IDs here.
+        */
         from("direct:checkRestaurantAvailable")
+        		.split(body())
+        			.filter(body().isNotEqualTo("-1"))        		
+        			.aggregate(constant(true), new CapacityAggregationStrategy()).completionTimeout(100)
                 .choice()
-                .when(simple("${in.body.size} > 0"))
-					.to("direct:selectBestFitRestaurant")
-                .otherwise()
-					.to("direct:rejectOrder")
+	                .when(simple("${body.size} > 0"))
+						.to("direct:selectBestFitRestaurant")
+	                .otherwise()
+						.to("direct:rejectOrder")
                 .end();
 
         /* TODO select best restaurant for this order*/
@@ -278,14 +252,25 @@ public class RESTRouter extends RouteBuilder {
 				.to("http://dummyHost")
 				.unmarshal().json(JsonLibrary.Jackson,PaymentRequestAnswer.class)
 				.choice()
-				.when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
-				.otherwise().to("direct:rejectOrder")
+					.when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
+					.otherwise().to("direct:rejectOrder")
 				.end();
 
-
+		 /**
+         *  Maintainer: till
+         *  Sending order again to restaurant, asking to accept the order.
+         */
         from("direct:sendOrderToRestaurant")
-                /* TODO HTTP */
-                .to("direct:updateOrder");
+        	.bean(PollOrder.class)
+        	.marshal().json(JsonLibrary.Jackson)
+        	.setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/restaurants/${header.restaurantId}/order"))
+        	.setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
+        	.to("http://dummyHost")
+        	.unmarshal().json(JsonLibrary.Jackson,OrderRequestAnswer.class) 	
+			.choice()
+				.when(simple("${in.body.accepted} == true")).to("direct:updateOrder")
+				.otherwise().to("direct:rejectOrder")
+			.end();
 
         from("direct:updateOrder")
                 /* TODO Update order in db, needs more info*/

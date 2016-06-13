@@ -11,14 +11,13 @@ public class CapacityAggregationStrategy implements AggregationStrategy{
 	        if (oldExchange == null) {
 	            List<Long> ids = new ArrayList<>();
 	            Long newId= Long.parseLong(newExchange.getIn().getBody(String.class));
-	            /* All ids = -1 indicate the restaurant has no capacity and are therefore not added */
-	            if(newId > -1){ids.add(newId);}
+	           ids.add(newId);
 	            newExchange.getIn().setBody(ids);
 	            return newExchange;
 	        }
 	        List<Long> ids = oldExchange.getIn().getBody(ArrayList.class);
             Long newId= Long.parseLong(newExchange.getIn().getBody(String.class));
-	        if(newId > -1){ids.add(newId);}
+	        ids.add(newId);
 	        oldExchange.getIn().setBody(ids);
 	        return oldExchange;
 	    }

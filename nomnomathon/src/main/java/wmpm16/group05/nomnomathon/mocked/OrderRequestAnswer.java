@@ -4,29 +4,27 @@ public class OrderRequestAnswer {
 	
 	@Override
 	public String toString() {
-		return "OrderRequestAnswer [answer=" + answer + ", restaurantId=" + restaurantId + ", orderId=" + orderId + "]";
-	}
-	public enum OrderRequestState {
-		accepted, rejected;
+		return "OrderRequestAnswer [accepted=" + accepted + ", restaurantId=" + restaurantId + ", orderId=" + orderId + "]";
 	}
 	
+	 public OrderRequestAnswer() {
+	    }
 	
-	
-	public OrderRequestAnswer(OrderRequestState answer, Long restaurantId, Long orderId) {
+	public OrderRequestAnswer(Boolean accepted, Long restaurantId, Long orderId) {
 		super();
-		this.answer = answer;
+		this.accepted = accepted;
 		this.restaurantId = restaurantId;
 		this.orderId = orderId;
 	}
-	private OrderRequestState answer;
+	private Boolean accepted;
 	private Long restaurantId;
 	private Long orderId;
 	
-	public OrderRequestState getAnswer() {
-		return answer;
+	public Boolean isAccepted() {
+		return accepted;
 	}
-	public void setAnswer(OrderRequestState answer) {
-		this.answer = answer;
+	public void setAccepted(Boolean accepted) {
+		this.accepted = accepted;
 	}
 	public Long getRestaurantId() {
 		return restaurantId;
