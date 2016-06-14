@@ -1,36 +1,20 @@
 package wmpm16.group05.nomnomathon.routers;
 
-import com.fasterxml.jackson.core.JsonParseException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import com.fasterxml.jackson.dataformat.xml.XmlMapper;
 
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
-import org.apache.camel.component.http.HttpMethods;
-import org.apache.camel.component.mongodb.MongoDbConstants;
+import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
-import org.apache.camel.processor.aggregate.GroupedExchangeAggregationStrategy;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.aggregation.*;
 import wmpm16.group05.nomnomathon.beans.*;
-import wmpm16.group05.nomnomathon.converter.DBObjectToResDataConverter;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
 import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
@@ -44,26 +28,30 @@ import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
 
 
-
 /**
  * Created by syrenio on 5/3/2016.
  */
 @Component
 public class RESTRouter extends RouteBuilder {
 
-	public static final String MATCHING_RESTAURANTS_SIZE = "MATCHING_RESTAURANTS_SIZE";
-	public static final String MATCHING_RESTAURANTS = "matching-restaurants";
-	public static final String MATCHING_REQUEST = "REQUESTID";
-	//THIS IS JUST FOR TESTPURPOSE
-	public static final AtomicLong REQUESTCOUNTER = new AtomicLong();
-	public static final String HEADER_RESTAURANT_ID = "restaurantId";
-	public static final String HEADER_DISHES_ORDER = "dishesOrder";
-	public static final String HEADER_DISHES_PRICES = "dishesPrices";
-	public static final String HEADER_AMOUNT = "amount";
-	public static final String HEADER_ORDER_STATE = "orderState";
+    public static final String MATCHING_RESTAURANTS_SIZE = "MATCHING_RESTAURANTS_SIZE";
+    public static final String MATCHING_RESTAURANTS = "matching-restaurants";
+    public static final String MATCHING_REQUEST = "REQUESTID";
+    //THIS IS JUST FOR TESTPURPOSE
+    public static final AtomicLong REQUESTCOUNTER = new AtomicLong();
+    public static final String HEADER_RESTAURANT_ID = "restaurantId";
+    public static final String HEADER_DISHES_ORDER = "dishesOrder";
+    public static final String HEADER_DISHES_PRICES = "dishesPrices";
+    public static final String HEADER_AMOUNT = "amount";
+    public static final String HEADER_ORDER_STATE = "orderState";
+    public static final String HEADER_RESTAURANTS = "restaurants";
 
-	@Override
+    private JacksonDataFormat restaurantjsonformat;
+
+    @Override
     public void configure() throws Exception {
+        restaurantjsonformat = new JacksonDataFormat();
+        restaurantjsonformat.setUnmarshalType(RestaurantData.class);
 
         restConfiguration()
                 .component("servlet")
@@ -129,22 +117,22 @@ public class RESTRouter extends RouteBuilder {
         /*store order in DB*/
         from("direct:storeOrder")
                 .bean(StoreOrderBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
-                    .choice()
-                        .when(header("type").isEqualTo(OrderType.SMS))
-                            .to("direct:hungryDish")
-                        .otherwise()
-                            .to("direct:regularDish")
-                    .end();
+                .choice()
+                .when(header("type").isEqualTo(OrderType.SMS))
+                .to("direct:hungryDish")
+                .otherwise()
+                .to("direct:regularDish")
+                .end();
 
         from("direct:hungryDish")
-                .setBody().simple("{ \"menu.price\": { $gt: 0, $lt: 20 }}")
+                .setBody().simple("{ \"menu.price\": { $gt: 0, $lt: 20 }}").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.hungryDish?level=DEBUG")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll")
                 .to("direct:splitRestaurants");
 
 
         /*query restaurants for dishes*/
         from("direct:regularDish")
-                .bean(ExtractDishRestaurantBean.class)
+                .bean(ExtractDishRestaurantBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.regularDish?level=DEBUG")
                 .to("direct:findAll");
 
         from("direct:findAll")
@@ -155,27 +143,28 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:splitRestaurants")
                 .split(body())
-                    .bean(DBObjectToResDataConverter.class)
-                    .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(10)
-                     //constant ist needed in order to aggregate all messages into a single message
-                     //stops aggregation after 10 milliseconds
-                    .choice()
-                        .when(header("type").isEqualTo(OrderType.SMS))
-                            .to("direct:extractHungryDish")
-                        .when(header("type").isEqualTo(OrderType.REGULAR))
-                            .to("direct:extractRegularDish")
-                    .end()
+                .convertBodyTo(String.class)
+                .unmarshal(restaurantjsonformat)
+                .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(10).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.splitRestaurants?level=DEBUG")
+                //constant ist needed in order to aggregate all messages into a single message
+                //stops aggregation after 10 milliseconds
+                .choice()
+                .when(header("type").isEqualTo(OrderType.SMS))
+                .to("direct:extractHungryDish")
+                .when(header("type").isEqualTo(OrderType.REGULAR))
+                .to("direct:extractRegularDish")
+                .end()
                 .end();
 
 
         from("direct:extractHungryDish")
-                .bean(RandomDishBean.class)
+                .bean(RandomDishBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.extractHungryDish?level=DEBUG")
                 .to("direct:checkRestaurantsAvailability")
                 .end();
 
         from("direct:extractRegularDish")
                 .enrich("direct:pollOrder", new DishesOrderAggregation())
-                .bean(QueryRestaurantBean.class)
+                .bean(RegularDishQueryRestaurantBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.extractRegularDish?level=DEBUG")
                 .to("direct:checkRestaurantsAvailability")
                 .end();
 
@@ -187,106 +176,110 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:checkRestaurantsAvailability")
                 .choice()
-                    .when(header("orderState").isEqualTo(OrderState.ENRICHED))
-                        .to("direct:requestCapacity")
-                    .when((header("orderState").isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
-                        .to("direct:rejectOrder")
+                .when(header("orderState").isEqualTo(OrderState.ENRICHED))
+                .to("direct:requestCapacity")
+                .when((header("orderState").isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
+                .to("direct:rejectOrder")
                 .end();
-        
+
         /**
          *  Maintainer: till
          *  Scatter-Gather: Ask all possible restaurants for their capacity.
          *  Given they have capacity, they answer with their ID, else -1.
          */
-        from("direct:requestCapacity")     
-	        .setBody(constant(null))
-	        .recipientList(header("restaurants"))
-	        	.parallelProcessing()
-	        	.aggregationStrategy(new CapacityAggregationStrategy())
-	        .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
-	        .to("direct:checkRestaurantAvailable");
+        from("direct:requestCapacity")
+                .bean(TransformRestaurantHeader.class)
+                .setBody(constant(null))
+                .recipientList(header(RESTRouter.HEADER_RESTAURANTS))
+                .parallelProcessing()
+                .aggregationStrategy(new CapacityAggregationStrategy())
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
+                .to("direct:checkRestaurantAvailable");
 
         /**
-        * Maintainer: till
-        * Message Filter: Drop all non valid Restaurant IDs here.
-        */
+         * Maintainer: till
+         * Message Filter: Drop all non valid Restaurant IDs here.
+         */
         from("direct:checkRestaurantAvailable")
-        		.split(body())
-        			.filter(body().isNotEqualTo("-1"))        		
-        			.aggregate(constant(true), new CapacityAggregationStrategy()).completionTimeout(100)
+                .split(body())
+                .filter(body().isNotEqualTo("-1"))
+                .aggregate(constant(true), new CapacityAggregationStrategy()).completionTimeout(100)
                 .choice()
-	                .when(simple("${body.size} > 0"))
-						.to("direct:selectBestFitRestaurant")
-	                .otherwise()
-						.to("direct:rejectOrder")
+                .when(simple("${body.size} > 0"))
+                .to("direct:selectBestFitRestaurant")
+                .otherwise()
+                .to("direct:rejectOrder")
                 .end();
 
-        /* TODO select best restaurant for this order*/
-        /* MAINTAINER: see issue #19
-         */
-        from("direct:selectBestFitRestaurant")    		
-				.split(body()).to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById")
-				        .bean(DBObjectToResDataConverter.class)
-				    .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(100)
-                        .bean(SelectBestFitRestaurantBean.class)
-                        .to("direct:checkCreditCard")
+
+        from("direct:selectBestFitRestaurant")
+                .split(body()).to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById")
+                .convertBodyTo(String.class)
+                .unmarshal(restaurantjsonformat)
+                .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(100).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.selectBestFitRestaurant?level=DEBUG")
+                .bean(SelectBestFitRestaurantBean.class)
+                .to("direct:checkCreditCard")
                 .end();
 
 
 
         /* TODO */
-		/**
-		 * MAINTAINER: BeLa
-		 * PRECONDITIONS
-		 * - BODY
-		 * --
-		 * - HEADER
-		 * --creditCard
-		 * --amount
-		 */
-		from("direct:checkCreditCard")
-				.bean(PrepareForCreditCheckBean.class)
-				.setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/creditcards/${header.creditCard}?amount=${header.amount}"))
-				.setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
-				.setBody(constant(null))
-				.to("http://dummyHost")
-				.unmarshal().json(JsonLibrary.Jackson,PaymentRequestAnswer.class)
-				.choice()
-					.when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
-					.otherwise().to("direct:rejectOrder")
-				.end();
+        /**
+         * MAINTAINER: BeLa
+         * PRECONDITIONS
+         * - BODY
+         * --
+         * - HEADER
+         * --creditCard
+         * --amount
+         */
+        from("direct:checkCreditCard")
+                .bean(PrepareForCreditCheckBean.class)
+                .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/creditcards/${header.creditCard}?amount=${header.amount}"))
+                .setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
+                .setBody(constant(null))
+                .to("http://dummyHost")
+                .unmarshal().json(JsonLibrary.Jackson, PaymentRequestAnswer.class)
+                .choice()
+                .when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
+                .otherwise().to("direct:rejectOrder")
+                .end();
 
-		 /**
+        /**
          *  Maintainer: till
          *  Sending order again to restaurant, asking to accept the order.
          */
         from("direct:sendOrderToRestaurant")
-        	.bean(PollOrder.class)
-        	.marshal().json(JsonLibrary.Jackson)
-        	.setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/restaurants/${header.restaurantId}/order"))
-        	.setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
-        	.to("http://dummyHost")
-        	.unmarshal().json(JsonLibrary.Jackson,OrderRequestAnswer.class) 	
-			.choice()
-				.when(simple("${in.body.accepted} == true")).to("direct:updateOrder")
-				.otherwise().to("direct:rejectOrder")
-			.end();
+                .bean(PollOrder.class)
+                .marshal().json(JsonLibrary.Jackson)
+                .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/restaurants/${header.restaurantId}/order"))
+                .setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
+                .to("http://dummyHost")
+                .unmarshal().json(JsonLibrary.Jackson, OrderRequestAnswer.class)
+                .choice()
+                .when(simple("${in.body.accepted} == true")).to("direct:updateOrder")
+                .otherwise().to("direct:rejectOrder")
+                .end();
 
         from("direct:updateOrder")
                 /* TODO Update order in db, needs more info*/
-				.bean(LoadOrderBean.class)
-				.process(x->{
-					OrderInProcess order = x.getIn().getBody(OrderInProcess.class);
-					order.setRestaurantId(x.getIn().getHeader(HEADER_RESTAURANT_ID, Long.class));
-					order.setState(OrderState.FULLFILLED);
-					/*set prices for dishes*/
-					Map<String, Double> dishPrices = x.getIn().getHeader(HEADER_DISHES_PRICES, Map.class);
-					for (Dish dish : order.getDishes()) {
-						Double price = dishPrices.getOrDefault(dish.getDish(), 0d);
-						dish.setPrice(price);
-					}
-				})
-				.bean(UpdateOrderBean.class)
+                .bean(LoadOrderBean.class)
+                .process(x -> {
+                    OrderInProcess order = x.getIn().getBody(OrderInProcess.class);
+                    order.setRestaurantId(x.getIn().getHeader(HEADER_RESTAURANT_ID, Long.class));
+                    order.setState(OrderState.FULLFILLED);
+                    /*set prices for dishes*/
+                    Map<String, Double> dishPrices = x.getIn().getHeader(HEADER_DISHES_PRICES, Map.class);
+                   /*add dish to order in case of random dish*/
+                    if (order.getDishes().size() == 0) {
+                        order.addDish(x.getIn().getHeader(HEADER_DISHES_ORDER, String.class));
+                    }
+                    for (Dish dish : order.getDishes()) {
+                        Double price = dishPrices.getOrDefault(dish.getDish(), 0d);
+                        dish.setPrice(price);
+                    }
+                })
+                .bean(UpdateOrderBean.class)
                 .to("direct:finishOrder");
 
         from("direct:finishOrder")
@@ -310,9 +303,9 @@ public class RESTRouter extends RouteBuilder {
 
         /* Next processes*/
 
-		from("direct:loadOrder")
-				.bean(LoadOrderBean.class)
-				.end();
+        from("direct:loadOrder")
+                .bean(LoadOrderBean.class)
+                .end();
 
         from("direct:start")
                 .process(new Processor() {
