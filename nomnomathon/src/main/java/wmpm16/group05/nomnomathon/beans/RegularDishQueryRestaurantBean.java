@@ -21,26 +21,27 @@ import java.util.List;
  * Created by Agnes on 21.05.16.
  */
 @Component
-public class QueryRestaurantBean {
+public class RegularDishQueryRestaurantBean {
 
     public void process(Exchange exchange) {
-    	String uri = "http://localhost:8080/external/restaurants/%s/capacity";
         ArrayList<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
         List<String> dishesInOrder = exchange.getIn().getHeader(RESTRouter.HEADER_DISHES_ORDER, ArrayList.class);
         List<String> restaurantIds = new ArrayList<>();
         List<String> dishesToDeliver = new ArrayList<>();
-        for (String d : dishesInOrder) {
-            for (RestaurantData r : restaurants) {
-                List<Menu> menu = r.getMenu();
-                List<String> dishes = new ArrayList<>();
-                for (Menu m : menu) {
-                    dishes.add(m.getName());
-                }
+        for (RestaurantData r : restaurants) {
+
+            String id = String.valueOf(r.get_id());
+            List<Menu> menu = r.getMenu();
+            List<String> dishes = new ArrayList<>();
+            for (Menu m : menu) {
+                dishes.add(m.getName());
+            }
+
+            for (String d : dishesInOrder) {
                 if (dishes.contains(d)) {
                     dishesToDeliver.add(d);
-                    if (!restaurantIds.contains(r.get_id())) {
-                    	/* Add a restaurant uri as String e.g. "http://localhost:8080/external/restaurants/2/capacity" */
-                        restaurantIds.add(String.format(uri,r.get_id()));
+                    if (!restaurantIds.contains(id)) {
+                        restaurantIds.add(String.valueOf(r.get_id()));
                     }
                 } else {
                     exchange.getIn().setHeader("orderState", OrderState.REJECTED_NO_RESTAURANTS);
@@ -52,7 +53,7 @@ public class QueryRestaurantBean {
             exchange.getIn().setHeader("orderState", OrderState.ENRICHED);
         }
         /*contains all restaurant ids for capacity check*/
-        exchange.getIn().setHeader("restaurants", restaurantIds);
-   }
+        exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANTS, restaurantIds);
+    }
 
 }
