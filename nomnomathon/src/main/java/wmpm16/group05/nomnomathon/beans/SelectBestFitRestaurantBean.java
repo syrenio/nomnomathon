@@ -3,11 +3,9 @@ package wmpm16.group05.nomnomathon.beans;
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.domain.Menu;
-import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.routers.RESTRouter;
 
-import java.math.BigDecimal;
 import java.util.*;
 
 
@@ -22,11 +20,11 @@ public class SelectBestFitRestaurantBean {
         List<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
         List<String> disheNames = exchange.getIn().getHeader(RESTRouter.HEADER_DISHES_ORDER, ArrayList.class);
 
-        Map<Integer, Integer> restauransTotalPrices = new HashMap<>();
-        PriorityQueue<Integer> pricesQueue = new PriorityQueue<>();
+        Map<Double, Integer> restauransTotalPrices = new HashMap<>();
+        PriorityQueue<Double> pricesQueue = new PriorityQueue<>();
         Map<String, Double> dishesPrices = new HashMap<>();
         for (RestaurantData r : restaurants) {
-            int sumPrices = 0;
+            double sumPrices = 0;
             for (Menu m : r.getMenu()) {
                 if (disheNames.contains(m.getName())) {
                     sumPrices += m.getPrice();
@@ -36,7 +34,7 @@ public class SelectBestFitRestaurantBean {
             restauransTotalPrices.put(sumPrices, r.get_id());
             pricesQueue.add(sumPrices);
         }
-        int bestPrice = pricesQueue.poll();
+        double bestPrice = pricesQueue.poll();
         int selectedRestaurantId = restauransTotalPrices.get(bestPrice);
 
         exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANT_ID, selectedRestaurantId);
