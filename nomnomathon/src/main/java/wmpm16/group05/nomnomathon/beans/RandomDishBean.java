@@ -31,9 +31,17 @@ public class RandomDishBean {
         selectRandomRestaurant(restaurants);
         Map<String, Double> dishesPrices = new HashMap<>();
         dishesPrices.put(selectedDish.getName(), selectedDish.getPrice());
+
+        List<String> restaurantIds = new ArrayList<>();
+        restaurantIds.add(String.valueOf(selectedRestaurant.get(0).get_id()));
+
         exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANT_ID, selectedRestaurant.get(0).get_id());
+        /*contains all restaurant ids for capacity check*/
+        exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANTS, restaurantIds);
         exchange.getIn().setHeader(RESTRouter.HEADER_DISHES_PRICES, dishesPrices);
         exchange.getIn().setHeader(RESTRouter.HEADER_ORDER_STATE, OrderState.ENRICHED);
+        exchange.getIn().setHeader(RESTRouter.HEADER_DISHES_ORDER, selectedDish.getName());
+
     }
 
     private void selectRandomRestaurant(ArrayList<RestaurantData> restaurants) {
