@@ -34,18 +34,6 @@ import wmpm16.group05.nomnomathon.models.OrderState;
 @Component
 public class RESTRouter extends RouteBuilder {
 
-    public static final String MATCHING_RESTAURANTS_SIZE = "MATCHING_RESTAURANTS_SIZE";
-    public static final String MATCHING_RESTAURANTS = "matching-restaurants";
-    public static final String MATCHING_REQUEST = "REQUESTID";
-    //THIS IS JUST FOR TESTPURPOSE
-    public static final AtomicLong REQUESTCOUNTER = new AtomicLong();
-    public static final String HEADER_RESTAURANT_ID = "restaurantId";
-    public static final String HEADER_DISHES_ORDER = "dishesOrder";
-    public static final String HEADER_DISHES_PRICES = "dishesPrices";
-    public static final String HEADER_AMOUNT = "amount";
-    public static final String HEADER_ORDER_STATE = "orderState";
-    public static final String HEADER_RESTAURANTS = "restaurants";
-
     private JacksonDataFormat restaurantjsonformat;
 
     @Override
@@ -190,7 +178,7 @@ public class RESTRouter extends RouteBuilder {
         from("direct:requestCapacity")
                 .bean(TransformRestaurantHeader.class)
                 .setBody(constant(null))
-                .recipientList(header(RESTRouter.HEADER_RESTAURANTS))
+                .recipientList(header(NomNomConstants.HEADER_RESTAURANTS))
                 .parallelProcessing()
                 .aggregationStrategy(new CapacityAggregationStrategy())
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
@@ -266,13 +254,13 @@ public class RESTRouter extends RouteBuilder {
                 .bean(LoadOrderBean.class)
                 .process(x -> {
                     OrderInProcess order = x.getIn().getBody(OrderInProcess.class);
-                    order.setRestaurantId(x.getIn().getHeader(HEADER_RESTAURANT_ID, Long.class));
+                    order.setRestaurantId(x.getIn().getHeader(NomNomConstants.HEADER_RESTAURANT_ID, Long.class));
                     order.setState(OrderState.FULLFILLED);
                     /*set prices for dishes*/
-                    Map<String, Double> dishPrices = x.getIn().getHeader(HEADER_DISHES_PRICES, Map.class);
+                    Map<String, Double> dishPrices = x.getIn().getHeader(NomNomConstants.HEADER_DISHES_PRICES, Map.class);
                    /*add dish to order in case of random dish*/
                     if (order.getDishes().size() == 0) {
-                        order.addDish(x.getIn().getHeader(HEADER_DISHES_ORDER, String.class));
+                        order.addDish(x.getIn().getHeader(NomNomConstants.HEADER_DISHES_ORDER, String.class));
                     }
                     for (Dish dish : order.getDishes()) {
                         Double price = dishPrices.getOrDefault(dish.getDish(), 0d);

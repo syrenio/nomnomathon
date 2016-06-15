@@ -11,6 +11,7 @@ import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 import wmpm16.group05.nomnomathon.routers.RESTRouter;
 
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class RegularDishQueryRestaurantBean {
 
     public void process(Exchange exchange) {
         ArrayList<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
-        List<String> dishesInOrder = exchange.getIn().getHeader(RESTRouter.HEADER_DISHES_ORDER, ArrayList.class);
+        List<String> dishesInOrder = exchange.getIn().getHeader(NomNomConstants.HEADER_DISHES_ORDER, ArrayList.class);
         List<String> restaurantIds = new ArrayList<>();
         List<String> dishesToDeliver = new ArrayList<>();
         for (RestaurantData r : restaurants) {
@@ -53,7 +54,7 @@ public class RegularDishQueryRestaurantBean {
             exchange.getIn().setHeader("orderState", OrderState.ENRICHED);
         }
         /*contains all restaurant ids for capacity check*/
-        exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANTS, restaurantIds);
+        exchange.getIn().setHeader(NomNomConstants.HEADER_RESTAURANTS, restaurantIds);
     }
 
 }

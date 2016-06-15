@@ -4,6 +4,7 @@ import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.domain.Menu;
 import wmpm16.group05.nomnomathon.domain.RestaurantData;
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 import wmpm16.group05.nomnomathon.routers.RESTRouter;
 
 import java.util.*;
@@ -18,7 +19,7 @@ public class SelectBestFitRestaurantBean {
 
     public void process(Exchange exchange) {
         List<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
-        List<String> disheNames = exchange.getIn().getHeader(RESTRouter.HEADER_DISHES_ORDER, ArrayList.class);
+        List<String> disheNames = exchange.getIn().getHeader(NomNomConstants.HEADER_DISHES_ORDER, ArrayList.class);
 
         Map<Double, Integer> restauransTotalPrices = new HashMap<>();
         PriorityQueue<Double> pricesQueue = new PriorityQueue<>();
@@ -37,8 +38,8 @@ public class SelectBestFitRestaurantBean {
         double bestPrice = pricesQueue.poll();
         int selectedRestaurantId = restauransTotalPrices.get(bestPrice);
 
-        exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANT_ID, selectedRestaurantId);
-        exchange.getIn().setHeader(RESTRouter.HEADER_AMOUNT, bestPrice);
-        exchange.getIn().setHeader(RESTRouter.HEADER_DISHES_PRICES, dishesPrices);
+        exchange.getIn().setHeader(NomNomConstants.HEADER_RESTAURANT_ID, selectedRestaurantId);
+        exchange.getIn().setHeader(NomNomConstants.HEADER_AMOUNT, bestPrice);
+        exchange.getIn().setHeader(NomNomConstants.HEADER_DISHES_PRICES, dishesPrices);
     }
 }

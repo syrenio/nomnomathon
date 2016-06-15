@@ -9,6 +9,7 @@ import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 import wmpm16.group05.nomnomathon.routers.RESTRouter;
 
 import java.util.ArrayList;
@@ -35,12 +36,12 @@ public class RandomDishBean {
         List<String> restaurantIds = new ArrayList<>();
         restaurantIds.add(String.valueOf(selectedRestaurant.get(0).get_id()));
 
-        exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANT_ID, selectedRestaurant.get(0).get_id());
+        exchange.getIn().setHeader(NomNomConstants.HEADER_RESTAURANT_ID, selectedRestaurant.get(0).get_id());
         /*contains all restaurant ids for capacity check*/
-        exchange.getIn().setHeader(RESTRouter.HEADER_RESTAURANTS, restaurantIds);
-        exchange.getIn().setHeader(RESTRouter.HEADER_DISHES_PRICES, dishesPrices);
-        exchange.getIn().setHeader(RESTRouter.HEADER_ORDER_STATE, OrderState.ENRICHED);
-        exchange.getIn().setHeader(RESTRouter.HEADER_DISHES_ORDER, selectedDish.getName());
+        exchange.getIn().setHeader(NomNomConstants.HEADER_RESTAURANTS, restaurantIds);
+        exchange.getIn().setHeader(NomNomConstants.HEADER_DISHES_PRICES, dishesPrices);
+        exchange.getIn().setHeader(NomNomConstants.HEADER_ORDER_STATE, OrderState.ENRICHED);
+        exchange.getIn().setHeader(NomNomConstants.HEADER_DISHES_ORDER, selectedDish.getName());
 
     }
 

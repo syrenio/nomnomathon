@@ -8,6 +8,7 @@ import org.apache.camel.Processor;
 import org.apache.log4j.Logger;
 
 import wmpm16.group05.nomnomathon.domain.RestaurantData;
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 import wmpm16.group05.nomnomathon.routers.RESTRouter;
 
 public class MatchingRestaurantsToReceipientListProcessor implements Processor {
@@ -16,7 +17,7 @@ public class MatchingRestaurantsToReceipientListProcessor implements Processor {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void process(Exchange exchange) throws Exception {
-		Long requestid = RESTRouter.REQUESTCOUNTER.get();
+		Long requestid = NomNomConstants.REQUESTCOUNTER.get();
 		int size = exchange.getIn().getBody(List.class).stream()
 				.filter(o -> o instanceof RestaurantData).mapToInt(o -> 1).sum();
 		String recipients = exchange.getIn().getBody(List.class).stream()
@@ -26,9 +27,9 @@ public class MatchingRestaurantsToReceipientListProcessor implements Processor {
 						String.valueOf(requestid) + "/capacity")
 				.collect(Collectors.joining(",")).toString();
 		log.debug("Recipients String: " + recipients);
-		exchange.getIn().setHeader(RESTRouter.MATCHING_RESTAURANTS, recipients);
-		exchange.getIn().setHeader(RESTRouter.MATCHING_RESTAURANTS_SIZE, size);
-		exchange.getIn().setHeader(RESTRouter.MATCHING_REQUEST, requestid);
+		exchange.getIn().setHeader(NomNomConstants.MATCHING_RESTAURANTS, recipients);
+		exchange.getIn().setHeader(NomNomConstants.MATCHING_RESTAURANTS_SIZE, size);
+		exchange.getIn().setHeader(NomNomConstants.MATCHING_REQUEST, requestid);
 		
 	}
 };
