@@ -106,7 +106,7 @@ public class RESTRouter extends RouteBuilder {
         from("direct:storeOrder")
                 .bean(StoreOrderBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
                 .choice()
-                .when(header("type").isEqualTo(OrderType.SMS))
+                .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.SMS))
                 .to("direct:hungryDish")
                 .otherwise()
                 .to("direct:regularDish")
@@ -137,9 +137,9 @@ public class RESTRouter extends RouteBuilder {
                 //constant ist needed in order to aggregate all messages into a single message
                 //stops aggregation after 10 milliseconds
                 .choice()
-                .when(header("type").isEqualTo(OrderType.SMS))
+                .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.SMS))
                 .to("direct:extractHungryDish")
-                .when(header("type").isEqualTo(OrderType.REGULAR))
+                .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.REGULAR))
                 .to("direct:extractRegularDish")
                 .end()
                 .end();
@@ -209,18 +209,6 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:checkCreditCard")
                 .end();
 
-
-
-        /* TODO */
-        /**
-         * MAINTAINER: BeLa
-         * PRECONDITIONS
-         * - BODY
-         * --
-         * - HEADER
-         * --creditCard
-         * --amount
-         */
         from("direct:checkCreditCard")
                 .bean(PrepareForCreditCheckBean.class)
                 .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/creditcards/${header.creditCard}?amount=${header.amount}"))
@@ -228,6 +216,7 @@ public class RESTRouter extends RouteBuilder {
                 .setBody(constant(null))
                 .to("http://dummyHost")
                 .unmarshal().json(JsonLibrary.Jackson, PaymentRequestAnswer.class)
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.checkCreditCard?level=DEBUG")
                 .choice()
                 .when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
                 .otherwise().to("direct:rejectOrder")
@@ -244,6 +233,7 @@ public class RESTRouter extends RouteBuilder {
                 .setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
                 .to("http://dummyHost")
                 .unmarshal().json(JsonLibrary.Jackson, OrderRequestAnswer.class)
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.sendOrderToRestaurant?level=DEBUG")
                 .choice()
                 .when(simple("${in.body.accepted} == true")).to("direct:updateOrder")
                 .otherwise().to("direct:rejectOrder")
@@ -268,6 +258,7 @@ public class RESTRouter extends RouteBuilder {
                     }
                 })
                 .bean(UpdateOrderBean.class)
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.updateOrder?level=DEBUG")
                 .to("direct:finishOrder");
 
         from("direct:finishOrder")

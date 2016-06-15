@@ -9,6 +9,7 @@ import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 
 public class EnrichCustomer implements AggregationStrategy{
 	private final Logger log = Logger.getLogger(EnrichCustomer.class);
@@ -35,11 +36,11 @@ public class EnrichCustomer implements AggregationStrategy{
 		
 		// Exchange transform OrderRequest to Order 
 		in.setBody(order);
-		in.setHeader("notificationType", customer.getNotificationType());
-		in.setHeader("to", customer.getMail());
-		in.setHeader("lastName", customer.getLastName());
-		in.setHeader("firstName", customer.getFirstName());
-		in.setHeader("type", orderRequest.getType());
+		in.setHeader(NomNomConstants.HEADER_NOTIFICATION_TYPE, customer.getNotificationType());
+		in.setHeader(NomNomConstants.HEADER_MAIL_TO, customer.getMail());
+		in.setHeader(NomNomConstants.HEADER_FIRST_NAME, customer.getLastName());
+		in.setHeader(NomNomConstants.HEADER_LAST_NAME, customer.getFirstName());
+		in.setHeader(NomNomConstants.HEADER_TYPE, orderRequest.getType());
 		
 		arg0.setIn(in);
 		

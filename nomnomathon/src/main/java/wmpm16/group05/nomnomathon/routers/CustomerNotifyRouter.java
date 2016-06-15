@@ -46,11 +46,11 @@ public class CustomerNotifyRouter extends RouteBuilder {
 	    	//.setHeader("menu").simple("body.menu") // exception: cant find menu in body??
         
 	        .choice()
-	        	.when(header("notificationType").isEqualTo(CustomerNotificationType.SMS))
+	        	.when(header(NomNomConstants.HEADER_NOTIFICATION_TYPE).isEqualTo(CustomerNotificationType.SMS))
 	        		.to("direct:notifyCustomerSms")
-		        .when(header("notificationType").isEqualTo(CustomerNotificationType.MAIL))
+		        .when(header(NomNomConstants.HEADER_NOTIFICATION_TYPE).isEqualTo(CustomerNotificationType.MAIL))
 	        		.to("direct:notifyCustomerMail")
-		        .when(header("notificationType").isEqualTo(CustomerNotificationType.REST))
+		        .when(header(NomNomConstants.HEADER_NOTIFICATION_TYPE).isEqualTo(CustomerNotificationType.REST))
 	        		.to("direct:notifyCustomerRest")
 		    	.otherwise()
 	    			//TODO error handling

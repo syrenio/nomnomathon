@@ -15,4 +15,10 @@ public class NomNomConstants {
     public static final String HEADER_AMOUNT = "amount";
     public static final String HEADER_ORDER_STATE = "orderState";
     public static final String HEADER_RESTAURANTS = "restaurants";
+
+    public static final String HEADER_NOTIFICATION_TYPE = "notificationType";
+    public static final String HEADER_MAIL_TO = "to";
+    public static final String HEADER_FIRST_NAME = "lastName";
+    public static final String HEADER_LAST_NAME = "firstName";
+    public static final String HEADER_TYPE = "type";
 }
