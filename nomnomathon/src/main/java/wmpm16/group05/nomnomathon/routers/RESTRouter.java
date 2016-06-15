@@ -242,21 +242,6 @@ public class RESTRouter extends RouteBuilder {
         from("direct:updateOrder")
                 /* TODO Update order in db, needs more info*/
                 .bean(LoadOrderBean.class)
-                .process(x -> {
-                    OrderInProcess order = x.getIn().getBody(OrderInProcess.class);
-                    order.setRestaurantId(x.getIn().getHeader(NomNomConstants.HEADER_RESTAURANT_ID, Long.class));
-                    order.setState(OrderState.FULLFILLED);
-                    /*set prices for dishes*/
-                    Map<String, Double> dishPrices = x.getIn().getHeader(NomNomConstants.HEADER_DISHES_PRICES, Map.class);
-                   /*add dish to order in case of random dish*/
-                    if (order.getDishes().size() == 0) {
-                        order.addDish(x.getIn().getHeader(NomNomConstants.HEADER_DISHES_ORDER, String.class));
-                    }
-                    for (Dish dish : order.getDishes()) {
-                        Double price = dishPrices.getOrDefault(dish.getDish(), 0d);
-                        dish.setPrice(price);
-                    }
-                })
                 .bean(UpdateOrderBean.class)
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.updateOrder?level=DEBUG")
                 .to("direct:finishOrder");
