@@ -3,6 +3,7 @@ package wmpm16.group05.nomnomathon.routers;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -126,10 +127,21 @@ public class RESTRouter extends RouteBuilder {
         from("direct:findAll")
                 .setBody().simple("{\"menu.name\":{ $in: [${header.dishNames}]}}").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
-                .to("direct:splitRestaurants");
+                .choice()
+                    .when(simple("${in.body.size} > 0"))
+                    .to("direct:splitRestaurants")
+                    .when(simple("${in.body.size} == 0"))
+                    .setHeader(NomNomConstants.HEADER_ORDER_STATE, constant(OrderState.REJECTED_NO_RESTAURANTS))
+                    .to("direct:rejectOrder")
+                .end()
+                .end();
+                //.to("direct:splitRestaurants");
 
 
         from("direct:splitRestaurants")
+                .process(x->{
+                    System.out.println("splitRest: " + x.getIn().getBody());
+                })
                 .split(body())
                 .convertBodyTo(String.class)
                 .unmarshal(restaurantjsonformat)
@@ -137,10 +149,10 @@ public class RESTRouter extends RouteBuilder {
                 //constant ist needed in order to aggregate all messages into a single message
                 //stops aggregation after 10 milliseconds
                 .choice()
-                .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.SMS))
-                .to("direct:extractHungryDish")
-                .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.REGULAR))
-                .to("direct:extractRegularDish")
+                    .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.SMS))
+                    .to("direct:extractHungryDish")
+                    .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.REGULAR))
+                    .to("direct:extractRegularDish")
                 .end()
                 .end();
 
@@ -164,9 +176,9 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:checkRestaurantsAvailability")
                 .choice()
-                .when(header("orderState").isEqualTo(OrderState.ENRICHED))
+                .when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.ENRICHED))
                 .to("direct:requestCapacity")
-                .when((header("orderState").isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
+                .when((header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
                 .to("direct:rejectOrder")
                 .end();
 
@@ -197,7 +209,7 @@ public class RESTRouter extends RouteBuilder {
                 .when(simple("${body.size} > 0"))
                 .to("direct:selectBestFitRestaurant")
                 .otherwise()
-                .setHeader("orderState").constant(OrderState.REJECTED_NO_CAPACITY)
+                .setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.REJECTED_NO_CAPACITY)
                 .to("direct:rejectOrder")
                 .end();
 
@@ -222,7 +234,7 @@ public class RESTRouter extends RouteBuilder {
                 .choice()
                 .when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
                 .otherwise()
-                .setHeader("orderState").constant(OrderState.REJECTED_INVALID_PAYMENT)
+                .setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.REJECTED_INVALID_PAYMENT)
                 .to("direct:rejectOrder")
                 .end();
 
@@ -255,12 +267,13 @@ public class RESTRouter extends RouteBuilder {
         from("direct:rejectOrder")
                 .bean(LoadOrderBean.class)
                 .bean(UpdateOrderBean.class)
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.rejectOrder?level=DEBUG")
                 .to("direct:notifyCustomer");
 
         /*notify customer via channel*/
         from("direct:notifyCustomer")
-                .filter(header("orderState").isEqualTo(OrderState.RESTAURANT_SELECT))
-                .setHeader("orderState").constant(OrderState.FULLFILLED) // just for DEMO without second part of process
+                .filter(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.RESTAURANT_SELECT))
+                    .setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.FULLFILLED) // just for DEMO without second part of process
                 .end()
                 .wireTap("direct:sendCustomerNotification")
                 .process(x -> {

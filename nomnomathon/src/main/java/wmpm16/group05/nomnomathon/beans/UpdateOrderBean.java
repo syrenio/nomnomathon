@@ -38,9 +38,11 @@ public class UpdateOrderBean {
         if (order.getDishes().size() == 0) {
             order.addDish(exchange.getIn().getHeader(NomNomConstants.HEADER_DISHES_ORDER, String.class));
         }
-        for (Dish dish : order.getDishes()) {
-            Double price = dishPrices.getOrDefault(dish.getDish(), 0d);
-            dish.setPrice(price);
+        if(dishPrices != null && dishPrices.size() > 0){
+            for (Dish dish : order.getDishes()) {
+                Double price = dishPrices.getOrDefault(dish.getDish(), 0d);
+                dish.setPrice(price);
+            }
         }
 
         return order;

@@ -45,13 +45,13 @@ public class RegularDishQueryRestaurantBean {
                         restaurantIds.add(String.valueOf(r.get_id()));
                     }
                 } else {
-                    exchange.getIn().setHeader("orderState", OrderState.REJECTED_NO_RESTAURANTS);
+                    exchange.getIn().setHeader(NomNomConstants.HEADER_ORDER_STATE, OrderState.REJECTED_NO_RESTAURANTS);
                 }
             }
         }
 
-        if (exchange.getIn().getHeader("orderState") != OrderState.REJECTED_NO_RESTAURANTS) {
-            exchange.getIn().setHeader("orderState", OrderState.ENRICHED);
+        if (exchange.getIn().getHeader(NomNomConstants.HEADER_ORDER_STATE) != OrderState.REJECTED_NO_RESTAURANTS) {
+            exchange.getIn().setHeader(NomNomConstants.HEADER_ORDER_STATE, OrderState.ENRICHED);
         }
         /*contains all restaurant ids for capacity check*/
         exchange.getIn().setHeader(NomNomConstants.HEADER_RESTAURANTS, restaurantIds);

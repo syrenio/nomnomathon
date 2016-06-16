@@ -67,19 +67,19 @@ public class CustomerNotifyRouter extends RouteBuilder {
 	        .setHeader("Content-type", constant("text/html"))
 	        .choice()
 	        	// set mail subject and Chunk template
-        		.when(header("orderState").isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
+        		.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
 		    		.setHeader("subject", constant("NomNom - No Restaurants"))
 		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#no_restaurants"))
 					
-				.when(header("orderState").isEqualTo(OrderState.REJECTED_NO_CAPACITY))
+				.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_CAPACITY))
 	        		.setHeader("subject", constant("NomNom - No Capacity"))
 		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#no_capacity"))
 	    			
-	        	.when(header("orderState").isEqualTo(OrderState.REJECTED_INVALID_PAYMENT))
+	        	.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_INVALID_PAYMENT))
         			.setHeader("subject", constant("NomNom - Payment failed"))
 		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#invalid_payment"))
 	    			
-		        .when(header("orderState").isEqualTo(OrderState.FULLFILLED))
+		        .when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.FULLFILLED))
         			.setHeader("subject", constant("NomNom - Order finished"))
 		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#fullfilled"))
 	    			

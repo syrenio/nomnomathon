@@ -75,11 +75,14 @@ Invalid format exception
 
 ## more examples
 
-### wurst not available
+### shrimp not found, REJECTED_NO_RESTAURANTS
+curl -H "Content-Type: application/json" -H "Authorization: Basic DEIN-AUTHCODE" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\" :\"+4368012345678\",\"dishes\":[\"shrimp\"]}" http://localhost:8080/api/orders
+
+### wurst not available, REJECTED_NO_RESTAURANTS
 curl -H "Content-Type: application/json" -H "Authorization: Basic DEIN-AUTHCODE" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368012345678\",\"dishes\":[\"pizza\", \"wurst\"]}" http://localhost:8080/api/orders
 
-### verfuegbar
+### verfuegbar, FULLFILLED
 curl -H "Content-Type: application/json" -H "Authorization: Basic DEIN-AUTHCODE" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368012345678\",\"dishes\":[\"pizza\", \"pasta\"]}" http://localhost:8080/api/orders
 
-### SMS random
+### SMS random, FULLFILLED
 curl -H "Content-Type: application/json" -X POST -d "{\"type\":\"SMS\",\"text\":\"hungry\",\"phoneNumber\":\"+DEINE-NUMMER\"}" http://localhost:8080/api/orders
