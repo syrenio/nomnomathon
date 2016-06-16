@@ -17,7 +17,7 @@ public class PrepareForCreditCheckBean {
 
     public void prepare(Exchange exchange, @Simple("header." + NomNomConstants.HEADER_ORDER_ID) Long orderId){
         OrderInProcess order = orderRepository.findOne(orderId);
-        exchange.getIn().setHeader("creditCard", order.getCustomer().getCreditCard());
+        exchange.getIn().setHeader(NomNomConstants.HEADER_CREDIT_CARD, order.getCustomer().getCreditCard());
         /*amount already set in previous step*/
     }
 }

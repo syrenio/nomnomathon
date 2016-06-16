@@ -15,6 +15,7 @@ public class NomNomConstants {
     public static final String HEADER_AMOUNT = "amount";
     public static final String HEADER_ORDER_STATE = "orderState";
     public static final String HEADER_RESTAURANTS = "restaurants";
+    public static final String HEADER_CREDIT_CARD = "creditCard";
 
     public static final String HEADER_NOTIFICATION_TYPE = "notificationType";
     public static final String HEADER_MAIL_TO = "to";
@@ -23,4 +24,5 @@ public class NomNomConstants {
     public static final String HEADER_TYPE = "type";
     public static final String HEADER_DISH_NAMES = "dishNames";
     public static final String HEADER_ORDER_ID = "orderId";
+
 }

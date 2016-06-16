@@ -139,9 +139,6 @@ public class RESTRouter extends RouteBuilder {
 
 
         from("direct:splitRestaurants")
-                .process(x->{
-                    System.out.println("splitRest: " + x.getIn().getBody());
-                })
                 .split(body())
                 .convertBodyTo(String.class)
                 .unmarshal(restaurantjsonformat)
