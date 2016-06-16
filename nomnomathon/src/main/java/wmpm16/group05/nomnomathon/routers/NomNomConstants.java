@@ -21,4 +21,6 @@ public class NomNomConstants {
     public static final String HEADER_FIRST_NAME = "lastName";
     public static final String HEADER_LAST_NAME = "firstName";
     public static final String HEADER_TYPE = "type";
+    public static final String HEADER_DISH_NAMES = "dishNames";
+    public static final String HEADER_ORDER_ID = "orderId";
 }

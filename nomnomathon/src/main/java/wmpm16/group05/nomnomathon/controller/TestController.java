@@ -30,6 +30,7 @@ import wmpm16.group05.nomnomathon.models.CustomerRepository;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderRepository;
 import wmpm16.group05.nomnomathon.models.OrderState;
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 
 @RestController
 public class TestController {
@@ -206,7 +207,7 @@ public class TestController {
 		exchange.getIn().setBody(order);
 		template.send("direct:storeOrder", exchange);
 
-		Object orderId = exchange.getIn().getHeader("orderId");
+		Object orderId = exchange.getIn().getHeader(NomNomConstants.HEADER_ORDER_ID);
 		Object o = template.requestBodyAndHeader("direct:loadOrder", null, "orderId", orderId);
 
 		System.out.println(o);

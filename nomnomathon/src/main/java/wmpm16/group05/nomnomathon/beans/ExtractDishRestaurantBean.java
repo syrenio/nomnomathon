@@ -4,6 +4,7 @@ import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 
 import java.util.List;
 
@@ -23,7 +24,7 @@ public class ExtractDishRestaurantBean {
         }
         dishNames = dishNames.substring(0, dishNames.length() - 2);
 
-        exchange.getIn().setHeader("dishNames", dishNames);
+        exchange.getIn().setHeader(NomNomConstants.HEADER_DISH_NAMES, dishNames);
 
     }
 }

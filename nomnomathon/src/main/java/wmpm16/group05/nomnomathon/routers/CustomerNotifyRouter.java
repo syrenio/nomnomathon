@@ -41,7 +41,7 @@ public class CustomerNotifyRouter extends RouteBuilder {
         
         //TODO extract orderId & co to header to acces it in template
 //        Alt: StringTemplate, FreeMarker
-        	.setHeader("orderId").simple("headers.order.orderId")
+        	.setHeader(NomNomConstants.HEADER_ORDER_ID).simple("headers.order." + NomNomConstants.HEADER_ORDER_ID)
     		.setHeader("dishes").simple("headers.order.dishes")
 	    	//.setHeader("menu").simple("body.menu") // exception: cant find menu in body??
         

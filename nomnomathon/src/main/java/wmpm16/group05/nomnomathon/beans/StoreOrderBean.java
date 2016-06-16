@@ -12,6 +12,7 @@ import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.DishRepository;
 import wmpm16.group05.nomnomathon.models.OrderListEntryRepository;
 import wmpm16.group05.nomnomathon.models.OrderRepository;
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 
 @Component
 public class StoreOrderBean {
@@ -53,7 +54,7 @@ public class StoreOrderBean {
 		*/
 		
 		exchange.setOut(exchange.getIn());
-		exchange.getOut().setHeader("orderId", order.getOrderId());
+		exchange.getOut().setHeader(NomNomConstants.HEADER_ORDER_ID, order.getOrderId());
 		
 	}
 		
