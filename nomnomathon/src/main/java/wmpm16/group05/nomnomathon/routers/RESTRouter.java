@@ -192,10 +192,12 @@ public class RESTRouter extends RouteBuilder {
                 .split(body())
                 .filter(body().isNotEqualTo("-1"))
                 .aggregate(constant(true), new CapacityAggregationStrategy()).completionTimeout(100)
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.checkRestaurantAvailable?level=DEBUG")
                 .choice()
                 .when(simple("${body.size} > 0"))
                 .to("direct:selectBestFitRestaurant")
                 .otherwise()
+                .setHeader("orderState").constant(OrderState.REJECTED_NO_CAPACITY)
                 .to("direct:rejectOrder")
                 .end();
 
@@ -219,24 +221,23 @@ public class RESTRouter extends RouteBuilder {
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.checkCreditCard?level=DEBUG")
                 .choice()
                 .when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
-                .otherwise().to("direct:rejectOrder")
+                .otherwise()
+                .setHeader("orderState").constant(OrderState.REJECTED_INVALID_PAYMENT)
+                .to("direct:rejectOrder")
                 .end();
 
         /**
          *  Maintainer: till
-         *  Sending order again to restaurant, asking to accept the order.
+         *  Wiretap: Sending order to restaurant.
          */
         from("direct:sendOrderToRestaurant")
                 .bean(PollOrder.class)
+                .wireTap("direct:updateOrder")
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.sendOrderToRestaurant?level=DEBUG")
                 .marshal().json(JsonLibrary.Jackson)
                 .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/restaurants/${header.restaurantId}/order"))
                 .setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
-                .to("http://dummyHost")
-                .unmarshal().json(JsonLibrary.Jackson, OrderRequestAnswer.class)
-                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.sendOrderToRestaurant?level=DEBUG")
-                .choice()
-                .when(simple("${in.body.accepted} == true")).to("direct:updateOrder")
-                .otherwise().to("direct:rejectOrder")
+                .to("http://dummyHost")                       
                 .end();
 
         from("direct:updateOrder")
