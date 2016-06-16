@@ -23,7 +23,10 @@ public class UpdateOrderBean {
         dishRepository.save(order.getDishes());
         order = orderRepository.save(order);
 
+        exchange.getOut().setHeaders(exchange.getIn().getHeaders());
         exchange.getOut().setBody(order);
+
+        
     }
 
     /*
