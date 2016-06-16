@@ -18,24 +18,20 @@ public class UpdateOrderBean {
 
     public void update(Exchange exchange){
         OrderInProcess order = exchange.getIn().getBody(OrderInProcess.class);
-
         order = updateOrderFields(order, exchange);
 
-
-        /*FIXME BAD Design, should be able to save this with the orderRepository.save(order) call, cascading db stuff*/
         dishRepository.save(order.getDishes());
-
         order = orderRepository.save(order);
 
         exchange.getOut().setBody(order);
     }
 
     /*
-     * Update prices, restaurantId, status
+     * Update prices, restaurantId, state
      */
     private OrderInProcess updateOrderFields(OrderInProcess order, Exchange exchange){
         order.setRestaurantId(exchange.getIn().getHeader(NomNomConstants.HEADER_RESTAURANT_ID, Long.class));
-        order.setState(OrderState.FULLFILLED);
+        order.setState(exchange.getIn().getHeader(NomNomConstants.HEADER_ORDER_STATE, OrderState.class));
         /*set prices for dishes*/
         Map<String, Double> dishPrices = exchange.getIn().getHeader(NomNomConstants.HEADER_DISHES_PRICES, Map.class);
         /*add dish to order in case of random dish*/

@@ -78,10 +78,10 @@ public class RESTRouter extends RouteBuilder {
         * */
         from("direct:postOrderWithSMS")
                 .filter(simple("${in.body.type} == 'SMS' && ${in.body.text} contains 'hungry'")) /*IGNORE OTHER Messages */
-                .bean(SMSAuthBean.class)
-                .filter(simple("${in.body.userId.present} == true"))
-                .to("direct:enrichCustomerData")
-                .end()
+                    .bean(SMSAuthBean.class)
+                    .filter(simple("${in.body.userId.present} == true"))
+                        .to("direct:enrichCustomerData")
+                    .end()
                 .end();
 
         /*extract customerId from header */
@@ -241,8 +241,8 @@ public class RESTRouter extends RouteBuilder {
                 .end();
 
         from("direct:updateOrder")
-                /* TODO Update order in db, needs more info*/
                 .bean(LoadOrderBean.class)
+                .setHeader(NomNomConstants.HEADER_ORDER_STATE, constant(OrderState.FULLFILLED))
                 .bean(UpdateOrderBean.class)
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.updateOrder?level=DEBUG")
                 .to("direct:finishOrder");
@@ -253,7 +253,8 @@ public class RESTRouter extends RouteBuilder {
 
         /*reject order, update DB*/
         from("direct:rejectOrder")
-                //TODO update OrderInProcess in DB
+                .bean(LoadOrderBean.class)
+                .bean(UpdateOrderBean.class)
                 .to("direct:notifyCustomer");
 
         /*notify customer via channel*/
