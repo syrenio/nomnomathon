@@ -19,10 +19,26 @@ public class NomNomConstants {
 
     public static final String HEADER_NOTIFICATION_TYPE = "notificationType";
     public static final String HEADER_MAIL_TO = "to";
-    public static final String HEADER_FIRST_NAME = "lastName";
-    public static final String HEADER_LAST_NAME = "firstName";
+    public static final String HEADER_SMS_PHONENUMBER = "CamelSmppDestAddr";
+    public static final String HEADER_FIRST_NAME = "firstName";
+    public static final String HEADER_LAST_NAME = "lastName";
     public static final String HEADER_TYPE = "type";
     public static final String HEADER_DISH_NAMES = "dishNames";
     public static final String HEADER_ORDER_ID = "orderId";
 
+    
+    //Mail
+    public static final String MAIL_HOST = "smtp.world4you.com";
+    public static final String MAIL_USER = "notify@nomnomathon.eu";
+    public static final String MAIL_PASS = "kiateR8";
+    public static final String MAIL_PORT = "25";
+
+    //SMS / SMPP
+    public static final String SMPP_HOST = "localhost";
+    public static final String SMPP_USER = "smppclient1";
+    public static final String SMPP_PASS = "password";
+    public static final String SMPP_PORT = "2775";
+
+
+    
 }
