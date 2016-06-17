@@ -34,7 +34,7 @@ public class DatabaseSeeder {
         customer = new Customer("bmu","Bernhard","Müller","12345");
         customer.setPhoneNumber("+4369981259747");
         customer.setMail("bernhard.mueller@gmx.at");
-        customer.setNotificationType(CustomerNotificationType.MAIL);;
+        customer.setNotificationType(CustomerNotificationType.SMS);;
         customer.setAddress("Percostraße 25, 1220 Wien");
         customer.setCreditCard("4411948396385770");
         customerRepository.save(customer);
