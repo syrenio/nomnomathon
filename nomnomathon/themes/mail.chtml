@@ -25,16 +25,14 @@ deine Bestellung mit der NomNomId: {$headers.orderId} wird gerade zubereitet und
 <table border="1", cellpadding="3",  border="1", cellspacing="1">
 <tr>
 <td>Gericht</td>
-<td>Menge</td>
 <td>Preis</td>
 </tr>
-{% loop in $headers.dishes as $dish %}
+{% loop in $headers.dishesOrder as $dish %}
 
 
 <tr>
 <td>{$dish.dish}</td>
-<td>{$dish.quantity}</td>
-<td>{$dish.price}</td>
+<td>{$dish.price}€</td>
 </tr>
 
 

@@ -17,6 +17,7 @@ We use the following software:
 ** see the pom for used components
 * H2 DB for inmemory relational data
 * mongodb for documents
+* SMPPSim for sending SMS
 
 #How to run it
 
@@ -27,6 +28,7 @@ U need this softwarestack to run it:
 * Java 8 JDK (off course)
 * maven 3
 * mongodb
+* SMPPsim with default settings http://www.seleniumsoftware.com/downloads.html
 
 ## Define your own properties
 
