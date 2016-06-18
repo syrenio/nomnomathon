@@ -12,7 +12,7 @@ public class DatabaseSeeder {
     @Autowired
     DishRepository dishRepository;
     @Autowired
-    OrderRepository orderRepository;
+    OrderInProcessRepository orderRepository;
 
     public void seed(){
 

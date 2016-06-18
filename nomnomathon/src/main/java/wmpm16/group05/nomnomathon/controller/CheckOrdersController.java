@@ -14,7 +14,7 @@ import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
-import wmpm16.group05.nomnomathon.models.OrderRepository;
+import wmpm16.group05.nomnomathon.models.OrderInProcessRepository;
 
 
 @RestController
@@ -25,7 +25,7 @@ public class CheckOrdersController {
 	private CamelContext context;
 	
 	@Autowired
-    OrderRepository orderRepository;
+    OrderInProcessRepository orderRepository;
 
 	@RequestMapping("/demo/checkorders")
 	public List<OrderInProcess> startProcess() {

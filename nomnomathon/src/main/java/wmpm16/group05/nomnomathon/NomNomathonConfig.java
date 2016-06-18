@@ -17,7 +17,7 @@ import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.CustomerNotificationType;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
 import wmpm16.group05.nomnomathon.models.DishRepository;
-import wmpm16.group05.nomnomathon.models.OrderRepository;
+import wmpm16.group05.nomnomathon.models.OrderInProcessRepository;
 
 @Configuration
 public class NomNomathonConfig {

@@ -28,7 +28,7 @@ import wmpm16.group05.nomnomathon.mocked.OrderRequestAnswer;
 import wmpm16.group05.nomnomathon.models.Customer;
 import wmpm16.group05.nomnomathon.models.CustomerRepository;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
-import wmpm16.group05.nomnomathon.models.OrderRepository;
+import wmpm16.group05.nomnomathon.models.OrderInProcessRepository;
 import wmpm16.group05.nomnomathon.models.OrderState;
 import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 
@@ -49,7 +49,7 @@ public class TestController {
 	StoreOrderBean orderBean;
 	
 	@Autowired
-	OrderRepository orderRepository;
+	OrderInProcessRepository orderRepository;
 
 	@RequestMapping("/test/EnrichOrder")
 	public OrderRequest testEnrichCustomer() {
