@@ -83,8 +83,14 @@ curl -H "Content-Type: application/json" -H "Authorization: Basic DEIN-AUTHCODE"
 ### wurst not available, REJECTED_NO_RESTAURANTS
 curl -H "Content-Type: application/json" -H "Authorization: Basic DEIN-AUTHCODE" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368012345678\",\"dishes\":[\"pizza\", \"wurst\"]}" http://localhost:8080/api/orders
 
+### frank nomoney has no money , REJECTED_INVALID_PAYMENT
+curl -H "Content-Type: application/json" -H "Authorization: Basic ZnJhbms6bm9tb25leQ==" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368000000000\",\"dishes\":[\"pizza\", \"pasta\"]}" http://localhost:8080/api/orders
+
 ### verfuegbar, FULLFILLED
 curl -H "Content-Type: application/json" -H "Authorization: Basic DEIN-AUTHCODE" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368012345678\",\"dishes\":[\"pizza\", \"pasta\"]}" http://localhost:8080/api/orders
 
 ### SMS random, FULLFILLED
 curl -H "Content-Type: application/json" -X POST -d "{\"type\":\"SMS\",\"text\":\"hungry\",\"phoneNumber\":\"+DEINE-NUMMER\"}" http://localhost:8080/api/orders
+
+
+

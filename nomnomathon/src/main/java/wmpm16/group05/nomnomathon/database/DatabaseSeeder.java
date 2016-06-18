@@ -46,5 +46,14 @@ public class DatabaseSeeder {
         customer.setAddress("blabla, 1234 Wien");
         customer.setCreditCard("342503083304998");
         customerRepository.save(customer);
+
+        //authcode: ZnJhbms6bm9tb25leQ==
+        customer = new Customer("frank","frank","nomoney","nomoney");
+        customer.setPhoneNumber("+4368000000000");
+        customer.setMail("a.b@c.d");
+        customer.setNotificationType(CustomerNotificationType.MAIL);;
+        customer.setAddress("No Name Street 123");
+        customer.setCreditCard("6011671952963165");
+        customerRepository.save(customer);
     }
 }
