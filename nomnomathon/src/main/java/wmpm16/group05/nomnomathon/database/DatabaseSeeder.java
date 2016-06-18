@@ -12,7 +12,7 @@ public class DatabaseSeeder {
     @Autowired
     DishRepository dishRepository;
     @Autowired
-    OrderRepository orderRepository;
+    OrderInProcessRepository orderRepository;
 
     public void seed(){
 
@@ -31,13 +31,24 @@ public class DatabaseSeeder {
 
         //authcode: Ym11OjEyMzQ1
         customer = new Customer("bmu","Bernhard","Müller","12345");
-        customer.setPhoneNumber("+43699812579");
+        customer.setPhoneNumber("+0699923923293");
+        customer.setMail("bernhard.mueller@gmx.at");
+        customer.setNotificationType(CustomerNotificationType.SMS);;
+        customer.setAddress("Percostraße 25, 1220 Wien");
+        customer.setCreditCard("4411948396385770");
+        customerRepository.save(customer);
+
+        //authcode: aG11OjEyMzQ1
+        customer = new Customer("hmu","Hansi","Müller","12345");
+        customer.setPhoneNumber("+0699923923434");
         customer.setMail("bernhard.mueller@gmx.at");
         customer.setNotificationType(CustomerNotificationType.MAIL);;
         customer.setAddress("Percostraße 25, 1220 Wien");
         customer.setCreditCard("4411948396385770");
         customerRepository.save(customer);
 
+        
+        
         //authcode: bWF3ZToxMjM0NQ==
         customer = new Customer("mawe","Martin","Weik","12345");
         customer.setPhoneNumber("+4369912345678");

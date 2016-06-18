@@ -99,4 +99,12 @@ public class RestaurantData {
 	public void set_id(int id) {
 		this._id = id;
 	}
+
+	@Override
+	public String toString() {
+		return "RestaurantData [_id=" + _id + ", name=" + name + ", location=" + location + ", opening=" + opening
+				+ ", closing=" + closing + ", categories=" + categories + ", menu=" + menu + "]";
+	}
+	
+	
 }

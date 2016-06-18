@@ -129,7 +129,7 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:findAll");
 
         from("direct:findAll")
-                .setBody().simple("{\"menu.name\":{ $in: [${header.dishNames}]}}").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
+                .setBody().simple("{\"menu.name\":{ $in: [${header." + NomNomConstants.HEADER_DISH_NAMES + "}]}}").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
                 .choice()
                     .when(simple("${in.body.size} > 0"))
@@ -227,7 +227,9 @@ public class RESTRouter extends RouteBuilder {
 
         from("direct:checkCreditCard")
                 .bean(PrepareForCreditCheckBean.class)
-                .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/creditcards/${header.creditCard}?amount=${header.amount}"))
+                .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/creditcards/"
+                		+ "${header." + NomNomConstants.HEADER_CREDIT_CARD + "}"
+                		+ "?amount=${header." + NomNomConstants.HEADER_AMOUNT + "}"))
                 .setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
                 .setBody(constant(null))
                 .to("http://dummyHost")
@@ -250,7 +252,7 @@ public class RESTRouter extends RouteBuilder {
                 .wireTap("direct:updateOrder")
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.sendOrderToRestaurant?level=DEBUG")
                 .marshal().json(JsonLibrary.Jackson)
-                .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/restaurants/${header.restaurantId}/order"))
+                .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/restaurants/${header." + NomNomConstants.HEADER_RESTAURANT_ID + "}/order"))
                 .setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.APPLICATION_JSON_VALUE))
                 .to("http://dummyHost")                       
                 .end();

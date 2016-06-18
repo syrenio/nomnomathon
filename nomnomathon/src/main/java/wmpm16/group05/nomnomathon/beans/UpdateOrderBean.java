@@ -12,7 +12,7 @@ import java.util.Map;
 public class UpdateOrderBean {
 
     @Autowired
-    OrderRepository orderRepository;
+    OrderInProcessRepository orderRepository;
     @Autowired
     DishRepository dishRepository;
 

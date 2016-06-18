@@ -17,20 +17,12 @@ public class OrderInProcess {
 	@OneToMany(fetch = FetchType.EAGER)
 	private List<Dish> dishes = new ArrayList<Dish>();
 
-	public Long getOrderId() {
-		return orderId;
-	}
+
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((customer == null) ? 0 : customer.hashCode());
-		result = prime * result + ((dishes == null) ? 0 : dishes.hashCode());
-		result = prime * result + ((orderId == null) ? 0 : orderId.hashCode());
-		result = prime * result + ((restaurantId == null) ? 0 : restaurantId.hashCode());
-		result = prime * result + ((state == null) ? 0 : state.hashCode());
-		return result;
+	public String toString() {
+		return "OrderInProcess [orderId=" + orderId + ", state=" + state + ", customer=" + customer + ", restaurantId="
+				+ restaurantId + ", dishes=" + dishes + "]";
 	}
 
 	@Override
@@ -65,6 +57,10 @@ public class OrderInProcess {
 		return state == other.state;
 	}
 
+	public Long getOrderId() {
+		return orderId;
+	}
+	
 	public void setOrderId(long orderId) {
 		this.orderId = orderId;
 	}
@@ -91,12 +87,6 @@ public class OrderInProcess {
 
 	public void setDishes(List<Dish> dishes) {
 		this.dishes = dishes;
-	}
-
-	@Override
-	public String toString() {
-		return "Order [orderId=" + orderId + ", state=" + state + ", customer=" + customer + ", restaurantId="
-				+ restaurantId + ", dishes=" + dishes + "]";
 	}
 
 	public void setOrderId(Long orderId) {

@@ -17,4 +17,11 @@ public class PaymentRequestAnswer {
 	public void setLiquid(Boolean liquid) {
 		this.liquid = liquid;
 	}
+
+	@Override
+	public String toString() {
+		return "PaymentRequestAnswer [liquid=" + liquid + "]";
+	}
+	
+	
 }

@@ -7,14 +7,14 @@ import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.DishRepository;
-import wmpm16.group05.nomnomathon.models.OrderRepository;
+import wmpm16.group05.nomnomathon.models.OrderInProcessRepository;
 import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 
 @Component
 public class StoreOrderBean {
 
 	@Autowired
-	OrderRepository orderRepository;
+	OrderInProcessRepository orderRepository;
 	
 	@Autowired
 	DishRepository dishRepository;

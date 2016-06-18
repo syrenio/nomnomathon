@@ -40,35 +40,36 @@ public class CustomerNotifyRouter extends RouteBuilder {
 
         
 	        .choice()
-	        	.when(header(NomNomConstants.HEADER_NOTIFICATION_TYPE).isEqualTo(CustomerNotificationType.SMS))
-		    		.setHeader(NomNomConstants.HEADER_SMS_PHONENUMBER).simple("body.customer.phoneNumber")
+			    .when(simple("${header." + NomNomConstants.HEADER_NOTIFICATION_TYPE + "} =~ '" + CustomerNotificationType.SMS + "'"
+			    		+ " && ${body?.customer?.phoneNumber} regex '{{smpp.regex}}'"))
+		    		.setHeader(NomNomConstants.HEADER_SMPP_PHONENUMBER).simple("body.customer.phoneNumber")
 	        		.to("direct:notifyCustomerSms")
-		        .when(header(NomNomConstants.HEADER_NOTIFICATION_TYPE).isEqualTo(CustomerNotificationType.MAIL))
-		    		.setHeader(NomNomConstants.HEADER_MAIL_TO).simple("body.customer.mail")
+			    .when(simple("${header." + NomNomConstants.HEADER_NOTIFICATION_TYPE + "} =~ '" + CustomerNotificationType.MAIL + "'"
+			    		+ " && ${body?.customer?.mail} regex '{{mail.regex}}'"))
+			        .setHeader(NomNomConstants.HEADER_SMTP_TO).simple("body.customer.mail")
 	        		.to("direct:notifyCustomerMail")
 		        .when(header(NomNomConstants.HEADER_NOTIFICATION_TYPE).isEqualTo(CustomerNotificationType.REST))
 	        		.to("direct:notifyCustomerRest")
 		    	.otherwise()
-					.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:undefined_customerNotificationType?level=ERROR")
+					.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:undefined_customerNotification?level=ERROR")
 					.stop()
 	        .end();
-	        		
-	
+   
         /* Send SMS to Customer */
         from("direct:notifyCustomerSms")
 	        .choice()
 	    		// set Chunk template
 				.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
-		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("sms#no_restaurants"))
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.sms.no_restaurants}}"))
 					
 				.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_CAPACITY))
-		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("sms#no_capacity"))
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.sms.no_capacity}}"))
 					
 		    	.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_INVALID_PAYMENT))
-		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("sms#invalid_payment"))
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.sms.invalid_payment}}"))
 					
 		        .when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.FULLFILLED))
-		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("sms#fullfilled"))
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.sms.fullfilled}}"))
 					
 				.otherwise()
 					.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerSms:undefined_orderState?level=ERROR")
@@ -76,11 +77,10 @@ public class CustomerNotifyRouter extends RouteBuilder {
 		    .end()
 		    // execute Chunk template and send SMS
 		    .to("chunk:dummy")
-//		    .process(x -> {System.err.println("CustomerNotifyRouter.java: START http://www.seleniumsoftware.com/downloads.html FOR SMS. Afterwards uncomment the code block: .to(\"smpp");})
 	        .to("smpp://{{smpp.user}}@{{smpp.host}}:{{smpp.port}}" 
 	        		+ "?password={{smpp.pass}}" 
 	        		+ "&enquireLinkTimer=6000&systemType=producer&registeredDelivery=0")
-        	.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerSms:send?level=DEBUG")
+        	.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerSms:send?level=DEBUG&showBody=true")
         	.end();
     
         /* Send Mail to Customer */
@@ -89,20 +89,20 @@ public class CustomerNotifyRouter extends RouteBuilder {
 	        .choice()
 	        	// set mail subject and Chunk template
         		.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
-		    		.setHeader("subject", constant("NomNom - No Restaurants"))
-		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#no_restaurants"))
+		    		.setHeader(NomNomConstants.HEADER_SUBJECT, constant("{{tpl.mail.subject.no_restaurants}}"))
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.mail.no_restaurants}}"))
 					
 				.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_CAPACITY))
-	        		.setHeader("subject", constant("NomNom - No Capacity"))
-		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#no_capacity"))
+	        		.setHeader(NomNomConstants.HEADER_SUBJECT, constant("{{tpl.mail.subject.no_capacity}}"))
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.mail.no_capacity}}"))
 	    			
 	        	.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_INVALID_PAYMENT))
-        			.setHeader("subject", constant("NomNom - Payment failed"))
-		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#invalid_payment"))
+        			.setHeader(NomNomConstants.HEADER_SUBJECT, constant("{{tpl.mail.subject.invalid_payment}}"))
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.mail.invalid_payment}}"))
 	    			
 		        .when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.FULLFILLED))
-        			.setHeader("subject", constant("NomNom - Order finished"))
-		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("mail#fullfilled"))
+		        	.setHeader(NomNomConstants.HEADER_SUBJECT, constant("{{tpl.mail.subject.fullfilled}}"))
+		    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.mail.fullfilled}}"))
 	    			
 	    		.otherwise()
 					.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:undefined_orderState?level=ERROR")
@@ -114,13 +114,31 @@ public class CustomerNotifyRouter extends RouteBuilder {
 					+ "password={{mail.pass}}&"
 					+ "username={{mail.user}}&"
 					+ "from={{mail.user}}")
-			.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:send?level=DEBUG")
+			.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:send?level=DEBUG&showBody=false")
 			.end();
     
         /* Send REST to Customer */
         from("direct:notifyCustomerRest")
         //TODO
-			.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerRest:send?level=DEBUG");
+        .choice()
+    		// set Chunk template
+			.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
+	    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.rest.no_restaurants}}"))
+				
+			.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_CAPACITY))
+	    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.rest.no_capacity}}"))
+				
+	    	.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_INVALID_PAYMENT))
+	    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.rest.invalid_payment}}"))
+				
+	        .when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.FULLFILLED))
+	    		.setHeader(ChunkConstants.CHUNK_RESOURCE_URI, constant("{{tpl.rest.fullfilled}}"))
+				
+			.otherwise()
+				.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerRest:undefined_orderState?level=ERROR")
+				.stop()
+	    .end()
+		.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerRest:send?level=DEBUG&showBody=false");
         
         
     }
