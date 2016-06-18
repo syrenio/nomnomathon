@@ -41,8 +41,6 @@ public class RESTRouter extends RouteBuilder {
     @Value("${notify.timePeriodMillis}")
     private String notifyTimePeriodMillis; // String to Long not possible with camel
     
-    
-    
     @Override
     public void configure() throws Exception {
         restaurantjsonformat = new JacksonDataFormat();
@@ -95,7 +93,7 @@ public class RESTRouter extends RouteBuilder {
         from("direct:postOrderWithREGULAR")
                 .bean(RegularAuthBean.class)
                 .filter(simple("${in.body.userId.present} == true"))
-                .to("direct:enrichCustomerData")
+                	.to("direct:enrichCustomerData")
                 .end();
 
         /*enrich order-request with customer data from DB and transform to Order*/
@@ -113,10 +111,10 @@ public class RESTRouter extends RouteBuilder {
         from("direct:storeOrder")
                 .bean(StoreOrderBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
                 .choice()
-                .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.SMS))
-                .to("direct:hungryDish")
-                .otherwise()
-                .to("direct:regularDish")
+	                .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.SMS))
+	                	.to("direct:hungryDish")
+	                .otherwise()
+	                	.to("direct:regularDish")
                 .end();
 
         from("direct:hungryDish")
@@ -135,10 +133,10 @@ public class RESTRouter extends RouteBuilder {
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
                 .choice()
                     .when(simple("${in.body.size} > 0"))
-                    .to("direct:splitRestaurants")
+                    	.to("direct:splitRestaurants")
                     .when(simple("${in.body.size} == 0"))
-                    .setHeader(NomNomConstants.HEADER_ORDER_STATE, constant(OrderState.REJECTED_NO_RESTAURANTS))
-                    .to("direct:rejectOrder")
+                    	.setHeader(NomNomConstants.HEADER_ORDER_STATE, constant(OrderState.REJECTED_NO_RESTAURANTS))
+                    	.to("direct:rejectOrder")
                 .end()
                 .end();
                 //.to("direct:splitRestaurants");
@@ -153,9 +151,9 @@ public class RESTRouter extends RouteBuilder {
                 //stops aggregation after 10 milliseconds
                 .choice()
                     .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.SMS))
-                    .to("direct:extractHungryDish")
+                    	.to("direct:extractHungryDish")
                     .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.REGULAR))
-                    .to("direct:extractRegularDish")
+                    	.to("direct:extractRegularDish")
                 .end()
                 .end();
 
@@ -166,23 +164,24 @@ public class RESTRouter extends RouteBuilder {
                 .end();
 
         from("direct:extractRegularDish")
-                .enrich("direct:pollOrder", new DishesOrderAggregation())
+                .enrich("direct:loadOrder", new DishesOrderAggregation())
                 .bean(RegularDishQueryRestaurantBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.extractRegularDish?level=DEBUG")
                 .to("direct:checkRestaurantsAvailability")
                 .end();
 
 
-        /*poll order data from SQL DB*/
-        from("direct:pollOrder")
-                .bean(PollOrder.class);
+        /*load order data from SQL DB*/
+        from("direct:loadOrder")
+		        .bean(LoadOrderBean.class)
+		        .end();
 
 
         from("direct:checkRestaurantsAvailability")
                 .choice()
-                .when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.ENRICHED))
-                .to("direct:requestCapacity")
-                .when((header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
-                .to("direct:rejectOrder")
+	                .when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.ENRICHED))
+	                	.to("direct:requestCapacity")
+	                .when((header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
+	                	.to("direct:rejectOrder")
                 .end();
 
         /**
@@ -206,15 +205,15 @@ public class RESTRouter extends RouteBuilder {
         from("direct:checkRestaurantAvailable")
                 .split(body())
                 .filter(body().isNotEqualTo("-1"))
-                .aggregate(constant(true), new CapacityAggregationStrategy()).completionTimeout(100)
-                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.checkRestaurantAvailable?level=DEBUG")
-                .choice()
-                .when(simple("${body.size} > 0"))
-                .to("direct:selectBestFitRestaurant")
-                .otherwise()
-                .setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.REJECTED_NO_CAPACITY)
-                .to("direct:rejectOrder")
-                .end();
+	                .aggregate(constant(true), new CapacityAggregationStrategy()).completionTimeout(100)
+	                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.checkRestaurantAvailable?level=DEBUG")
+	                .choice()
+		                .when(simple("${body.size} > 0"))
+		                	.to("direct:selectBestFitRestaurant")
+		                .otherwise()
+			                .setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.REJECTED_NO_CAPACITY)
+			                .to("direct:rejectOrder")
+	                .end();
 
 
         from("direct:selectBestFitRestaurant")
@@ -235,10 +234,11 @@ public class RESTRouter extends RouteBuilder {
                 .unmarshal().json(JsonLibrary.Jackson, PaymentRequestAnswer.class)
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.checkCreditCard?level=DEBUG")
                 .choice()
-                .when(simple("${in.body.liquid} == true")).to("direct:sendOrderToRestaurant")
-                .otherwise()
-                .setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.REJECTED_INVALID_PAYMENT)
-                .to("direct:rejectOrder")
+	                .when(simple("${in.body.liquid} == true"))
+	                	.to("direct:sendOrderToRestaurant")
+	                .otherwise()
+	                	.setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.REJECTED_INVALID_PAYMENT)
+	                	.to("direct:rejectOrder")
                 .end();
 
         /**
@@ -246,7 +246,7 @@ public class RESTRouter extends RouteBuilder {
          *  Wiretap: Sending order to restaurant.
          */
         from("direct:sendOrderToRestaurant")
-                .bean(PollOrder.class)
+                .bean(LoadOrderBean.class)
                 .wireTap("direct:updateOrder")
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.sendOrderToRestaurant?level=DEBUG")
                 .marshal().json(JsonLibrary.Jackson)
@@ -280,9 +280,7 @@ public class RESTRouter extends RouteBuilder {
 
         /* Next processes*/
 
-        from("direct:loadOrder")
-                .bean(LoadOrderBean.class)
-                .end();
+
 
         from("direct:start")
                 .process(new Processor() {
