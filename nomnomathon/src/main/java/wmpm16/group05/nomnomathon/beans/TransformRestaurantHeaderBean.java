@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
  * Created by Agnes on 14.06.16.
  */
 @Component
-public class TransformRestaurantHeader {
+public class TransformRestaurantHeaderBean {
 
     String uri = "http://localhost:8080/external/restaurants/%s/capacity";
 

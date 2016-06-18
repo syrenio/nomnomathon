@@ -99,13 +99,13 @@ public class RESTRouter extends RouteBuilder {
         /*enrich order-request with customer data from DB and transform to Order*/
         from("direct:enrichCustomerData")
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.enrichCustomerData?level=DEBUG")
-                .enrich("direct:pollUser", new EnrichCustomer())
+                .enrich("direct:loadUser", new EnrichCustomer())
                 .to("direct:storeOrder").end();
         
-		/*poll user data from SQL DB*/
-        from("direct:pollUser")
-                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.pollUser?level=DEBUG")
-                .bean(PollCustomerFromOrder.class);
+		/*load user data from SQL DB*/
+        from("direct:loadUser")
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.loadUser?level=DEBUG")
+                .bean(LoadCustomerFromOrderBean.class);
 
         /*store order in DB*/
         from("direct:storeOrder")
@@ -190,7 +190,7 @@ public class RESTRouter extends RouteBuilder {
          *  Given they have capacity, they answer with their ID, else -1.
          */
         from("direct:requestCapacity")
-                .bean(TransformRestaurantHeader.class)
+                .bean(TransformRestaurantHeaderBean.class)
                 .setBody(constant(null))
                 .recipientList(header(NomNomConstants.HEADER_RESTAURANTS))
                 .parallelProcessing()
