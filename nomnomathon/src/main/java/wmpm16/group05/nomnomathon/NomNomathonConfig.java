@@ -32,8 +32,6 @@ public class NomNomathonConfig {
     @Value("${mongoDB.host}")
     private String mongoHost;
 
-    //@Autowired
-    //OrderListEntryRepository orderListEntryRepository;
     
     @Bean
     public ServletRegistrationBean servletRegistrationBean(){
