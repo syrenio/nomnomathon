@@ -13,6 +13,7 @@ import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.aggregation.*;
 import wmpm16.group05.nomnomathon.beans.*;
@@ -37,6 +38,11 @@ public class RESTRouter extends RouteBuilder {
 
     private JacksonDataFormat restaurantjsonformat;
 
+    @Value("${notify.timePeriodMillis}")
+    private String notifyTimePeriodMillis; // String to Long not possible with camel
+    
+    
+    
     @Override
     public void configure() throws Exception {
         restaurantjsonformat = new JacksonDataFormat();
@@ -257,7 +263,6 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:finishOrder");
 
         from("direct:finishOrder")
-                /* TODO set stuff for notification*/
                 .to("direct:notifyCustomer");
 
         /*reject order, update DB*/
@@ -269,13 +274,9 @@ public class RESTRouter extends RouteBuilder {
 
         /*notify customer via channel*/
         from("direct:notifyCustomer")
-                .filter(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.RESTAURANT_SELECT))
-                    .setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.FULLFILLED) // just for DEMO without second part of process
-                .end()
-                .wireTap("direct:sendCustomerNotification")
-                .process(x -> {
-                    System.out.println(x.getIn().getBody());
-                });
+				.throttle(simple("{{notify.maximumRequestsPerPeriod}}"))
+        		.timePeriodMillis(Long.parseLong(notifyTimePeriodMillis))//.timePeriodMillis(simple("{{notify.timePeriodMillis}}", Long.class))
+                .to("direct:sendCustomerNotification");
 
         /* Next processes*/
 
