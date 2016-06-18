@@ -38,8 +38,6 @@ public class RESTRouter extends RouteBuilder {
 
     private JacksonDataFormat restaurantjsonformat;
 
-    @Value("${notify.timePeriodMillis}")
-    private String notifyTimePeriodMillis; // String to Long not possible with camel
     
     @Override
     public void configure() throws Exception {
@@ -72,9 +70,9 @@ public class RESTRouter extends RouteBuilder {
         from("direct:postOrder")
                 .choice()
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.SMS)
-                .to("direct:postOrderWithSMS")
+                	.to("direct:postOrderWithSMS")
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.REGULAR)
-                .to("direct:postOrderWithREGULAR")
+                	.to("direct:postOrderWithREGULAR")
                 .end();
 
         /*
@@ -143,12 +141,11 @@ public class RESTRouter extends RouteBuilder {
 
 
         from("direct:splitRestaurants")
-                .split(body())
+        		.split(body())
                 .convertBodyTo(String.class)
                 .unmarshal(restaurantjsonformat)
-                .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(10).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.splitRestaurants?level=DEBUG")
-                //constant ist needed in order to aggregate all messages into a single message
-                //stops aggregation after 10 milliseconds
+                .aggregate(header(NomNomConstants.HEADER_ORDER_ID), new RestaurantDataAggregation()).completionTimeout(NomNomConstants.AGGREGATION_TIMEOUT)
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.splitRestaurants?level=DEBUG")
                 .choice()
                     .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.SMS))
                     	.to("direct:extractHungryDish")
@@ -205,7 +202,7 @@ public class RESTRouter extends RouteBuilder {
         from("direct:checkRestaurantAvailable")
                 .split(body())
                 .filter(body().isNotEqualTo("-1"))
-	                .aggregate(constant(true), new CapacityAggregationStrategy()).completionTimeout(100)
+	                .aggregate(header(NomNomConstants.HEADER_ORDER_ID), new CapacityAggregationStrategy()).completionTimeout(NomNomConstants.AGGREGATION_TIMEOUT)
 	                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.checkRestaurantAvailable?level=DEBUG")
 	                .choice()
 		                .when(simple("${body.size} > 0"))
@@ -217,10 +214,12 @@ public class RESTRouter extends RouteBuilder {
 
 
         from("direct:selectBestFitRestaurant")
-                .split(body()).to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById")
+                .split(body())
+                .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById")
                 .convertBodyTo(String.class)
                 .unmarshal(restaurantjsonformat)
-                .aggregate(constant(true), new RestaurantDataAggregation()).completionTimeout(100).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.selectBestFitRestaurant?level=DEBUG")
+                .aggregate(header(NomNomConstants.HEADER_ORDER_ID), new RestaurantDataAggregation()).completionTimeout(NomNomConstants.AGGREGATION_TIMEOUT)
+                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.selectBestFitRestaurant?level=DEBUG")
                 .bean(SelectBestFitRestaurantBean.class)
                 .to("direct:checkCreditCard")
                 .end();
@@ -277,7 +276,8 @@ public class RESTRouter extends RouteBuilder {
         /*notify customer via channel*/
         from("direct:notifyCustomer")
 				.throttle(simple("{{notify.maximumRequestsPerPeriod}}"))
-        		.timePeriodMillis(Long.parseLong(notifyTimePeriodMillis))//.timePeriodMillis(simple("{{notify.timePeriodMillis}}", Long.class))
+        		.timePeriodMillis(NomNomConstants.THROTTLER_PERIOD)
+        		//does not work: .timePeriodMillis(Long.perseLong(SpringPropterty)).timePeriodMillis(simple("{{notify.timePeriodMillis}}", Long.class))
                 .to("direct:sendCustomerNotification");
 
         /* Next processes*/

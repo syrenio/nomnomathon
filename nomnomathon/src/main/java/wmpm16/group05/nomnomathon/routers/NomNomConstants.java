@@ -22,6 +22,9 @@ public class NomNomConstants {
     public static final String HEADER_DISH_NAMES = "dishNames";
     public static final String HEADER_ORDER_ID = "orderId";
 
+    public static final Long AGGREGATION_TIMEOUT = 1000L;
+    public static final Long THROTTLER_PERIOD = 10000L;
+    
     // camel components
     public static final String HEADER_SMTP_TO = "to";
     public static final String HEADER_SUBJECT = "subject";
