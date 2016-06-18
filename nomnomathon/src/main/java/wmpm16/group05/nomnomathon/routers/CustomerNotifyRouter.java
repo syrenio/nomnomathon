@@ -15,19 +15,7 @@ import wmpm16.group05.nomnomathon.models.OrderState;
 @Component
 public class CustomerNotifyRouter extends RouteBuilder {
 
-//	@Value("${mail.host}")
-//	private String host;
-//	
-//	@Value("${mail.port}")
-//	private String port;
-//	
-//	@Value("${mail.pass}")
-//	private String pass;
-//	
-//	@Value("${mail.user}")
-//	private String user;
-	
-	
+		
     @Override
     public void configure() throws Exception {
     	
@@ -88,14 +76,11 @@ public class CustomerNotifyRouter extends RouteBuilder {
 		    .end()
 		    // execute Chunk template and send SMS
 		    .to("chunk:dummy")
-		    .process(x -> {System.err.println("CustomerNotifyRouter.java: START http://www.seleniumsoftware.com/downloads.html FOR SMS. Afterwards uncomment the code block: .to(\"smpp");})
-	        /*.to("smpp://"
-	        		+ NomNomConstants.SMPP_USER + "@"
-	        		+ NomNomConstants.SMPP_HOST + ":"
-	        		+ NomNomConstants.SMPP_PORT + "?password="
-	        		+ NomNomConstants.SMPP_PASS 
+//		    .process(x -> {System.err.println("CustomerNotifyRouter.java: START http://www.seleniumsoftware.com/downloads.html FOR SMS. Afterwards uncomment the code block: .to(\"smpp");})
+	        .to("smpp://{{smpp.user}}@{{smpp.host}}:{{smpp.port}}" 
+	        		+ "?password={{smpp.pass}}" 
 	        		+ "&enquireLinkTimer=6000&systemType=producer&registeredDelivery=0")
-        	.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerSms:send")*/
+        	.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerSms:send?level=DEBUG")
         	.end();
     
         /* Send Mail to Customer */
@@ -125,18 +110,17 @@ public class CustomerNotifyRouter extends RouteBuilder {
 	        .end()
 	        // execute Chunk template and send mail
 	        .to("chunk:dummy")
-			.to("smtp://" 
-					+ NomNomConstants.MAIL_HOST + "?password=" 
-					+ NomNomConstants.MAIL_PASS + "&username=" 
-					+ NomNomConstants.MAIL_USER + "&from=" 
-					+ NomNomConstants.MAIL_USER)
-			.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:send")
+			.to("smtp://{{mail.host}}:{{mail.port}}?"
+					+ "password={{mail.pass}}&"
+					+ "username={{mail.user}}&"
+					+ "from={{mail.user}}")
+			.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerMail:send?level=DEBUG")
 			.end();
     
         /* Send REST to Customer */
         from("direct:notifyCustomerRest")
         //TODO
-			.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerRest:send");
+			.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerRest:send?level=DEBUG");
         
         
     }
