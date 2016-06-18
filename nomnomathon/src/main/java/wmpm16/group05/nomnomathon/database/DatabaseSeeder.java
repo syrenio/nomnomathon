@@ -23,7 +23,7 @@ public class DatabaseSeeder {
         //authcode: YmVybmQ6bm9tbm9t
         Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");
-        customer.setMail("a.b@c.d");
+        customer.setMail("a.b@c.at");
         customer.setNotificationType(CustomerNotificationType.MAIL);;
         customer.setAddress("Percostraße 27, 1220 Wien");
         customer.setCreditCard("5487765682447742");
@@ -61,7 +61,7 @@ public class DatabaseSeeder {
         //authcode: ZnJhbms6bm9tb25leQ==
         customer = new Customer("frank","frank","nomoney","nomoney");
         customer.setPhoneNumber("+4368000000000");
-        customer.setMail("a.b@c.d");
+        customer.setMail("a.b@c.at");
         customer.setNotificationType(CustomerNotificationType.MAIL);;
         customer.setAddress("No Name Street 123");
         customer.setCreditCard("6011671952963165");
