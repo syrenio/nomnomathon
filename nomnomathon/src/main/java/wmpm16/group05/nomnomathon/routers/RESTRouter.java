@@ -43,7 +43,6 @@ public class RESTRouter extends RouteBuilder {
 
     private JacksonDataFormat restaurantjsonformat;
 
-    // TODO comment all routes
     // TODO constants for URI?
     // TODO Exception in demoCpntroller
     // TODO delete unused controllers, tests, routes
@@ -69,14 +68,11 @@ public class RESTRouter extends RouteBuilder {
                 .post("/orders").type(OrderRequest.class).to("direct:postOrder");
 
 
-        /*REST Endpoint to check if service is running*/
+        /* REST Endpoint to check if service is running */
         from("direct:status")
                 .transform().constant("running!");
 
-
-
-
-        /*Start of the process*/
+        /* start of the process */
         from("direct:postOrder")
                 .choice()
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.SMS)
@@ -105,7 +101,7 @@ public class RESTRouter extends RouteBuilder {
                     .end()
                 .end();
 
-        /*extract customerId from header */
+        /* extract customerId from header */
         from("direct:postOrderWithREGULAR")
                 .bean(RegularAuthBean.class)
                 .filter(simple("${in.body.userId.present} == true"))
@@ -113,18 +109,18 @@ public class RESTRouter extends RouteBuilder {
                 	.to("direct:enrichCustomerData")
                 .end();
 
-        /*enrich order-request with customer data from DB and transform to Order*/
+        /* enrich order-request with customer data from DB and transform to Order */
         from("direct:enrichCustomerData")
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.enrichCustomerData?level=DEBUG")
                 .enrich("direct:loadUser", new EnrichCustomer())
                 .to("direct:storeOrder").end();
         
-		/*load user data from SQL DB*/
+		/* load user data from SQL DB */
         from("direct:loadUser")
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.loadUser?level=DEBUG")
                 .bean(LoadCustomerFromOrderBean.class);
 
-        /*store order in DB*/
+        /* store order in DB */
         from("direct:storeOrder")
                 .bean(StoreOrderBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.storeOrder.after?level=DEBUG")
                 .choice()
@@ -134,17 +130,19 @@ public class RESTRouter extends RouteBuilder {
 	                	.to("direct:regularDish")
                 .end();
 
+        /* set price limit for menu items ordered by sms */
         from("direct:hungryDish")
                 .setBody().simple("{ \"menu.price\": { $gt: 0, $lt: 20 }}").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.hungryDish?level=DEBUG")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll")
                 .to("direct:splitRestaurants");
 
 
-        /*query restaurants for dishes*/
+        /* get dish names and put them in header */
         from("direct:regularDish")
                 .bean(ExtractDishRestaurantBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.regularDish?level=DEBUG")
                 .to("direct:findAll");
 
+        /* query restaurants for dishes */
         from("direct:findAll")
                 .setBody().simple("{\"menu.name\":{ $in: [${header." + NomNomConstants.HEADER_DISH_NAMES + "}]}}").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findAll").to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.findAll?level=DEBUG")
@@ -156,7 +154,7 @@ public class RESTRouter extends RouteBuilder {
                     	.to("direct:rejectOrder")
                 .end();
 
-
+        /* convert to restaurant data */
         from("direct:splitRestaurants")
         		.split(body())
                 .convertBodyTo(String.class)
@@ -173,24 +171,25 @@ public class RESTRouter extends RouteBuilder {
                 .end();
 
 
+        /* select a random dish and according restaurant */
         from("direct:extractHungryDish")
                 .bean(RandomDishBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.extractHungryDish?level=DEBUG")
                 .to("direct:checkRestaurantsAvailability")
                 .end();
 
+        /* select restaurants for the regular dishes */
         from("direct:extractRegularDish")
                 .enrich("direct:loadOrder", new DishesOrderAggregation())
                 .bean(RegularDishQueryRestaurantBean.class).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.extractRegularDish?level=DEBUG")
                 .to("direct:checkRestaurantsAvailability")
                 .end();
 
-
-        /*load order data from SQL DB*/
+        /* load order data from SQL DB */
         from("direct:loadOrder")
 		        .bean(LoadOrderBean.class)
 		        .end();
 
-
+        /* if there are restaurants capable of serving the order, continue by checking capacities of the restaurants */
         from("direct:checkRestaurantsAvailability")
                 // TODO check opening hours?
         		.choice()
@@ -200,11 +199,7 @@ public class RESTRouter extends RouteBuilder {
 	                	.to("direct:rejectOrder")
                 .end();
 
-        /**
-         *  Maintainer: till
-         *  Scatter-Gather: Ask all possible restaurants for their capacity.
-         *  Given they have capacity, they answer with their ID, else -1.
-         */
+        /* scatter-gather: ask all possible restaurants for their capacity, so given they have capacity, they answer with their ID, else -1 */
         from("direct:checkCapacity")
                 .bean(TransformRestaurantHeaderBean.class)
                 .setBody(constant(null))
@@ -220,7 +215,7 @@ public class RESTRouter extends RouteBuilder {
 		                .to("direct:rejectOrder")
 	            .end();
         
-
+        /* select restaurant with best price */
         from("direct:selectBestFitRestaurant")
                 .split(body())
                 .to("mongodb:mongoDb?database=restaurant_data&collection=restaurant_data&operation=findById")
@@ -232,6 +227,7 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:checkCreditCard")
                 .end();
 
+        /* check for valid credit card */
         from("direct:checkCreditCard")
                 .bean(PrepareForCreditCheckBean.class)
                 .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/external/creditcards/"
@@ -250,10 +246,7 @@ public class RESTRouter extends RouteBuilder {
 	                	.to("direct:rejectOrder")
                 .end();
 
-        /**
-         *  Maintainer: till
-         *  Wiretap: Sending order to restaurant.
-         */
+        /* sending order to restaurant through wiretap */
         from("direct:sendOrderToRestaurant")
                 .bean(LoadOrderBean.class)
                 .wireTap("direct:updateOrder")
@@ -264,6 +257,7 @@ public class RESTRouter extends RouteBuilder {
                 .to("http://dummyHost")                       
                 .end();
 
+        /* update the order, update DB */
         from("direct:updateOrder")
                 .bean(LoadOrderBean.class)
                 .setHeader(NomNomConstants.HEADER_ORDER_STATE, constant(OrderState.FULLFILLED))
@@ -271,6 +265,7 @@ public class RESTRouter extends RouteBuilder {
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.updateOrder?level=DEBUG")
                 .to("direct:finishOrder");
 
+        /*  finish order */
         from("direct:finishOrder")
 				.wireTap("metrics:counter:orders:FINISHED?increment=1")
                 .to("direct:notifyCustomer");
