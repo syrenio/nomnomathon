@@ -43,10 +43,6 @@ public class RESTRouter extends RouteBuilder {
 
     private JacksonDataFormat restaurantjsonformat;
 
-    // TODO constants for URI?
-    // TODO Exception in demoCpntroller
-    // TODO delete unused controllers, tests, routes
-    // TODO metrics?!?!
     
     @Override
     public void configure() throws Exception {
@@ -191,7 +187,6 @@ public class RESTRouter extends RouteBuilder {
 
         /* if there are restaurants capable of serving the order, continue by checking capacities of the restaurants */
         from("direct:checkRestaurantsAvailability")
-                // TODO check opening hours?
         		.choice()
 	                .when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.ENRICHED))
 	                	.to("direct:checkCapacity")

@@ -102,7 +102,6 @@ public class OrderInProcess {
 	}
 
 	public void proceed(OrderState state) {
-		// TODO should check if the transition is valid or switch to next state
 		this.state = state;
 	}
 

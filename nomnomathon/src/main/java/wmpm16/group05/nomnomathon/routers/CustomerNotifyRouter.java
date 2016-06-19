@@ -19,10 +19,7 @@ public class CustomerNotifyRouter extends RouteBuilder {
 		
     @Override
     public void configure() throws Exception {
-    	
-    	
-    	//TODO Templates anpassen
-    	
+    	    	
     	//configure redelivery of failed notifications
     	errorHandler(deadLetterChannel("seda:errors")
     					.maximumRedeliveries(20)
@@ -124,7 +121,6 @@ public class CustomerNotifyRouter extends RouteBuilder {
     
         /* Send REST to Customer */
         from("direct:notifyCustomerRest")
-        //TODO
         .choice()
     		// set Chunk template
 			.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
