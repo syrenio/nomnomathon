@@ -66,6 +66,15 @@ public class DatabaseSeeder {
         customer.setAddress("No Name Street 123");
         customer.setCreditCard("6011671952963165");
         customerRepository.save(customer);
+        
+        //authcode: dGl3ZToxMjM0NTY=
+        customer = new Customer("tiwe","Till","Weisser","123456");
+        customer.setPhoneNumber("+43777611611372");
+        customer.setMail("till.weisser@gmail.com");
+        customer.setNotificationType(CustomerNotificationType.MAIL);
+        customer.setAddress("lakierergasse 12");
+        customer.setCreditCard("60134519567831652");
+        customerRepository.save(customer);
 
         //authcode: YWdmcjoxMjM0NTY=
         customer = new Customer("agfr","Agnes","Froeschl","123456");
