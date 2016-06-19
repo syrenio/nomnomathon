@@ -3,17 +3,12 @@ package wmpm16.group05.nomnomathon.routers;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
-
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.aggregation.*;
 import wmpm16.group05.nomnomathon.beans.*;
@@ -23,10 +18,7 @@ import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;
-import wmpm16.group05.nomnomathon.mocked.OrderRequestAnswer;
 import wmpm16.group05.nomnomathon.mocked.PaymentRequestAnswer;
-import wmpm16.group05.nomnomathon.models.Dish;
-import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.models.OrderState;
 
 
@@ -38,6 +30,11 @@ public class RESTRouter extends RouteBuilder {
 
     private JacksonDataFormat restaurantjsonformat;
 
+    // TODO comment all routes
+    // TODO constants for URI?
+    // TODO Exception in demoCpntroller
+    // TODO delete unused controllers, tests, routes
+    // TODO metrics?!?!
     
     @Override
     public void configure() throws Exception {
@@ -132,12 +129,10 @@ public class RESTRouter extends RouteBuilder {
                 .choice()
                     .when(simple("${in.body.size} > 0"))
                     	.to("direct:splitRestaurants")
-                    .when(simple("${in.body.size} == 0"))
+                    .otherwise()
                     	.setHeader(NomNomConstants.HEADER_ORDER_STATE, constant(OrderState.REJECTED_NO_RESTAURANTS))
                     	.to("direct:rejectOrder")
-                .end()
                 .end();
-                //.to("direct:splitRestaurants");
 
 
         from("direct:splitRestaurants")
@@ -151,7 +146,8 @@ public class RESTRouter extends RouteBuilder {
                     	.to("direct:extractHungryDish")
                     .when(header(NomNomConstants.HEADER_TYPE).isEqualTo(OrderType.REGULAR))
                     	.to("direct:extractRegularDish")
-                .end()
+                    .otherwise()
+                    	.to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.splitRestaurants_undefinedType?level=ERROR")
                 .end();
 
 
@@ -174,9 +170,10 @@ public class RESTRouter extends RouteBuilder {
 
 
         from("direct:checkRestaurantsAvailability")
-                .choice()
+                // TODO check opening hours?
+        		.choice()
 	                .when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.ENRICHED))
-	                	.to("direct:requestCapacity")
+	                	.to("direct:checkCapacity")
 	                .when((header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS)))
 	                	.to("direct:rejectOrder")
                 .end();
@@ -186,32 +183,21 @@ public class RESTRouter extends RouteBuilder {
          *  Scatter-Gather: Ask all possible restaurants for their capacity.
          *  Given they have capacity, they answer with their ID, else -1.
          */
-        from("direct:requestCapacity")
+        from("direct:checkCapacity")
                 .bean(TransformRestaurantHeaderBean.class)
                 .setBody(constant(null))
                 .recipientList(header(NomNomConstants.HEADER_RESTAURANTS))
                 .parallelProcessing()
-                .aggregationStrategy(new CapacityAggregationStrategy())
-                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
-                .to("direct:checkRestaurantAvailable");
-
-        /**
-         * Maintainer: till
-         * Message Filter: Drop all non valid Restaurant IDs here.
-         */
-        from("direct:checkRestaurantAvailable")
-                .split(body())
-                .filter(body().isNotEqualTo("-1"))
-	                .aggregate(header(NomNomConstants.HEADER_ORDER_ID), new CapacityAggregationStrategy()).completionTimeout(NomNomConstants.AGGREGATION_TIMEOUT)
-	                .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.checkRestaurantAvailable?level=DEBUG")
-	                .choice()
-		                .when(simple("${body.size} > 0"))
-		                	.to("direct:selectBestFitRestaurant")
-		                .otherwise()
-			                .setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.REJECTED_NO_CAPACITY)
-			                .to("direct:rejectOrder")
-	                .end();
-
+                .aggregationStrategy(new CapacityAggregationStrategy()).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
+                // TODO completionTimeout what if restaurant is offline??
+                .choice()
+	                .when(simple("${body.size} > 0"))
+	                	.to("direct:selectBestFitRestaurant")
+	                .otherwise()
+		                .setHeader(NomNomConstants.HEADER_ORDER_STATE).constant(OrderState.REJECTED_NO_CAPACITY)
+		                .to("direct:rejectOrder")
+	            .end();
+        
 
         from("direct:selectBestFitRestaurant")
                 .split(body())
