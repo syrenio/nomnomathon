@@ -189,9 +189,9 @@ public class RESTRouter extends RouteBuilder {
                 .bean(TransformRestaurantHeaderBean.class)
                 .setBody(constant(null))
                 .recipientList(header(NomNomConstants.HEADER_RESTAURANTS))
+                .timeout(NomNomConstants.AGGREGATION_TIMEOUT)
                 .parallelProcessing()
                 .aggregationStrategy(new CapacityAggregationStrategy()).to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.requestCapacity?level=DEBUG")
-                // TODO completionTimeout what if restaurant is offline??
                 .choice()
 	                .when(simple("${body.size} > 0"))
 	                	.to("direct:selectBestFitRestaurant")
