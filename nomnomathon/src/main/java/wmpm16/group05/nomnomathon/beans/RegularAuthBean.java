@@ -1,6 +1,7 @@
 package wmpm16.group05.nomnomathon.beans;
 
 import org.apache.camel.Exchange;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
@@ -16,6 +17,7 @@ import java.util.Optional;
  */
 @Component
 public class RegularAuthBean {
+    private final Logger log = Logger.getLogger(RegularAuthBean.class);
 
     private static final String HEADER_Authorization = "Authorization";
 
@@ -32,10 +34,16 @@ public class RegularAuthBean {
         String username = null;
         String password = null;
 
-        if (auth_header != null && auth_header.startsWith("Basic")) {
-            final String[] values = extractBasicAuth(auth_header);
-            username = values[0];
-            password = values[1];
+        try{
+            if (auth_header != null && auth_header.startsWith("Basic")) {
+                final String[] values = extractBasicAuth(auth_header);
+                if(values.length == 2) {
+                    username = values[0];
+                    password = values[1];
+                }
+            }
+        }catch (Exception ex){
+            log.error("Incorrect auth header: " + auth_header);
         }
 
         body.setUserId(Optional.empty());

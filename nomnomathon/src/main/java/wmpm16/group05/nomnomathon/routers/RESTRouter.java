@@ -70,7 +70,14 @@ public class RESTRouter extends RouteBuilder {
                 	.to("direct:postOrderWithSMS")
                 .when(exchange -> exchange.getIn().getBody(OrderRequest.class).getType() == OrderType.REGULAR)
                 	.to("direct:postOrderWithREGULAR")
-                .end();
+                .end()
+				.choice()
+					.when(simple("${header." + NomNomConstants.HEADER_ORDER_ID + "} > 0"))
+						.setBody(simple("order with id: ${header." + NomNomConstants.HEADER_ORDER_ID + "} received!"))
+					.otherwise()
+						.setBody(simple("invalid order!"))
+				.end();
+
 
         /*
         * check if SMS order is of type SMS and contains keyword 'hungry'
