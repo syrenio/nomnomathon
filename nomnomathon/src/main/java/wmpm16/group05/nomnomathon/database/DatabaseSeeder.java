@@ -24,7 +24,7 @@ public class DatabaseSeeder {
         Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");
         customer.setMail("a.b@c.at");
-        customer.setNotificationType(CustomerNotificationType.MAIL);;
+        customer.setNotificationType(CustomerNotificationType.MAIL);
         customer.setAddress("Percostraße 27, 1220 Wien");
         customer.setCreditCard("5487765682447742");
         customerRepository.save(customer);
@@ -33,7 +33,7 @@ public class DatabaseSeeder {
         customer = new Customer("bmu","Bernhard","Müller","12345");
         customer.setPhoneNumber("+0699923923293");
         customer.setMail("bernhard.mueller@gmx.at");
-        customer.setNotificationType(CustomerNotificationType.SMS);;
+        customer.setNotificationType(CustomerNotificationType.SMS);
         customer.setAddress("Percostraße 25, 1220 Wien");
         customer.setCreditCard("4411948396385770");
         customerRepository.save(customer);
@@ -42,7 +42,7 @@ public class DatabaseSeeder {
         customer = new Customer("hmu","Hansi","Müller","12345");
         customer.setPhoneNumber("+0699923923434");
         customer.setMail("bernhard.mueller@gmx.at");
-        customer.setNotificationType(CustomerNotificationType.MAIL);;
+        customer.setNotificationType(CustomerNotificationType.MAIL);
         customer.setAddress("Percostraße 25, 1220 Wien");
         customer.setCreditCard("4411948396385770");
         customerRepository.save(customer);
@@ -53,7 +53,7 @@ public class DatabaseSeeder {
         customer = new Customer("mawe","Martin","Weik","12345");
         customer.setPhoneNumber("+4369912345678");
         customer.setMail("martin@weik.at");
-        customer.setNotificationType(CustomerNotificationType.MAIL);;
+        customer.setNotificationType(CustomerNotificationType.MAIL);
         customer.setAddress("blabla, 1234 Wien");
         customer.setCreditCard("342503083304998");
         customerRepository.save(customer);
@@ -62,9 +62,18 @@ public class DatabaseSeeder {
         customer = new Customer("frank","frank","nomoney","nomoney");
         customer.setPhoneNumber("+4368000000000");
         customer.setMail("a.b@c.at");
-        customer.setNotificationType(CustomerNotificationType.MAIL);;
+        customer.setNotificationType(CustomerNotificationType.MAIL);
         customer.setAddress("No Name Street 123");
         customer.setCreditCard("6011671952963165");
+        customerRepository.save(customer);
+
+        //authcode: YWdmcjoxMjM0NTY=
+        customer = new Customer("agfr","Agnes","Froeschl","123456");
+        customer.setPhoneNumber("+43634566789");
+        customer.setMail("agnes.froeschl@gmail.com");
+        customer.setNotificationType(CustomerNotificationType.MAIL);
+        customer.setAddress("Breitengasse 12");
+        customer.setCreditCard("6013451956783165");
         customerRepository.save(customer);
     }
 }
