@@ -2,7 +2,6 @@ package wmpm16.group05.nomnomathon.domain;
 
 import java.util.ArrayList;
 
-import javax.validation.GroupSequence;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

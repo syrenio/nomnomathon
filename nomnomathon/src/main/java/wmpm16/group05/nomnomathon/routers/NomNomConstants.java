@@ -1,7 +1,5 @@
 package wmpm16.group05.nomnomathon.routers;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 public class NomNomConstants {
 
     public static final String HEADER_RESTAURANT_ID = "restaurantId";

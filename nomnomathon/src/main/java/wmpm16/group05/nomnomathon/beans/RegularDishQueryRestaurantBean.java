@@ -1,21 +1,15 @@
 package wmpm16.group05.nomnomathon.beans;
 
-import com.mongodb.BasicDBList;
-import com.mongodb.BasicDBObject;
-import org.apache.camel.Exchange;
-import org.apache.camel.component.mail.MailBinding;
-import org.apache.log4j.Logger;
-import org.springframework.stereotype.Component;
-import wmpm16.group05.nomnomathon.domain.Menu;
-import wmpm16.group05.nomnomathon.domain.RestaurantData;
-import wmpm16.group05.nomnomathon.models.Dish;
-import wmpm16.group05.nomnomathon.models.OrderInProcess;
-import wmpm16.group05.nomnomathon.models.OrderState;
-import wmpm16.group05.nomnomathon.routers.NomNomConstants;
-import wmpm16.group05.nomnomathon.routers.RESTRouter;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.camel.Exchange;
+import org.springframework.stereotype.Component;
+
+import wmpm16.group05.nomnomathon.domain.Menu;
+import wmpm16.group05.nomnomathon.domain.RestaurantData;
+import wmpm16.group05.nomnomathon.models.OrderState;
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 
 
 /**

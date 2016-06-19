@@ -1,20 +1,33 @@
 package wmpm16.group05.nomnomathon.routers;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-
 import org.apache.camel.Exchange;
-import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.model.dataformat.JsonLibrary;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.springframework.stereotype.Component;
-import wmpm16.group05.nomnomathon.aggregation.*;
-import wmpm16.group05.nomnomathon.beans.*;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
+import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
+
+import wmpm16.group05.nomnomathon.aggregation.CapacityAggregationStrategy;
+import wmpm16.group05.nomnomathon.aggregation.DishesOrderAggregation;
+import wmpm16.group05.nomnomathon.aggregation.EnrichCustomer;
+import wmpm16.group05.nomnomathon.aggregation.RestaurantDataAggregation;
+import wmpm16.group05.nomnomathon.beans.ExtractDishRestaurantBean;
+import wmpm16.group05.nomnomathon.beans.LoadCustomerFromOrderBean;
+import wmpm16.group05.nomnomathon.beans.LoadOrderBean;
+import wmpm16.group05.nomnomathon.beans.PrepareForCreditCheckBean;
+import wmpm16.group05.nomnomathon.beans.RandomDishBean;
+import wmpm16.group05.nomnomathon.beans.RegularAuthBean;
+import wmpm16.group05.nomnomathon.beans.RegularDishQueryRestaurantBean;
+import wmpm16.group05.nomnomathon.beans.SMSAuthBean;
+import wmpm16.group05.nomnomathon.beans.SelectBestFitRestaurantBean;
+import wmpm16.group05.nomnomathon.beans.StoreOrderBean;
+import wmpm16.group05.nomnomathon.beans.TransformRestaurantHeaderBean;
+import wmpm16.group05.nomnomathon.beans.UpdateOrderBean;
 import wmpm16.group05.nomnomathon.domain.OrderRequest;
 import wmpm16.group05.nomnomathon.domain.OrderType;
-import wmpm16.group05.nomnomathon.domain.RestaurantCapacityResponse;
 import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.exceptions.InvalidFormatHandler;
 import wmpm16.group05.nomnomathon.exceptions.UnrecognizedPropertyHandler;

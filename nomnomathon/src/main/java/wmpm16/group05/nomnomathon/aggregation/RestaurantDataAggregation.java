@@ -1,12 +1,12 @@
 package wmpm16.group05.nomnomathon.aggregation;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.processor.aggregate.AggregationStrategy;
-import wmpm16.group05.nomnomathon.domain.OrderType;
-import wmpm16.group05.nomnomathon.domain.RestaurantData;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.camel.Exchange;
+import org.apache.camel.processor.aggregate.AggregationStrategy;
+
+import wmpm16.group05.nomnomathon.domain.RestaurantData;
 
 /**
  * Created by Agnes on 31.05.16.

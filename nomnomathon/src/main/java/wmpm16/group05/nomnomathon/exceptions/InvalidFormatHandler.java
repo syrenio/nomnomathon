@@ -1,16 +1,14 @@
 package wmpm16.group05.nomnomathon.exceptions;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
-import org.apache.camel.Exchange;
-import org.springframework.stereotype.Component;
-
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.aspectj.bridge.Version.text;
+import org.apache.camel.Exchange;
+import org.springframework.stereotype.Component;
+
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 
 /**
  * Created by syrenio on 22/05/16.

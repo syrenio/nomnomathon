@@ -1,16 +1,12 @@
 package wmpm16.group05.nomnomathon.routers;
 
-import org.apache.camel.InvalidPayloadException;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.bean.validator.BeanValidationException;
 import org.apache.camel.component.jackson.JacksonDataFormat;
 import org.apache.camel.component.jacksonxml.JacksonXMLDataFormat;
 import org.apache.camel.model.rest.RestBindingMode;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-
-import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException;
 
 import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.exceptions.BeanValidationHandler;

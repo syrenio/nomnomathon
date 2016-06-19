@@ -1,13 +1,13 @@
 package wmpm16.group05.nomnomathon.beans;
 
-import org.apache.camel.Exchange;
-import org.springframework.stereotype.Component;
-import wmpm16.group05.nomnomathon.routers.NomNomConstants;
-import wmpm16.group05.nomnomathon.routers.RESTRouter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.apache.camel.Exchange;
+import org.springframework.stereotype.Component;
+
+import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 
 /**
  * Created by Agnes on 14.06.16.

@@ -1,11 +1,10 @@
 package wmpm16.group05.nomnomathon.exceptions;
 
-import org.apache.camel.Exchange;
-import org.apache.camel.InvalidPayloadException;
-import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
+
+import org.apache.camel.Exchange;
+import org.springframework.stereotype.Component;
 
 @Component
 public class IllegalArgumentHandler {

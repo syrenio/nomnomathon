@@ -1,13 +1,17 @@
 package wmpm16.group05.nomnomathon.beans;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.PriorityQueue;
+
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
+
 import wmpm16.group05.nomnomathon.domain.Menu;
 import wmpm16.group05.nomnomathon.domain.RestaurantData;
 import wmpm16.group05.nomnomathon.routers.NomNomConstants;
-import wmpm16.group05.nomnomathon.routers.RESTRouter;
-
-import java.util.*;
 
 
 /**

@@ -1,14 +1,14 @@
 package wmpm16.group05.nomnomathon.aggregation;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.camel.Exchange;
 import org.apache.camel.processor.aggregate.AggregationStrategy;
+
 import wmpm16.group05.nomnomathon.models.Dish;
 import wmpm16.group05.nomnomathon.models.OrderInProcess;
 import wmpm16.group05.nomnomathon.routers.NomNomConstants;
-import wmpm16.group05.nomnomathon.routers.RESTRouter;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Agnes on 24.05.16.

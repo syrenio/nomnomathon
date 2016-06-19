@@ -6,7 +6,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 
 @SpringBootApplication
 public class NomNomathon {
-	/**
+	/*
 	 * A main method to start
 	 */
 	public static void main(String[] args) {
