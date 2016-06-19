@@ -4,9 +4,6 @@ import java.util.concurrent.atomic.AtomicLong;
 
 public class NomNomConstants {
 
-    //THIS IS JUST FOR TESTPURPOSE
-    public static final AtomicLong REQUESTCOUNTER = new AtomicLong();
-    
     public static final String HEADER_RESTAURANT_ID = "restaurantId";
     public static final String HEADER_DISHES_ORDER = "dishesOrder";
     public static final String HEADER_DISHES_PRICES = "dishesPrices";

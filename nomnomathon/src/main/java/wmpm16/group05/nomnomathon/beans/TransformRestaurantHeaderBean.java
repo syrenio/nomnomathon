@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @Component
 public class TransformRestaurantHeaderBean {
 
-    String uri = "http://localhost:8080/external/restaurants/%s/capacity";
+    private final String uri = "http://localhost:8080/external/restaurants/%s/capacity";
 
     public void process(Exchange exchange) {
         ArrayList<String> restaurantIds = exchange.getIn().getHeader(NomNomConstants.HEADER_RESTAURANTS, ArrayList.class);
