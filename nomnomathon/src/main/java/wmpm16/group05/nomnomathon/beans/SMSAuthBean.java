@@ -31,7 +31,6 @@ public class SMSAuthBean {
         if(customer!=null){
             body.setUserId(Optional.of(customer.getId()));
         }
-        /*TODO Throw Error or Exception when user doesnt exist*/
 
         req.getOut().setBody(body);
     }

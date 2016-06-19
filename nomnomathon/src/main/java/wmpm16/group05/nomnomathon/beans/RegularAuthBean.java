@@ -46,7 +46,6 @@ public class RegularAuthBean {
                 body.setUserId(Optional.of(cust.get().getId()));
             }
         }
-        /*TODO Throw Error or Exception when user doesnt exist*/
 
         req.getOut().setBody(body);
     }
