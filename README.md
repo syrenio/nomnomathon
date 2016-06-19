@@ -53,10 +53,10 @@ If you want to start mongodb in docker use this command: docker run --name mymon
 
 replace YOUR_PHONENUMBER or YOUR_AUTH_CODE
 
-### Hungry SMS OrderRequest - get meal under 20€
+### hungry SMS OrderRequest - get meal under 20€
 > curl -H "Content-Type: application/json" -X POST -d "{\"type\":\"SMS\",\"text\":\"hungry\",\"phoneNumber\":\"+YOUR_PHONENUMBER\"}" http://localhost:8080/api/orders
 
-### verfuegbar, FULLFILLED
+### available, FULLFILLED
 > curl -H "Content-Type: application/json" -H "Authorization: Basic YOUR_AUTH_CODE" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+YOUR_PHONENUMBER\",\"dishes\":[\"pizza\", \"pasta\"]}" http://localhost:8080/api/orders
 
 ### shrimp not found, REJECTED_NO_RESTAURANTS
@@ -68,13 +68,13 @@ replace YOUR_PHONENUMBER or YOUR_AUTH_CODE
 ### frank nomoney has no money , REJECTED_INVALID_PAYMENT
 > curl -H "Content-Type: application/json" -H "Authorization: Basic ZnJhbms6bm9tb25leQ==" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368000000000\",\"dishes\":[\"pizza\", \"pasta\"]}" http://localhost:8080/api/orders
 
-### Unknown property 'tex'
+### unknown property 'tex'
 > curl -H "Content-Type: application/json;" -H "Authorization: Basic ZnJhbms6bm9tb25leQ==" -X POST -d "{\"type\":\"REGULAR\",\"tex\":\"hungry\"}" http://localhost:8080/api/orders
 
-### Invalid format exception
+### invalid format exception
 > curl -H "Content-Type: application/json;" -H "Authorization: Basic ZnJhbms6bm9tb25leQ==" -X POST -d "{\"type\":\"UPS!\",\"text\":\"hungry\"}" http://localhost:8080/api/orders
 
-### Update restaurant data via REST Endpoint
+### update restaurant data via REST Endpoint
 > curl -H "Content-Type: application/json" http://localhost:8080/api/updateResData --data-binary @panucis_pizza.json
 
 ```
