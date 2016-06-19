@@ -1,9 +1,7 @@
 # nomnomathon
 Workflow Management and Process Management Project
 
-link: https://github.com/syrenio/nomnomathon
-
-## What it is
+## Introduction
 
 Nomnomathon is a virtual delivery service that makes exhaustive use of Apache Camel.
 It was created for a lecture on University in sommerterm 2016.
@@ -13,21 +11,21 @@ It was created for a lecture on University in sommerterm 2016.
 We use the following software:
 
 * Spring
-** Boot
-** Data
+  * Boot
+  * Data
 * Apache Camel
-** see the pom for used components
+  * see the pom for used components
 * H2 DB for inmemory relational data
 * mongodb for documents
 * SMPPSim for sending SMS
 
-#How to run it
+# Getting Started
 
 ## Requirements
 
-U need this softwarestack to run it:
+You need this softwarestack to run it:
 
-* Java 8 JDK (off course)
+* Java 8 JDK
 * maven 3
 * mongodb
 * SMPPsim with default settings http://www.seleniumsoftware.com/downloads.html
@@ -44,55 +42,67 @@ The selected profile should be shown
 
 If you want to start mongodb in docker use this command: docker run --name mymongo -p 27017:27017 -d mongo:3.2
 
-## Command for execution
-
-Execute mvn spring-boot:run in the main project folder.
-
-
-# test order via REST Endpoint
-
-> curl -H "Content-Type: application/json" -X POST -d '{"type":"SMS","text":"hungry","phoneNumber":"+4368012345678"}' http://localhost:8080/api/orders
-
-or
-
-> curl -H "Content-Type: application/json;" -H "Authorization: Basic YmVybmQ6bm9tbm9t" -X POST -d '{"type":"REGULAR","text":"hungry","dishes":["pizza", "wurst"]}' http://localhost:8080/api/orders
-
-or
-
-> curl -H "Content-Type: application/json" -H "Authorization: Basic YmVybmQ6bm9tbm9t" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368012345678\",\"dishes\":[\"pizza\", \"wurst\"]}" http://localhost:8080/api/orders
+## Setup and execution
+* Adapt Testusers in DatabaseSeeder.java
+  * Base64 encode: username:password for testing (e.g. https://www.base64encode.org/)
+* Start mongodb and SMPPsim
+* Execute mvn spring-boot:run in the main project folder.
 
 
-## Requests that will show error messages
+## Test via REST Endpoint
 
-Unknown property 'tex'
+replace YOUR_PHONENUMBER or YOUR_AUTH_CODE
 
-> curl -H "Content-Type: application/json;" -H "Authorization: Basic YmVybmQ6bm9tbm9t" -X POST -d '{"type":"REGULAR","tex":"hungry"}' http://localhost:8080/api/orders
-
-Invalid format exception
-
-> curl -H "Content-Type: application/json;" -H "Authorization: Basic YmVybmQ6bm9tbm9t" -X POST -d '{"type":"UPS!","text":"hungry"}' http://localhost:8080/api/orders
-
-## Update restaurant data via REST Endpoint
-
-> curl -H "Content-Type: application/json" http://localhost:8080/api/updateResData --data-binary @panucis_pizza.json
-
-
-## more examples
-
-### shrimp not found, REJECTED_NO_RESTAURANTS
-curl -H "Content-Type: application/json" -H "Authorization: Basic DEIN-AUTHCODE" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\" :\"+4368012345678\",\"dishes\":[\"shrimp\"]}" http://localhost:8080/api/orders
-
-### wurst not available, REJECTED_NO_RESTAURANTS
-curl -H "Content-Type: application/json" -H "Authorization: Basic DEIN-AUTHCODE" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368012345678\",\"dishes\":[\"pizza\", \"wurst\"]}" http://localhost:8080/api/orders
-
-### frank nomoney has no money , REJECTED_INVALID_PAYMENT
-curl -H "Content-Type: application/json" -H "Authorization: Basic ZnJhbms6bm9tb25leQ==" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368000000000\",\"dishes\":[\"pizza\", \"pasta\"]}" http://localhost:8080/api/orders
+### Hungry SMS OrderRequest - get meal under 20€
+> curl -H "Content-Type: application/json" -X POST -d "{\"type\":\"SMS\",\"text\":\"hungry\",\"phoneNumber\":\"+0699923923434\"}" http://localhost:8080/api/orders
 
 ### verfuegbar, FULLFILLED
-curl -H "Content-Type: application/json" -H "Authorization: Basic DEIN-AUTHCODE" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368012345678\",\"dishes\":[\"pizza\", \"pasta\"]}" http://localhost:8080/api/orders
+> curl -H "Content-Type: application/json" -H "Authorization: Basic aG11OjEyMzQ1" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+0699923923434\",\"dishes\":[\"pizza\", \"pasta\"]}" http://localhost:8080/api/orders
 
-### SMS random, FULLFILLED
-curl -H "Content-Type: application/json" -X POST -d "{\"type\":\"SMS\",\"text\":\"hungry\",\"phoneNumber\":\"+DEINE-NUMMER\"}" http://localhost:8080/api/orders
+### shrimp not found, REJECTED_NO_RESTAURANTS
+> curl -H "Content-Type: application/json" -H "Authorization: Basic aG11OjEyMzQ1" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\" :\"+0699923923434\",\"dishes\":[\"shrimp\"]}" http://localhost:8080/api/orders
 
+### wurst not available, REJECTED_NO_RESTAURANTS
+> curl -H "Content-Type: application/json" -H "Authorization: Basic aG11OjEyMzQ1" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+0699923923434\",\"dishes\":[\"pizza\", \"wurst\"]}" http://localhost:8080/api/orders
 
+### frank nomoney has no money , REJECTED_INVALID_PAYMENT
+> curl -H "Content-Type: application/json" -H "Authorization: Basic ZnJhbms6bm9tb25leQ==" -X POST -d "{\"type\":\"REGULAR\",\"text\":\"hungry\",\"phoneNumber\":\"+4368000000000\",\"dishes\":[\"pizza\", \"pasta\"]}" http://localhost:8080/api/orders
+
+### Unknown property 'tex'
+> curl -H "Content-Type: application/json;" -H "Authorization: Basic ZnJhbms6bm9tb25leQ==" -X POST -d "{\"type\":\"REGULAR\",\"tex\":\"hungry\"}" http://localhost:8080/api/orders
+
+### Invalid format exception
+> curl -H "Content-Type: application/json;" -H "Authorization: Basic ZnJhbms6bm9tb25leQ==" -X POST -d "{\"type\":\"UPS!\",\"text\":\"hungry\"}" http://localhost:8080/api/orders
+
+### Update restaurant data via REST Endpoint
+> curl -H "Content-Type: application/json" http://localhost:8080/api/updateResData --data-binary @panucis_pizza.json
+
+```
+panucis_pizza.json
+{
+
+	"name": "Panucis Pizza",
+	"_id": 1,
+	"location": "1150",
+	"opening": "10:00",
+	"closing": "22:00",
+	"categories": [
+
+		"italian",
+		"american"
+
+	],
+
+	"menu": [{
+		"name": "pizza",
+		"price": 22.99
+	}, {
+		"name": "pasta",
+		"price": 11.99
+	}, {
+		"name": "burger",
+		"price": 33.99
+	}]
+}
+```
 
