@@ -12,12 +12,14 @@ import wmpm16.group05.nomnomathon.models.OrderState;
 /**
  * Route to notify users on status changes of his order.
  */
+
 @Component
 public class CustomerNotifyRouter extends RouteBuilder {
 
 		
     @Override
     public void configure() throws Exception {
+    	
     	
     	//TODO Templates anpassen
     	
@@ -39,8 +41,7 @@ public class CustomerNotifyRouter extends RouteBuilder {
 	    	.setHeader(NomNomConstants.HEADER_FIRST_NAME).simple("body.customer.firstName")
 	    	.setHeader(NomNomConstants.HEADER_LAST_NAME).simple("body.customer.lastName")
 	    	.setHeader(NomNomConstants.HEADER_DISHES_ORDER).simple("body.dishes")
-
-        
+       
 	        .choice()
 			    .when(simple("${header." + NomNomConstants.HEADER_NOTIFICATION_TYPE + "} =~ '" + CustomerNotificationType.SMS + "'"
 			    		+ " && ${body?.customer?.phoneNumber} regex '{{smpp.regex}}'"))
@@ -59,6 +60,7 @@ public class CustomerNotifyRouter extends RouteBuilder {
    
         /* Send SMS to Customer */
         from("direct:notifyCustomerSms")
+			.wireTap("metrics:counter:notify:SMS?increment=1")
 	        .choice()
 	    		// set Chunk template
 				.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
@@ -82,11 +84,12 @@ public class CustomerNotifyRouter extends RouteBuilder {
 	        .to("smpp://{{smpp.user}}@{{smpp.host}}:{{smpp.port}}" 
 	        		+ "?password={{smpp.pass}}" 
 	        		+ "&enquireLinkTimer=6000&systemType=producer&registeredDelivery=0")
-        	.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerSms:send?level=DEBUG&showBody=true")
+        	.wireTap("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerSms:send?level=DEBUG&showBody=false")
         	.end();
     
         /* Send Mail to Customer */
         from("direct:notifyCustomerMail")
+        	.wireTap("metrics:counter:notify:MAIL?increment=1")
 	        .setHeader("Content-type", constant("text/html"))
 	        .choice()
 	        	// set mail subject and Chunk template

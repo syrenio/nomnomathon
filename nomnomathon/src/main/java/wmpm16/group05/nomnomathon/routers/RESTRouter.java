@@ -80,6 +80,7 @@ public class RESTRouter extends RouteBuilder {
                 .filter(simple("${in.body.type} == 'SMS' && ${in.body.text} contains 'hungry'")) /*IGNORE OTHER Messages */
                     .bean(SMSAuthBean.class)
                     .filter(simple("${in.body.userId.present} == true"))
+						.wireTap("metrics:counter:requests:RANDOM?increment=1")
                         .to("direct:enrichCustomerData")
                     .end()
                 .end();
@@ -88,6 +89,7 @@ public class RESTRouter extends RouteBuilder {
         from("direct:postOrderWithREGULAR")
                 .bean(RegularAuthBean.class)
                 .filter(simple("${in.body.userId.present} == true"))
+					.wireTap("metrics:counter:requests:REGULAR?increment=1")
                 	.to("direct:enrichCustomerData")
                 .end();
 
@@ -250,12 +252,14 @@ public class RESTRouter extends RouteBuilder {
                 .to("direct:finishOrder");
 
         from("direct:finishOrder")
+				.wireTap("metrics:counter:orders:FINISHED?increment=1")
                 .to("direct:notifyCustomer");
 
         /*reject order, update DB*/
         from("direct:rejectOrder")
                 .bean(LoadOrderBean.class)
                 .bean(UpdateOrderBean.class)
+				.wireTap("metrics:counter:orders:REJECTED?increment=1")
                 .to("log:wmpm16.group05.nomnomathon.routers.RESTRouter.rejectOrder?level=DEBUG")
                 .to("direct:notifyCustomer");
 
