@@ -20,6 +20,13 @@ public class DatabaseSeeder {
         dishRepository.deleteAll();
         orderRepository.deleteAll();
 
+        // mail regex = [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}
+        // e.g. a@b.c.at <- length of TLD at least 2
+
+        // phoneNumber regex = \\+[0-9.]{5,}
+        // strat with + add at least 5 numbers
+        
+        
         //authcode: YmVybmQ6bm9tbm9t
         Customer customer = new Customer("bernd","bernd","test","nomnom");
         customer.setPhoneNumber("+4368012345678");
@@ -32,7 +39,7 @@ public class DatabaseSeeder {
         //authcode: Ym11OjEyMzQ1
         customer = new Customer("bmu","Bernhard","Müller","12345");
         customer.setPhoneNumber("+0699923923293");
-        customer.setMail("bernhard.mueller@gmx.at");
+        customer.setMail("a.b@c.at");
         customer.setNotificationType(CustomerNotificationType.SMS);
         customer.setAddress("Percostraße 25, 1220 Wien");
         customer.setCreditCard("4411948396385770");
@@ -41,13 +48,11 @@ public class DatabaseSeeder {
         //authcode: aG11OjEyMzQ1
         customer = new Customer("hmu","Hansi","Müller","12345");
         customer.setPhoneNumber("+0699923923434");
-        customer.setMail("bernhard.mueller@gmx.at");
+        customer.setMail("a.b@c.at");
         customer.setNotificationType(CustomerNotificationType.MAIL);
         customer.setAddress("Percostraße 25, 1220 Wien");
         customer.setCreditCard("4411948396385770");
-        customerRepository.save(customer);
-
-        
+        customerRepository.save(customer);      
         
         //authcode: bWF3ZToxMjM0NQ==
         customer = new Customer("mawe","Martin","Weik","12345");
