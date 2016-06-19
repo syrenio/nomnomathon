@@ -270,25 +270,6 @@ public class RESTRouter extends RouteBuilder {
         		//does not work: .timePeriodMillis(Long.perseLong(SpringPropterty)).timePeriodMillis(simple("{{notify.timePeriodMillis}}", Long.class))
                 .to("direct:sendCustomerNotification");
 
-        /* Next processes*/
-
-
-
-        from("direct:start")
-                .process(new Processor() {
-                    public void process(Exchange exchange) throws Exception {
-                        System.out.println(exchange.getIn().getBody());
-                    }
-                })
-                .to("http://localhost:8080/external/restaurants/pizzza")
-                .unmarshal().json(JsonLibrary.Jackson, RestaurantCapacityResponse.class)
-                .process(new Processor() {
-                    public void process(Exchange exchange) throws Exception {
-                        RestaurantCapacityResponse response = exchange.getIn().getBody(RestaurantCapacityResponse.class);
-                        System.out.println(response);
-                    }
-                });
-
     }
 
 }
