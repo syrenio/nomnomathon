@@ -1,5 +1,6 @@
 package wmpm16.group05.nomnomathon.routers;
 
+import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.builder.RouteBuilder;
 import org.apache.camel.component.chunk.ChunkConstants;
@@ -15,7 +16,6 @@ import wmpm16.group05.nomnomathon.models.OrderState;
 
 @Component
 public class CustomerNotifyRouter extends RouteBuilder {
-
 		
     @Override
     public void configure() throws Exception {
@@ -34,6 +34,7 @@ public class CustomerNotifyRouter extends RouteBuilder {
         	.bean(LoadOrderBean.class)
 
 	    	.setHeader(NomNomConstants.HEADER_ORDER_ID).simple("body.orderId")
+	    	.setHeader(NomNomConstants.HEADER_CUSTOMER_ID).simple("body.customer.id")
 	    	.setHeader(NomNomConstants.HEADER_NOTIFICATION_TYPE).simple("body.customer.notificationType")
 	    	.setHeader(NomNomConstants.HEADER_FIRST_NAME).simple("body.customer.firstName")
 	    	.setHeader(NomNomConstants.HEADER_LAST_NAME).simple("body.customer.lastName")
@@ -139,6 +140,12 @@ public class CustomerNotifyRouter extends RouteBuilder {
 				.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerRest:undefined_orderState?level=ERROR")
 				.stop()
 	    .end()
+        .to("chunk:dummy")
+        .setHeader(Exchange.HTTP_URI, simple("http://localhost:8080/customer"
+        		+ "?id=${header." + NomNomConstants.HEADER_CUSTOMER_ID + "}"))
+        .setHeader(Exchange.HTTP_METHOD, constant("POST"))
+        .setHeader(Exchange.CONTENT_TYPE, constant(org.springframework.http.MediaType.TEXT_PLAIN_VALUE))
+        .to("http://dummyhost")
 		.to("log:wmpm16.group05.nomnomathon.routers.CustomerNotifyRouter.notifyCustomerRest:send?level=DEBUG&showBody=false");
         
         

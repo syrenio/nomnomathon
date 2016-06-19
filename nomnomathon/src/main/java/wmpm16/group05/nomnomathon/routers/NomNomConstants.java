@@ -16,6 +16,7 @@ public class NomNomConstants {
     public static final String HEADER_TYPE = "type";
     public static final String HEADER_DISH_NAMES = "dishNames";
     public static final String HEADER_ORDER_ID = "orderId";
+    public static final String HEADER_CUSTOMER_ID = "customerId";
 
     public static final Long AGGREGATION_TIMEOUT = 1000L;
     public static final Long THROTTLER_PERIOD = 10000L;

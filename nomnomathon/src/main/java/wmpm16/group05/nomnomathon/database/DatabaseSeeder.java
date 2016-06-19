@@ -40,11 +40,12 @@ public class DatabaseSeeder {
         customer = new Customer("bmu","Bernhard","Müller","12345");
         customer.setPhoneNumber("+0699923923293");
         customer.setMail("a.b@c.at");
-        customer.setNotificationType(CustomerNotificationType.SMS);
+        customer.setNotificationType(CustomerNotificationType.REST);
         customer.setAddress("Percostraße 25, 1220 Wien");
         customer.setCreditCard("4411948396385770");
         customerRepository.save(customer);
 
+        
         //authcode: aG11OjEyMzQ1
         customer = new Customer("hmu","Hansi","Müller","12345");
         customer.setPhoneNumber("+0699923923434");
