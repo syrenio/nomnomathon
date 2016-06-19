@@ -1,0 +1,25 @@
+{
+
+	"name": "Pizza Mann",
+	"_id": 7,
+	"location": "1100",
+	"opening": "10:00",
+	"closing": "22:00",
+	"categories": [
+
+		"italian"
+
+	],
+
+	"menu": [{
+		"name": "pizza",
+		"price": 5.99
+	}, {
+		"name": "pasta",
+		"price": 12.99
+	}, {
+		"name": "burger",
+		"price": 33.99
+	}]
+}
+
