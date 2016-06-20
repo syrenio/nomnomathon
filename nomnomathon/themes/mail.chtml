@@ -39,6 +39,10 @@ deine Bestellung mit der NomNomId: {$headers.orderId} wird gerade zubereitet und
 {% onEmpty %}
 {!-- Always provide an onEmpty block  --}
 {% endloop %}
+<tr>
+<td>TOTAL:</td>
+<td>{$headers.amount}</td>
+</tr>
 </table>
 
 
