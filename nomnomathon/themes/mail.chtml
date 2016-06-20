@@ -21,7 +21,7 @@ dein NomNomathon Team <br>
 {#fullfilled}
 {% include #header %}
  
-deine Bestellung mit der NomNomId: {$headers.orderId} wird gerade zubereitet und frisch an dich geliefert. <br>
+deine Bestellung mit der NomNomId: {$headers.orderId} wird gerade zubereitet und frisch von "{$headers.restaurantname}" an dich geliefert. <br>
 <table border="1", cellpadding="3",  border="1", cellspacing="1">
 <tr>
 <td>Gericht</td>
@@ -40,8 +40,8 @@ deine Bestellung mit der NomNomId: {$headers.orderId} wird gerade zubereitet und
 {!-- Always provide an onEmpty block  --}
 {% endloop %}
 <tr>
-<td>TOTAL:</td>
-<td>{$headers.amount}</td>
+<td>TOTAL</td>
+<td>{$headers.amount}€</td>
 </tr>
 </table>
 

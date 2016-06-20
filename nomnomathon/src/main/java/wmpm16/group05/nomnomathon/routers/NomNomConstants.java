@@ -25,6 +25,7 @@ public class NomNomConstants {
     public static final String HEADER_SMTP_TO = "to";
     public static final String HEADER_SUBJECT = "subject";
     public static final String HEADER_SMPP_PHONENUMBER = "CamelSmppDestAddr";
+	public static final String HEADER_RESTAURANT_NAME = "restaurantname";
 
     
 }

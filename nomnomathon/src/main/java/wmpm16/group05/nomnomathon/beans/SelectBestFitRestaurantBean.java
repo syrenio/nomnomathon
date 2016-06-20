@@ -31,11 +31,10 @@ public class SelectBestFitRestaurantBean {
         List<String> disheNames = exchange.getIn().getHeader(NomNomConstants.HEADER_DISHES_ORDER, ArrayList.class);
 
         //actual best price
-        double bestPrice = 0;
-        //first solution is assumed best, is set to false for restaurants after
-        boolean firstrun = true;
+        double bestPrice = Double.MAX_VALUE;
         //actual best restaurant
         int selectedRestaurantId = 0;
+        String selectedRestaurantName = "";
         //actual best combination of dishes
         Map<String, Double> dishesPrices = new HashMap<>();
         
@@ -51,16 +50,17 @@ public class SelectBestFitRestaurantBean {
                     dishesPricesTemporary.put(m.getName(), m.getPrice());
                 }
             }
-            if(firstrun || sumPrices < bestPrice) {
-            	firstrun = false;
+            if(sumPrices < bestPrice) {
             	bestPrice = sumPrices;
             	selectedRestaurantId = r.get_id();
+            	selectedRestaurantName = r.getName();
             	dishesPrices = dishesPricesTemporary;            	
             }            
         }
         
 
         exchange.getIn().setHeader(NomNomConstants.HEADER_RESTAURANT_ID, selectedRestaurantId);
+        exchange.getIn().setHeader(NomNomConstants.HEADER_RESTAURANT_NAME, selectedRestaurantName);
         exchange.getIn().setHeader(NomNomConstants.HEADER_AMOUNT, bestPrice);
         exchange.getIn().setHeader(NomNomConstants.HEADER_DISHES_PRICES, dishesPrices);
     }
