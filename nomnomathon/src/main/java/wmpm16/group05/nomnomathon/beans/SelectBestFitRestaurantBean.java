@@ -20,27 +20,45 @@ import wmpm16.group05.nomnomathon.routers.NomNomConstants;
 @Component
 public class SelectBestFitRestaurantBean {
 
+	/**
+	 * Looks for the cheapest restaurant.
+	 * @param exchange
+	 */
 
-    public void process(Exchange exchange) {
+    @SuppressWarnings("unchecked")
+	public void process(Exchange exchange) {
         List<RestaurantData> restaurants = exchange.getIn().getBody(ArrayList.class);
         List<String> disheNames = exchange.getIn().getHeader(NomNomConstants.HEADER_DISHES_ORDER, ArrayList.class);
 
-        Map<Double, Integer> restauransTotalPrices = new HashMap<>();
-        PriorityQueue<Double> pricesQueue = new PriorityQueue<>();
+        //actual best price
+        double bestPrice = 0;
+        //first solution is assumed best, is set to false for restaurants after
+        boolean firstrun = true;
+        //actual best restaurant
+        int selectedRestaurantId = 0;
+        //actual best combination of dishes
         Map<String, Double> dishesPrices = new HashMap<>();
+        
+        //iterable looks for best restaurant
         for (RestaurantData r : restaurants) {
+        	//total for actual restaurant
             double sumPrices = 0;
+            //dishes and prices for actual restaurant
+            Map<String, Double> dishesPricesTemporary = new HashMap<>();
             for (Menu m : r.getMenu()) {
                 if (disheNames.contains(m.getName())) {
                     sumPrices += m.getPrice();
-                    dishesPrices.put(m.getName(), m.getPrice());
+                    dishesPricesTemporary.put(m.getName(), m.getPrice());
                 }
             }
-            restauransTotalPrices.put(sumPrices, r.get_id());
-            pricesQueue.add(sumPrices);
+            if(firstrun || sumPrices < bestPrice) {
+            	firstrun = false;
+            	bestPrice = sumPrices;
+            	selectedRestaurantId = r.get_id();
+            	dishesPrices = dishesPricesTemporary;            	
+            }            
         }
-        double bestPrice = pricesQueue.poll();
-        int selectedRestaurantId = restauransTotalPrices.get(bestPrice);
+        
 
         exchange.getIn().setHeader(NomNomConstants.HEADER_RESTAURANT_ID, selectedRestaurantId);
         exchange.getIn().setHeader(NomNomConstants.HEADER_AMOUNT, bestPrice);
