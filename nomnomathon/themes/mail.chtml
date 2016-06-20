@@ -38,10 +38,6 @@ deine Bestellung mit der NomNomId: {$headers.orderId} wird gerade zubereitet und
 
 {% onEmpty %}
 {!-- Always provide an onEmpty block  --}
-
-
-
-
 {% endloop %}
 </table>
 
@@ -52,7 +48,7 @@ deine Bestellung mit der NomNomId: {$headers.orderId} wird gerade zubereitet und
 {#invalid_payment}
 {% include #header %}
  
-deine Zahlung konnte leider nicht erfolgreich ausgeführt werden.<br>
+deine Zahlung für Bestellung (NomNomId: {$headers.orderId}) konnte leider nicht erfolgreich ausgeführt werden.<br>
 
 {% include #footer %}
 {#}
@@ -60,7 +56,7 @@ deine Zahlung konnte leider nicht erfolgreich ausgeführt werden.<br>
 {#no_capacity}
 {% include #header %}
  
-wir konnten leider kein Restaurant finden, dass deine Bestellung bearbeiten kann. Versuch es doch ein anderes Mal. <br>
+wir konnten leider kein Restaurant finden, dass deine Bestellung (NomNomId: {$headers.orderId}) bearbeiten kann. Versuch es doch ein anderes Mal. <br>
 
 {% include #footer %}
 {#}
@@ -68,7 +64,7 @@ wir konnten leider kein Restaurant finden, dass deine Bestellung bearbeiten kann
 {#no_restaurants}
 {% include #header %}
  
-wir konnten leider kein Restaurant finden, dass deine Bestellung bearbeiten kann. <br>
+wir konnten leider kein Restaurant finden, dass deine Bestellung (NomNomId: {$headers.orderId}) bearbeiten kann. <br>
 
 {% include #footer %}
 {#}

@@ -1,47 +1,18 @@
-{!-- templates for customer notification mails --}
-{#header}
-Hallo {$headers.firstName} {$headers.lastName},<br><br>
-{#}
-
-{#footer}
-<br>
-Wir freuen uns auf deine nächste Bestellung, <br>
-dein NomNomathon Team <br>
-<a href="http://www.nomnomathon.eu/">www.nomnomathon.eu</a><br>
-{#}
-
-
 {!-- various message types --}
 
 {#fullfilled}
-{% include #header %}
- 
-deine Bestellung mit der NomNomId: {$headers.order.orderId} wird gerade zubereitet und frisch an dich geliefert. <br>
-
-{% include #footer %}
+Bestellung (NomNomId: {$headers.orderId}) wird gerade zubereitet und frisch an dich geliefert.
 {#}
 
 {#invalid_payment}
-{% include #header %}
- 
-deine Zahlung konnte leider nicht erfolgreich ausgeführt werden.<br>
-
-{% include #footer %}
+Zahlung für Bestellung (NomNomId: {$headers.orderId}) konnte leider nicht erfolgreich ausgeführt werden.
 {#}
 
 {#no_capacity}
-{% include #header %}
- 
-wir konnten leider kein Restaurant finden, dass deine Bestellung bearbeiten kann. Versuch es doch ein anderes Mal. <br>
-
-{% include #footer %}
+Wir konnten leider kein Restaurant finden, dass deine Bestellung (NomNomId: {$headers.orderId}) bearbeiten kann. Versuch es doch ein anderes Mal.
 {#}
 
 {#no_restaurants}
-{% include #header %}
- 
-wir konnten leider kein Restaurant finden, dass deine Bestellung bearbeiten kann. <br>
-
-{% include #footer %}
+Wir konnten leider kein Restaurant finden, dass deine Bestellung (NomNomId: {$headers.orderId}) bearbeiten kann. <br>
 {#}
 

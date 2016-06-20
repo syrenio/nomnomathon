@@ -11,19 +11,19 @@ dein NomNomathon Team
 {!-- various message types --}
 
 {#fullfilled}
-{% include #header %} deine Bestellung wird gerade zubereitet und frisch an dich geliefert. {% include #footer %}
+{% include #header %} deine Bestellung (NomNomId: {$headers.orderId}) wird gerade zubereitet und frisch an dich geliefert. {% include #footer %}
 {#}
 
 {#invalid_payment}
-{% include #header %} die Bezahlung deiner Bestellung (NomNomId: {$headers.order.orderId}) ist fehlgeschlagen. {% include #footer %}
+{% include #header %} die Bezahlung deiner Bestellung (NomNomId: {$headers.orderId}) ist fehlgeschlagen. {% include #footer %}
 
 {#}
 
 {#no_capacity}
-{% include #header %} wir konnten leider kein Restaurant finden, dass deine Bestellung derzeit bearbeiten kann. {% include #footer %}
+{% include #header %} wir konnten leider kein Restaurant finden, dass deine Bestellung (NomNomId: {$headers.orderId}) derzeit bearbeiten kann. {% include #footer %}
 {#}
 
 {#no_restaurants}
-{% include #header %} wir konnten leider kein Restaurant finden, dass deine Bestellung bearbeiten kann. {% include #footer %}
+{% include #header %} wir konnten leider kein Restaurant finden, dass deine Bestellung (NomNomId: {$headers.orderId}) bearbeiten kann. {% include #footer %}
 {#}
 
