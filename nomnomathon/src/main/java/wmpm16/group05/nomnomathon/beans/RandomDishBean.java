@@ -1,9 +1,6 @@
 package wmpm16.group05.nomnomathon.beans;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.apache.camel.Exchange;
 import org.springframework.stereotype.Component;
@@ -47,8 +44,22 @@ public class RandomDishBean {
     }
 
     private void selectRandomDish() {
-        ArrayList<Menu> dishes = selectedRestaurant.get(0).getMenu();
+        List<Menu> dishes = getDishesLt20(selectedRestaurant.get(0).getMenu());
         selectedDish = dishes.get(calculateRandomValue(0, dishes.size() - 1));
+    }
+
+    private List<Menu> getDishesLt20(List<Menu> menu) {
+        List<Menu> dishes = new ArrayList<>();
+        dishes.addAll(menu);
+
+        for (Iterator<Menu> it = dishes.iterator(); it.hasNext(); ) {
+            Menu dish = it.next();
+            if (dish.getPrice() > 20) {
+                it.remove();
+            }
+        }
+
+        return dishes;
     }
 
     private int calculateRandomValue(int min, int max) {

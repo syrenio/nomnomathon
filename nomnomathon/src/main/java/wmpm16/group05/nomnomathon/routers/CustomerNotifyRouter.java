@@ -122,6 +122,7 @@ public class CustomerNotifyRouter extends RouteBuilder {
     
         /* Send REST to Customer */
         from("direct:notifyCustomerRest")
+    	.wireTap("metrics:counter:notify:REST?increment=1")
         .choice()
     		// set Chunk template
 			.when(header(NomNomConstants.HEADER_ORDER_STATE).isEqualTo(OrderState.REJECTED_NO_RESTAURANTS))
